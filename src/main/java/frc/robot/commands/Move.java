@@ -26,7 +26,7 @@ public class Move {
     public Optional<Alliance> ally;
 
     public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter) {
-        this.intake = intake;
+        this.hopper = hopper;
         this.climber = climber;
         this.intake = intake;
         this.shooter = shooter;
@@ -57,19 +57,19 @@ public class Move {
     //==========================================================
 
     public Command climbSequence() {
-        return Commands.parallel(hopper.hopperRetract(),climber.liftClimbExtend(), climber.rotateClimb1Extend(), climber.rotateClimb2Extend()).andThen(  //Verify hooks extended and hopper retracted
+        return Commands.parallel(hopper.hopperRetract(),climber.liftClimbExtend()/*, climber.rotateClimb1Extend(), climber.rotateClimb2Extend()*/).andThen(  //Verify hooks extended and hopper retracted
             climber.liftClimbPastHandoff()).andThen( //Lift pulls down to rotate hooks  
             climber.rotateClimbEngaged()).andThen( //Rotate hooks are engaged
-            Commands.parallel(climber.liftClimbExtend(),climber.rotateClimb1Retract(),climber.rotateClimb2Retract())).andThen(  //Lift extends to climb ready while rotate retracts
+            Commands.parallel(climber.liftClimbExtend()/*,climber.rotateClimb1Retract(),climber.rotateClimb2Retract()*/)).andThen(  //Lift extends to climb ready while rotate retracts
             climber.liftClimbPastHandoff(),climber.rotateClimb1Extend(),climber.rotateClimb2Extend()).andThen( //Lift pulls down while rotate hooks return upward 
             climber.rotateClimbEngaged()).andThen( //Rotate hooks are engaged
-            Commands.parallel(climber.liftClimbExtend(),climber.rotateClimb1Retract(),climber.rotateClimb2Retract())).andThen(  //Lift extends to climb ready while rotate retracts
+            Commands.parallel(climber.liftClimbExtend()/*,climber.rotateClimb1Retract(),climber.rotateClimb2Retract()*/)).andThen(  //Lift extends to climb ready while rotate retracts
             climber.liftClimbPastHandoff(),climber.rotateClimb1Extend(),climber.rotateClimb2Extend()).andThen( //Lift pulls down while rotate hooks return upward             
             );
     }
 
     public Command stopClimb() {
-        return Commands.parallel(climber.rotateClimb1Stop(),climber.rotateClimb2Stop(),climber.liftClimbStop());
+        return Commands.parallel(climber.rotateClimb1Stop()/*,climber.rotateClimb2Stop(),climber.liftClimbStop()*/);
     }
         
     public Command quickClimbRight() {//Drives to the right climb location
@@ -89,12 +89,12 @@ public class Move {
 
     //================================Hopper================================
     public Command emptyHopper() {
-        return Commands.parallel(shooter.slowShoot(),shooter.turretSlowShootPosition()).andThen(
+        return Commands.parallel(shooter.slowShoot()/*,shooter.turretSlowShootPosition()*/).andThen(
             shooter.forwardSpindexer(),shooter.forwardKickup());
     }    
 
     public Command stopEmptyHopper () {
-        return Commands.parallel(shooter.stopShoot(), shooter.stopSpindexer(), shooter.stopKickup());
+        return Commands.parallel(shooter.stopShoot()/*, shooter.stopSpindexer(), shooter.stopKickup()*/);
     }
 
     public Command hopperRetract(){
@@ -107,27 +107,27 @@ public class Move {
 
     //==============================Spin and Kick================================
     public Command reverseSpinAndKick() {  //Need to make sure they are stopped first
-        return Commands.parallel(shooter.reverseSpindexer(),shooter.reverseKickup());
+        return Commands.parallel(shooter.reverseSpindexer()/*,shooter.reverseKickup()*/);
     }
 
     public Command stopSpinAndKick(){
-        return Commands.parallel(shooter.stopShoot(),shooter.stopSpindexer(),shooter.stopKickup());
+        return Commands.parallel(shooter.stopShoot()/*,shooter.stopSpindexer(),shooter.stopKickup()*/);
     }
 
     //==================================Climb====================================
     public Command primeClimb() {
         return Commands.parallel(hopper.hopperRetract(),intake.intakeStop()).andThen(
-        Commands.parallel(climber.releasePins(), climber.rotateClimb1Extend(),climber.rotateClimb2Extend(),climber.liftClimbExtend()));
+        Commands.parallel(climber.releasePins()/*, climber.rotateClimb1Extend(),climber.rotateClimb2Extend(),climber.liftClimbExtend()*/));
     }
 
     public Command homeClimb() {  
         return shooter.turretClimbPosition().andThen(
-            Commands.parallel(climber.rotateClimb1Home(), climber.rotateClimb2Home(), climber.liftClimbHome()).
+            Commands.parallel(climber.rotateClimb1Home()/*, climber.rotateClimb2Home(), climber.liftClimbHome()*/).
         until(climber.isClimberHome));
     }
 
     public Command stopShoot() {
-        return Commands.parallel(shooter.stopSpindexer(), shooter.stopKickup()).andThen(
+        return Commands.parallel(shooter.stopSpindexer()/*, shooter.stopKickup()*/).andThen(
             shooter.stopShoot());
     }
 

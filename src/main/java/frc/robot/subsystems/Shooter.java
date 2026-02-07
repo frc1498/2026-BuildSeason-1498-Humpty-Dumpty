@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.MatchInfo;
 import frc.robot.ShotCalculation;
 import frc.robot.config.ShooterConfig;
 import frc.robot.sim.ShooterSim;
@@ -97,6 +98,8 @@ public class Shooter extends SubsystemBase {
   public DutyCycleOut shooterDutyCycle;
   public DutyCycleOut kickupDutyCycle;
   public DutyCycleOut spindexerDutyCycle;
+
+  private double simTime;
 
   boolean turretZeroed;
   boolean requestShoot;
@@ -555,6 +558,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Current Turret Angle", () -> {return this.currentTurretAngle;}, null);
     builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
     builder.addDoubleProperty("Current Flywheel Velocity", () -> {return this.currentFlywheelVelocity;}, null);
+    builder.addDoubleProperty("Sim Time in Auton", () -> {return this.simTime;}, null);
   }
 
   @Override
@@ -587,6 +591,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     // Every loop, update the odometry with the pose of the virtual target.
     this.targetingField.setRobotPose(this.currentTarget);
+
+    this.simTime = MatchInfo.getInstance().timeLeftinAuton();
   }
 
   @Override
