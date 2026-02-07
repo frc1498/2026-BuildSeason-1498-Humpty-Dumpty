@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "R Outpost"
+            "pathName": "Red R to C to R Sh"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost to Dep"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Dep to L Cl"
+            "pathName": "Red R Sh to R Cl"
           }
         }
       ]

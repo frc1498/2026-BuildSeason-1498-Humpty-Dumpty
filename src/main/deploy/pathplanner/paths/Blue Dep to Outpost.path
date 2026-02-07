@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.8872409909909913,
-        "y": 2.298626126126127
+        "x": 0.4461036036036041,
+        "y": 5.975653153153153
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7841328828828833,
-        "y": 1.6960022522522538
+        "x": 2.958738738738739,
+        "y": 5.444527027027027
       },
       "isLocked": false,
-      "linkedName": "Right Shoot"
+      "linkedName": "Blue Depot"
     },
     {
       "anchor": {
-        "x": 1.058941441441442,
-        "y": 2.7786824324324324
+        "x": 0.4461036036036041,
+        "y": 0.6643918918918927
       },
       "prevControl": {
-        "x": 1.0793693693693698,
-        "y": 1.358941441441442
+        "x": 1.937342342342343,
+        "y": 1.4304391891891897
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Climb"
+      "linkedName": "Blue Outpost"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 179.80400607907845
   },
   "reversed": false,
   "folder": "Blue",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 43.408859728805446
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

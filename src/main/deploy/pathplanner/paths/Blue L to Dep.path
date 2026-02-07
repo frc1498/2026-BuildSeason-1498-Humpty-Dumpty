@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4461036036036041,
-        "y": 0.6643918918918927
+        "x": 3.581790540540541,
+        "y": 6.343355855855856
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3653603603603608,
-        "y": 0.6848198198198214
+        "x": 2.5597485399238797,
+        "y": 6.347589912532748
       },
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.058941441441442,
-        "y": 2.7786824324324324
+        "x": 0.4461036036036041,
+        "y": 5.975653153153153
       },
       "prevControl": {
-        "x": 0.9772297297297304,
-        "y": 1.9513513513513523
+        "x": 1.100697696071979,
+        "y": 5.980230734219365
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Climb"
+      "linkedName": "Blue Depot"
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Blue",

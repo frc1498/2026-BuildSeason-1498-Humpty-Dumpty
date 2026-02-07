@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.581790540540541,
-        "y": 6.343355855855856
+        "x": 14.316666666664842,
+        "y": 5.509942658194005
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5597485399238797,
-        "y": 6.347589912532748
+        "x": 15.39642857142857,
+        "y": 6.496857142857143
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Red Right Shoot"
     },
     {
       "anchor": {
-        "x": 0.4461036036036041,
-        "y": 5.975653153153153
+        "x": 15.482809523809527,
+        "y": 5.287523809523809
       },
       "prevControl": {
-        "x": 1.1006976960719792,
-        "y": 5.980230734219365
+        "x": 15.445724410576963,
+        "y": 5.534757897740883
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Red Right Climb"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Blue",
+  "folder": "Red",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 45.33599266136768
   },
   "useDefaultConstraints": true
 }

@@ -4,36 +4,31 @@
     {
       "anchor": {
         "x": 0.4461036036036041,
-        "y": 5.975653153153153
+        "y": 0.6643918918918927
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.5910360360360363,
-        "y": 5.230033783783783
+        "x": 1.3653603603603608,
+        "y": 0.6848198198198214
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Blue Outpost"
     },
     {
       "anchor": {
         "x": 1.058941441441442,
-        "y": 4.637623873873874
+        "y": 2.7786824324324324
       },
       "prevControl": {
-        "x": 0.813806306306307,
-        "y": 5.750945945945946
+        "x": 0.9772297297297304,
+        "y": 1.9513513513513523
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Blue Right Climb"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": -92.02319436592816
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -47,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": -89.05475686304814
   },
   "reversed": false,
   "folder": "Blue",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 179.80400607907845
   },
   "useDefaultConstraints": true
 }
