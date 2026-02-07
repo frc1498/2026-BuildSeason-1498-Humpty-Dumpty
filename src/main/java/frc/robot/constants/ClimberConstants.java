@@ -5,6 +5,7 @@
 package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -43,17 +44,16 @@ public class ClimberConstants {
    * 0 [blue left][blue right]
    * 1 [red left][red right]
   */
-  // TO DO: Initialize array with the actual coordinates
   public static final Pose2d[][] quickClimbPoses = {
     //Blue
     {
-      new Pose2d(), //left
-      new Pose2d() //right
+      new Pose2d(1.512, 4.178, Rotation2d.fromDegrees(180)), //left
+      new Pose2d(1.512, 3.310, Rotation2d.fromDegrees(180)) //right
     },
     //Red
     {
-      new Pose2d(), //left
-      new Pose2d() //right
+      new Pose2d(15.034, 3.882, new Rotation2d(0)), //left
+      new Pose2d(15.034, 4.734, new Rotation2d(0)) //right
     }
   };
 }
