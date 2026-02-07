@@ -1,0 +1,70 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.4461036036036041,
+        "y": 0.6643918918918927
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.5594256756756761,
+        "y": 2.1045608108108116
+      },
+      "isLocked": false,
+      "linkedName": "Blue Outpost"
+    },
+    {
+      "anchor": {
+        "x": 2.121193693693694,
+        "y": 4.024786036036036
+      },
+      "prevControl": {
+        "x": 2.121193693693694,
+        "y": 3.4411583118542497
+      },
+      "nextControl": {
+        "x": 2.121193693693694,
+        "y": 6.25143018018018
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.4461036036036041,
+        "y": 5.975653153153153
+      },
+      "prevControl": {
+        "x": 1.2938626126126131,
+        "y": 5.965439189189189
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Blue Depot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Blue",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 179.80400607907845
+  },
+  "useDefaultConstraints": true
+}

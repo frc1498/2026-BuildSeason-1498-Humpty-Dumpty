@@ -7,19 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L to Dep"
+            "pathName": "Blue R to C to Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Dep to Outpost"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Outpost to R Cl"
+            "pathName": "Blue Outpost to R Cl"
           }
         }
       ]
