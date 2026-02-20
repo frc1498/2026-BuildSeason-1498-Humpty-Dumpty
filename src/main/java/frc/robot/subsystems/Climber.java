@@ -16,7 +16,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.motorcontrol.PWMVictorSPX;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.ClimberConfig;
@@ -28,7 +27,8 @@ public class Climber extends SubsystemBase {
   public TalonFX liftClimbMotor;  //Motor type definition
   public TalonFX rotateClimb1Motor;  //Motor type definition
   public TalonFX rotateClimb2Motor;  //Motor type definition
-  public PWMVictorSPX pinReleaseMotor; //Motor type definition
+  public PWMVictorSPX liftHookReleasePin; //Motor type definition
+  public PWMVictorSPX rollerHookReleasePin; //Motor type definition
 
   public PositionVoltage liftClimbMotorMode; //Motor control type definition
   public PositionVoltage rotateClimb1MotorMode; //Motor control type definition
@@ -55,13 +55,14 @@ public class Climber extends SubsystemBase {
     liftClimbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
     this.configureMechanism(liftClimbMotor, config.liftClimbMotorConfig);
 
-    hookRotateEncoder = new CANcoder(ClimberConfig.kHookRotateEncoderCANID,"canivore");
-    this.configureCANcoder(hookRotateEncoder,config.hookRotateCANcoderConfig);
+    //hookRotateEncoder = new CANcoder(ClimberConfig.kHookRotateEncoderCANID,"canivore");
+    //this.configureCANcoder(hookRotateEncoder,config.hookRotateCANcoderConfig);
 
-    liftEncoder = new CANcoder(ClimberConfig.kLiftEncoderCANID,"canivore");
-    this.configureCANcoder(liftEncoder,config.liftCANcoderConfig);
+    //liftEncoder = new CANcoder(ClimberConfig.kLiftEncoderCANID,"canivore");
+    //this.configureCANcoder(liftEncoder,config.liftCANcoderConfig);
 
-    pinReleaseMotor = new PWMVictorSPX(0);
+    liftHookReleasePin = new PWMVictorSPX(0);
+    rollerHookReleasePin = new PWMVictorSPX(1);
 
     dutyCycleOut = new DutyCycleOut(0.0);
 
@@ -96,7 +97,10 @@ public class Climber extends SubsystemBase {
     }
   }
 
+//=======================================================
 //====================Private Methods====================
+//=======================================================
+//===============Private Set/Goto Methods================
   private void goToPositionLiftClimb(double position) {
     if (MotorEnableConstants.kLiftClimbMotorEnabled) {
       if (position <= ClimberConstants.kLiftClimbSafeExtend //Check that Value is below extended distance 
@@ -121,6 +125,26 @@ public class Climber extends SubsystemBase {
     }
   }
 
+  private void retractClimberPins() {
+    liftHookReleasePin.set(-1);
+    rollerHookReleasePin.set(-1);
+  }
+
+  private void extendClimberPins() {
+    liftHookReleasePin.set(1);
+    rollerHookReleasePin.set(1);
+  }
+
+  private void rotateClimberStop(){
+    rotateClimb1Motor.setControl(dutyCycleOut.withOutput(0.0));
+    rotateClimb2Motor.setControl(dutyCycleOut.withOutput(0.0));
+  }
+
+  private void liftClimberStop(){
+    liftClimbMotor.setControl(dutyCycleOut.withOutput(0.0));
+  }
+
+  //=====================Private Get Methods==================================
   private double getRotateClimb1Position() {
     return rotateClimb1Motor.getPosition().getValueAsDouble();
   }
@@ -133,63 +157,39 @@ public class Climber extends SubsystemBase {
     return liftClimbMotor.getPosition().getValueAsDouble();
   }
 
-
+  //=====================Private Trigger Methods
   private boolean isLiftClimbAtPosition(double position) {
     return ((position - ClimberConstants.kLiftClimbDeadband) <= this.getLiftClimbPosition()) 
     && ((position + ClimberConstants.kLiftClimbDeadband) >= this.getLiftClimbPosition());
   }
 
-  private boolean isRotateClimb1AtPosition(double position) {
+  private boolean isRotateClimbAtPosition(double position) {
     return ((position - ClimberConstants.kRotateClimbDeadband) <= this.getRotateClimb1Position()) 
-    && ((position + ClimberConstants.kRotateClimbDeadband) >= this.getRotateClimb1Position());
-  }
-
-  private boolean isRotateClimb2AtPosition(double position) {
-    return ((position - ClimberConstants.kRotateClimbDeadband) <= this.getRotateClimb2Position()) 
+    && ((position + ClimberConstants.kRotateClimbDeadband) >= this.getRotateClimb1Position()) 
+    && ((position - ClimberConstants.kRotateClimbDeadband) <= this.getRotateClimb2Position()) 
     && ((position + ClimberConstants.kRotateClimbDeadband) >= this.getRotateClimb2Position());
   }
 
   private boolean isClimberReadyToClimb() {
     return (this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbExtend) &&
-    this.isRotateClimb1AtPosition(ClimberConstants.kRotateClimbExtend) &&
-    this.isRotateClimb2AtPosition(ClimberConstants.kRotateClimbExtend));
+    this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbExtend));
   }
 
   private boolean isClimberHome() {
     return (this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbHome) &&
-    this.isRotateClimb1AtPosition(ClimberConstants.kRotateClimbHome) &&
-    this.isRotateClimb2AtPosition(ClimberConstants.kRotateClimbHome));
+    this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbHome));
   }
-
-  private void releaseClimberPins() {
-    pinReleaseMotor.set(1);
-  }
-
-  private void extendClimberPins() {
-    pinReleaseMotor.set(-1);
-  }
-
-  private void rotateClimber1Stop(){
-    rotateClimb1Motor.setControl(dutyCycleOut.withOutput(0.0));
-  }
-
-  private void rotateClimber2Stop(){
-    rotateClimb2Motor.setControl(dutyCycleOut.withOutput(0.0));
-  }
-
-  private void liftClimberStop(){
-    liftClimbMotor.setControl(dutyCycleOut.withOutput(0.0));
-  }
-
+//=======================================================
 //=====================Public Methods====================
-  //=================Lift Climb Commands================
+//=======================================================
+  //=================Public Lift Climb Methods================
   public Command liftClimbExtend() {
     return run(
       () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbExtend);}
     ).until(isLiftClimbExtended);
   }
 
-  public Command liftClimbHandOff() {
+  public Command liftClimbHandoff() {
     return run(
       () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbHandOff);}
     ).until(isLiftClimbHandedOff);
@@ -213,89 +213,47 @@ public class Climber extends SubsystemBase {
     );
   }
 
-  public Command liftClimbPastHandoff(){
-    return run(
-      () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbRetract);}
-      ).until(isLiftClimbHandedOff);
-  }
-
-  //===============Climb 1 Commands================
-  public Command rotateClimb1Extend() {
-    return run(
-      () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbExtend);}
-    ).until(isRotateClimb1Extended);
-  }
-  public Command rotateClimb1Handoff() {
-    return run(
-      () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbHandOff);}
-    ).until(isRotateClimb1HandedOff);
-  }
-
-  public Command rotateClimb1Retract() {
+  //===============Rotate Climb Commands - Simplified==========================
+  public Command rotateClimbHandoff() {
     return run(
       () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbRetract);}
-    ).until(isRotateClimb1Retracted);
+    ).until(isRotateClimbHandedOff);
   }
 
-  public Command rotateClimb1Home() {
+  public Command rotateClimbHome() {
     return run(
       () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbHome);}
-    ).until(isRotateClimb1Home);
-  }  
-
-  public Command rotateClimb1Stop() {
-    return run(
-      () -> {this.rotateClimber1Stop();}
-    );
+    ).until(isRotateClimbHome);
   }
 
-  //====================Climb 2 Commands===============
-  public Command rotateClimb2Extend() {
+  public Command rotateClimbExtend() {
     return run(
       () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbExtend);}
-    ).until(isRotateClimb1Extended);
+    ).until(isRotateClimbExtended);
   }
-  public Command rotateClimb2Handoff() {
-    return run(
-      () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbHandOff);}
-    ).until(isRotateClimb1HandedOff);
-  }
-
-  public Command rotateClimb2Retract() {
+  
+  public Command rotateClimbRetract() {
     return run(
       () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbRetract);}
-    ).until(isRotateClimb1Retracted);
+    ).until(isRotateClimbRetracted);
   }
 
-  public Command rotateClimb2Home() {
+  public Command rotateClimbStop() {
     return run(
-      () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbHome);}
-    ).until(isRotateClimb1Home);
-  }
-
-  public Command rotateClimb2Stop() {
-    return run(
-      () -> {this.rotateClimber2Stop();}
+      () -> {this.rotateClimberStop();}
     );
   }
-
-  public Command rotateClimbEngaged() {
-    return run(
-      () -> {this.goToPositionRotateClimb(ClimberConstants.kRotateClimbHome);}
-    ).until(isRotateClimb1HandedOff);
-  }
-
 
   //===================Pin Commands========================
-  public Command releasePins() {
+  public Command retractPins() {
     return run(
-      () -> {this.releaseClimberPins();});
+      () -> {this.retractClimberPins();});
   }
 
-
-
-
-
+    public Command extendPins() {
+    return run(
+      () -> {this.extendClimberPins();});
+  }
 
   //=======================Triggers======================
   public Trigger isLiftClimbExtended = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbExtend);});
@@ -303,15 +261,10 @@ public class Climber extends SubsystemBase {
   public Trigger isLiftClimbRetracted = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbRetract);});
   public Trigger isLiftClimbHome = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbHome);});
 
-  public Trigger isRotateClimb1Extended = new Trigger(() -> {return this.isRotateClimb1AtPosition(ClimberConstants.kRotateClimbExtend);});
-  public Trigger isRotateClimb1HandedOff = new Trigger(() -> {return this.isRotateClimb1AtPosition(ClimberConstants.kRotateClimbHandOff);});
-  public Trigger isRotateClimb1Retracted = new Trigger(() -> {return this.isRotateClimb1AtPosition(ClimberConstants.kRotateClimbRetract);});
-  public Trigger isRotateClimb1Home = new Trigger(() -> {return this.isRotateClimb1AtPosition(ClimberConstants.kRotateClimbHome);});
-
-  public Trigger isRotateClimb2Extended = new Trigger(() -> {return this.isRotateClimb2AtPosition(ClimberConstants.kRotateClimbExtend);});
-  public Trigger isRotateClimb2HandedOff = new Trigger(() -> {return this.isRotateClimb2AtPosition(ClimberConstants.kRotateClimbHandOff);});
-  public Trigger isRotateClimb2Retracted = new Trigger(() -> {return this.isRotateClimb2AtPosition(ClimberConstants.kRotateClimbRetract);});
-  public Trigger isRotateClimb2Home = new Trigger(() -> {return this.isRotateClimb2AtPosition(ClimberConstants.kRotateClimbHome);});
+  public Trigger isRotateClimbExtended = new Trigger(() -> {return this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbExtend);});
+  public Trigger isRotateClimbHandedOff = new Trigger(() -> {return this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbHandOff);});
+  public Trigger isRotateClimbRetracted = new Trigger(() -> {return this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbRetract);});
+  public Trigger isRotateClimbHome = new Trigger(() -> {return this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbHome);});
 
   public Trigger isClimberReadyToClimb = new Trigger(() -> {return this.isClimberReadyToClimb();});
   public Trigger isClimberHome = new Trigger (() -> {return this.isClimberHome();});

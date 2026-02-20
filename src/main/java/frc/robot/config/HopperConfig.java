@@ -6,7 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class HopperConfig {
     //Constants go here
-    public static final int kHopperExtendCANID=0;
+    public static final int kHopperExtendCANID=10;
    
     //Variables
     public TalonFXConfiguration hopperConfig;  //Create variable of type TalonFXConfiguration
@@ -22,16 +22,16 @@ public class HopperConfig {
         //super low current limit to create software spring
 
         //configure motor
-        hopper.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-        hopper.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        hopper.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;  //Set 2-17-26
+        hopper.MotorOutput.NeutralMode = NeutralModeValue.Coast;  //Set 2-17-26
         hopper.MotorOutput.PeakForwardDutyCycle = 1;
         hopper.MotorOutput.PeakReverseDutyCycle = -1;
 
         hopper.CurrentLimits.StatorCurrentLimit = 120.0;
         hopper.CurrentLimits.StatorCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLimit = 20;    //Was 20
+        hopper.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
         hopper.CurrentLimits.SupplyCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
+        hopper.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Set 2-17-26
         hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
