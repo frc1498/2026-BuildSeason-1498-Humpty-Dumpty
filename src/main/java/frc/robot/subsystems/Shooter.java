@@ -685,6 +685,6 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
     this.sim.simulationPeriodic();
-    this.sim.updateShooterHoodVis(this.currentFlywheelVelocity, this.currentHoodAngle);
+    this.sim.updateShooterHoodVis(this.currentFlywheelVelocity, this.currentHoodAngle, this.hoodAtPosition);
   }
 }

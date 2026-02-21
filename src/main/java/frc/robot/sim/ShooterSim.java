@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.config.ShooterConfig;
 import frc.robot.constants.ShooterConstants;
 
@@ -61,6 +63,31 @@ public class ShooterSim implements AutoCloseable {
     public MechanismRoot2d shooter_root;
     public MechanismObject2d shooter_turret;
     public MechanismLigament2d shooter_hood;
+
+    private enum VisState {
+    AT_VELOCITY(new Color8Bit(Color.kGreen)),
+    AT_POSITION(new Color8Bit(Color.kGreen)),
+    FORWARD(new Color8Bit(Color.kAliceBlue)),
+    REVERSE(new Color8Bit(Color.kRed));
+
+    private Color8Bit color;
+
+    /**
+     * Constructor for the VisState enumeration.
+     * @param color - The intended color of the visual.
+     */
+    VisState(Color8Bit color) {
+      this.color = color;
+    }
+
+    /**
+     * Returns the color for this state.
+     * @return - Desired color for the visualization.
+     */
+    public Color8Bit color() {
+      return this.color;
+    }
+  }
 
      /*new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, 0.001, 100.0), gearbox);*/
     public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterLeft, TalonFXSimState shooterRight, TalonFXSimState spindexer, TalonFXSimState kickup) {
@@ -186,9 +213,10 @@ public class ShooterSim implements AutoCloseable {
         return this.shooter_vis;
     }
 
-    public void updateShooterHoodVis(double velocity, double angle) {
+    public void updateShooterHoodVis(double velocity, double angle, boolean atVelocity) {
         this.shooter_hood.setLength((velocity / ShooterConstants.kShooterMaxSpeed) * 10.0);
         this.shooter_hood.setAngle(angle);
+        this.shooter_hood.setColor(atVelocity ? VisState.AT_POSITION.color() : VisState.REVERSE.color());
     }
 
     @Override
