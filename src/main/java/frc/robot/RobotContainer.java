@@ -95,7 +95,7 @@ public class RobotContainer {
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy);
 
-    public final Move move = new Move(climber,hopper,intake,shooter);
+    public final Move move = new Move(climber,hopper,intake,shooter,drivetrain);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -175,13 +175,10 @@ public class RobotContainer {
         driver.povDown().onTrue(move.stopClimb());
 
         //Driver POV Left: Autodrive Quick Climb Left
-        //driver.povLeft().onTrue(Commands.select(Map.ofEntries(
-		//Map.entry("", drivetrain.pathPlannerToPose(vistion.getDesiredClimbPoseLeft())),
-		//Map.entry("", drivetrain.pathPlannerToPose(vistion.getDesiredClimbPoseLeft()))),
-		//endEffector.getMode??????()));
+        driver.povLeft().onTrue(move.quickClimbLeft());
 
         //Driver POV Right: Autodrive Quick Climb Right
-        //driver.povRight().onTrue
+        driver.povRight().onTrue(move.quickClimbRight());
 
         //Driver X button: Empty Hopper / Slow shot / Hopper In
         driver.x().whileTrue(move.emptyHopper());

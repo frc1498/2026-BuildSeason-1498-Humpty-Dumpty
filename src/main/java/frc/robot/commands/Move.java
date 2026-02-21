@@ -23,14 +23,13 @@ public class Move {
     public Intake intake;
     public Shooter shooter;
     public CommandSwerveDrivetrain drivetrain;
-    public Optional<Alliance> ally;
 
-    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter) {
+    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain) {
         this.climber = climber;
         this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
-        // this.drivetrain = drivetrain;
+        this.drivetrain = drivetrain;
     }
 
     //==========================================================
@@ -41,11 +40,12 @@ public class Move {
     //======================Private=============================
     //==========================================================
     private int getAlliance() {
-        if (ally.isPresent()) {
-            if (ally.get() == Alliance.Blue) {
+        if (DriverStation.getAlliance().isPresent()) {
+
+            if (DriverStation.getAlliance().get() == Alliance.Blue) {
                 return 0;
             }
-            else if (ally.get() == Alliance.Red) {
+            else if (DriverStation.getAlliance().get() == Alliance.Red) {
                 return 1;
             }
         }
