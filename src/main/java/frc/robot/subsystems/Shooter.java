@@ -92,6 +92,7 @@ public class Shooter extends SubsystemBase {
   private double tuningHoodAngle;
   private double tuningTurretAngle;
   private double tuningFlywheelVelocity;
+  private boolean tuningShotSuccessful;
 
   private ShooterSim sim;
   private TalonFXSimState shooterLeftMotorSim;
@@ -232,6 +233,7 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
   this.tuningHoodAngle = 0.0;
   this.tuningTurretAngle = 0.0;
   this.tuningFlywheelVelocity = 0.0;
+  this.tuningShotSuccessful = false;
 
 }
 
@@ -362,7 +364,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * @return - The current velocity of the first shooter motor, in rotations per second.
    */
   private double getShooterOneVelocity() {
-    return this.shooterLeftMotor.getVelocity().getValueAsDouble();
+    return this.shooterRightMotor.getVelocity().getValueAsDouble();
   }
 
   /**
@@ -428,7 +430,6 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return ((current >= (setpoint - deadBand)) && (current <= (setpoint + deadBand)));
   }  
 
-
   /**
    * Returns a string of the name of the currently running command.
    * If no command is running, return "No Command".
@@ -443,6 +444,24 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
       }
       // Refactoring this method with a ternary operator.
       // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
+  }
+
+  /**
+   * Set the result of the last tuning shot.  True is successful, false is unsuccessful.
+   * @param tuningShotSuccessful
+   */
+  private void setTuningShotSuccessful(boolean tuningShotSuccessful) {
+    this.tuningShotSuccessful = tuningShotSuccessful;
+  }
+
+  /**
+   * Log the latest results of the tuning shot.  Remember to always update the boolean flag before running this method.
+   */
+  private void logTuningResult() {
+    DogLog.log("Tuning Hood Angle", this.tuningHoodAngle);
+    DogLog.log("Tuning Turret Angle", this.tuningTurretAngle);
+    DogLog.log("Tuning Flywheel Velocity", this.tuningFlywheelVelocity);
+    DogLog.log("Shot Successful", this.tuningShotSuccessful);
   }
 
   /*====================Public Methods=====================*/
@@ -464,11 +483,21 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * @return
    */
   public Command setTuningShooterOutputs() {
-    return runOnce(() -> {
+    return run(() -> {
       this.setHoodPosition(this.tuningHoodAngle);
       this.setTurretPosition(this.tuningTurretAngle);
       this.setShooterVelocity(this.tuningFlywheelVelocity);
     }).withName("setTuningShooterOutputs");
+  }
+
+  /**
+   * Dog the latest results of the tuning shot.
+   * @return
+   */
+  public Command logLatestTuningResult() {
+    return runOnce(() -> {
+      this.logTuningResult();
+    });
   }
 
   /**
@@ -616,6 +645,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
     builder.addDoubleProperty("Tuning Turret Angle", () -> {return this.tuningTurretAngle;}, this::setTuningTurretPosition);
     builder.addDoubleProperty("Tuning Flywheel Velocity", () -> {return this.tuningFlywheelVelocity;}, this::setTuningShooterVelocity);
+    builder.addBooleanProperty("Tuning Shot Successful", () -> {return this.tuningShotSuccessful;}, this::setTuningShotSuccessful);
   }
 
   @Override

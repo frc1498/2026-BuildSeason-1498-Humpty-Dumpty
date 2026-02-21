@@ -20,8 +20,8 @@ public class ShooterSim implements AutoCloseable {
     public ShooterConfig shooterConfig;
     public TalonFXSimState hood;
     public TalonFXSimState turret;
-    public TalonFXSimState shooterOne;
-    public TalonFXSimState shooterTwo;
+    public TalonFXSimState shooterLeft;
+    public TalonFXSimState shooterRight;
     public TalonFXSimState spindexer;
     public TalonFXSimState kickup;
 
@@ -67,8 +67,8 @@ public class ShooterSim implements AutoCloseable {
         this.shooterConfig = config;
         this.hood = hood;
         this.turret = turret;
-        this.shooterOne = shooterLeft;
-        this.shooterTwo = shooterRight;
+        this.shooterLeft = shooterLeft;
+        this.shooterRight = shooterRight;
         this.spindexer = spindexer;
         this.kickup = kickup;
 
@@ -94,13 +94,13 @@ public class ShooterSim implements AutoCloseable {
         this.simVoltage = RoboRioSim.getVInVoltage();
         this.hood.setSupplyVoltage(this.simVoltage);
         this.turret.setSupplyVoltage(this.simVoltage);
-        this.shooterOne.setSupplyVoltage(this.simVoltage);
-        this.shooterTwo.setSupplyVoltage(this.simVoltage);
+        this.shooterLeft.setSupplyVoltage(this.simVoltage);
+        this.shooterRight.setSupplyVoltage(this.simVoltage);
         this.spindexer.setSupplyVoltage(this.simVoltage);
         this.kickup.setSupplyVoltage(this.simVoltage);
 
         // Run the simulation and update it.
-        this.shooterFlywheel.setInput(shooterOne.getMotorVoltage());
+        this.shooterFlywheel.setInput(shooterRight.getMotorVoltage());
         this.shooterFlywheel.update(this.simPeriod);
 
         this.hoodAdjustSim.setInput(hood.getMotorVoltage());
@@ -118,8 +118,10 @@ public class ShooterSim implements AutoCloseable {
         // Update sensor positions.
         this.flywheelVelocity = this.outputRPMToInputRPS(this.shooterFlywheel.getAngularVelocityRPM(), ShooterConstants.kShooterFlywheelGearing);
         this.flywheelPosition = this.flywheelVelocity * this.simPeriod;
-        this.shooterOne.setRotorVelocity(this.flywheelVelocity);
-        this.shooterOne.addRotorPosition(this.flywheelPosition);
+        this.shooterLeft.setRotorVelocity(this.flywheelVelocity);
+        this.shooterLeft.addRotorPosition(this.flywheelPosition);
+        this.shooterRight.setRotorVelocity(this.flywheelVelocity);
+        this.shooterRight.addRotorPosition(this.flywheelPosition);
 
         this.hoodVelocity = this.outputRPMToInputRPS(this.hoodAdjustSim.getAngularVelocityRPM(), ShooterConstants.kHoodGearing);
         this.hoodPositionDelta = this.hoodVelocity * this.simPeriod;
