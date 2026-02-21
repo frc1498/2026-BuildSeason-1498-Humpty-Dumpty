@@ -26,11 +26,11 @@ public class Move {
     public Optional<Alliance> ally;
 
     public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter) {
-        this.intake = intake;
         this.climber = climber;
+        this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
-        this.drivetrain = drivetrain;
+        // this.drivetrain = drivetrain;
     }
 
     //==========================================================
