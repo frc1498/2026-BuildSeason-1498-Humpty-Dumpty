@@ -4,15 +4,6 @@
 
 //This subsystem manages the run/stop of the intake rollers
 
-/* TO DO: Doglog
- * Desired Intake Velocity (NOT NEEDED)
- * Actual Intake Velocity (DONE)
- * Actual Intake Current (DONE)
- * Desired Intake State (NOT NEEDED)
- * Actual Intake State (DONE)
- * Current Subsystem Command (DONE)
- */
-
 package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -25,7 +16,6 @@ import frc.robot.constants.IntakeConstants;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
 
 public class Intake extends SubsystemBase {
   //Variables

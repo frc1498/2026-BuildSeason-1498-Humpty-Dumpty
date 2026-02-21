@@ -4,19 +4,6 @@
 
 //This subsystem manages the climber
 
-/* TO DO: Doglog
- * Desired Climber Position
- * Actual Climber Position
- * Actual Climber Current
- * Desired Rotate Motor 1 Position
- * Actual Rotate Motor 1 Position
- * Actual Rotate Motor 1 Current
- * Desired Rotate Motor 2 Position
- * Actual Rotate Motor 2 Position
- * Actual Rotate Motor 2 Current
- * Current Subsystem Command
- */
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
@@ -35,7 +22,6 @@ import frc.robot.config.ClimberConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ClimberConstants;
 import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
 
 public class Climber extends SubsystemBase {
 //==================Variables=======================
@@ -50,6 +36,10 @@ public class Climber extends SubsystemBase {
   public PositionVoltage rotateClimb2MotorMode; //Motor control type definition
 
   public DutyCycleOut dutyCycleOut; //Motor Control type definition
+
+  private double desiredLiftMotorPosition;
+  private double desiredRotate1MotorPosition;
+  private double desiredRotate2MotorPosition;
 
   CANcoder hookRotateEncoder;
   CANcoder liftEncoder;
@@ -119,6 +109,7 @@ public class Climber extends SubsystemBase {
 //=======================================================
 //===============Private Set/Goto Methods================
   private void goToPositionLiftClimb(double position) {
+    desiredLiftMotorPosition = position;
     if (MotorEnableConstants.kLiftClimbMotorEnabled) {
       if (position <= ClimberConstants.kLiftClimbSafeExtend //Check that Value is below extended distance 
       && position >= ClimberConstants.kLiftClimbSafeRetract) { //Check that Value is above retracted distance
@@ -128,13 +119,15 @@ public class Climber extends SubsystemBase {
   }
 
   private void goToPositionRotateClimb(double position) {
+    desiredRotate1MotorPosition = position;
+    desiredRotate2MotorPosition = position;
     if (MotorEnableConstants.kRotateClimb1MotorEnabled) {
       if (position <= ClimberConstants.kRotateClimbSafeExtend //Check that Value is below extended distance 
       && position >= ClimberConstants.kRotateClimbSafeRetract) { //Check that Value is above retracted distance
         rotateClimb1Motor.setControl(rotateClimb1MotorMode.withPosition(position));
       }
     }
-        if (MotorEnableConstants.kRotateClimb2MotorEnabled) {
+    if (MotorEnableConstants.kRotateClimb2MotorEnabled) {
       if (position <= ClimberConstants.kRotateClimbSafeExtend //Check that Value is below extended distance 
       && position >= ClimberConstants.kRotateClimbSafeRetract) { //Check that Value is above retracted distance
         rotateClimb2Motor.setControl(rotateClimb2MotorMode.withPosition(position));
@@ -159,6 +152,17 @@ public class Climber extends SubsystemBase {
 
   private void liftClimberStop(){
     liftClimbMotor.setControl(dutyCycleOut.withOutput(0.0));
+  }
+
+  private String getCurrentCommandName() {
+      if (this.getCurrentCommand() == null) {
+          return "No Command";
+      }
+      else {
+          return this.getCurrentCommand().getName();
+      }
+      // Refactoring this method with a ternary operator.
+      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
   //=====================Private Get Methods==================================
@@ -289,6 +293,18 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    DogLog.log("Current Climber Command", getCurrentCommandName());
+    DogLog.log("Desired Lift Motor Position", desiredLiftMotorPosition);
+    DogLog.log("Actual Lift Motor Position", getLiftClimbPosition());
+    DogLog.log("Actual Lift Motor Current", liftClimbMotor.getSupplyCurrent().getValueAsDouble());
+
+    DogLog.log("Desired Rotate1 Motor Position", desiredRotate1MotorPosition);
+    DogLog.log("Actual Rotate1 Motor Position", getRotateClimb1Position());
+    DogLog.log("Actual Rotate1 Motor Current", rotateClimb1Motor.getSupplyCurrent().getValueAsDouble());
+
+    DogLog.log("Desired Rotate2 Motor Position", desiredRotate2MotorPosition);
+    DogLog.log("Actual Rotate2 Motor Position", getRotateClimb2Position());
+    DogLog.log("Actual Rotate2 Motor Current", rotateClimb2Motor.getSupplyCurrent().getValueAsDouble());
   }
 
   @Override

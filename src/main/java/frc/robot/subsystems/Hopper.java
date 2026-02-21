@@ -4,13 +4,6 @@
 
 //This subsystem manages the in and out motion of the hopper
 
-/* TO DO: Doglog
- * Desired Hopper Position (DONE)
- * Actual Hopper Position (DONE)
- * Actual Hopper Current  (DONE)
- * Current Subsystem Command (DONE)
- */
-
 package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -24,7 +17,6 @@ import frc.robot.config.HopperConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.HopperConstants;
 import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
 
 public class Hopper extends SubsystemBase {
 
