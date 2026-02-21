@@ -5,12 +5,12 @@
 //This subsystem manages the run/stop of the intake rollers
 
 /* TO DO: Doglog
- * Desired Intake Velocity
- * Actual Intake Velocity
- * Actual Intake Current
- * Desired Intake State
- * Actual Intake State
- * Current Subsystem Command
+ * Desired Intake Velocity (NOT NEEDED)
+ * Actual Intake Velocity (DONE)
+ * Actual Intake Current (DONE)
+ * Desired Intake State (NOT NEEDED)
+ * Actual Intake State (DONE)
+ * Current Subsystem Command (DONE)
  */
 
 package frc.robot.subsystems;
@@ -97,6 +97,18 @@ public class Intake extends SubsystemBase {
       intakeMotor.setControl(intakeMotorMode.withVelocity(IntakeConstants.kStopSpeed));
     }
   }
+
+  private String getCurrentCommandName() {
+      if (this.getCurrentCommand() == null) {
+          return "No Command";
+      }
+      else {
+          return this.getCurrentCommand().getName();
+      }
+      // Refactoring this method with a ternary operator.
+      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
+  }
+
   //=====================================================
   //=============Public Methods==========================
   //=====================================================
@@ -122,6 +134,10 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    DogLog.log("Current Intake Command", getCurrentCommandName());
+    DogLog.log("Intake Current", intakeMotor.getSupplyCurrent().getValueAsDouble());
+    DogLog.log("Actual Intake State", intakeState);
+    DogLog.log("Actual Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
   }
 
   @Override
