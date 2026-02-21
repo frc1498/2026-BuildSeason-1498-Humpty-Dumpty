@@ -4,6 +4,19 @@
 
 //This subsystem manages the climber
 
+/* TO DO: Doglog
+ * Desired Climber Position
+ * Actual Climber Position
+ * Actual Climber Current
+ * Desired Rotate Motor 1 Position
+ * Actual Rotate Motor 1 Position
+ * Actual Rotate Motor 1 Current
+ * Desired Rotate Motor 2 Position
+ * Actual Rotate Motor 2 Position
+ * Actual Rotate Motor 2 Current
+ * Current Subsystem Command
+ */
+
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
@@ -21,6 +34,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.ClimberConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ClimberConstants;
+import dev.doglog.DogLog;
+import dev.doglog.DogLogOptions;
 
 public class Climber extends SubsystemBase {
 //==================Variables=======================
