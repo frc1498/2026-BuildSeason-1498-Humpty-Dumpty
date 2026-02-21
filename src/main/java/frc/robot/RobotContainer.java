@@ -74,6 +74,7 @@ public class RobotContainer {
     //Instantiate 
     private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
     //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
+    private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -173,9 +174,6 @@ public class RobotContainer {
         driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         driver.povDown().onTrue(move.stopClimb());
 
-        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
-        driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
-
         //Driver POV Left: Autodrive Quick Climb Left
         //driver.povLeft().onTrue(Commands.select(Map.ofEntries(
 		//Map.entry("", drivetrain.pathPlannerToPose(vistion.getDesiredClimbPoseLeft())),
@@ -261,6 +259,13 @@ public class RobotContainer {
 
         //Operator Start
         //operator.START().
+
+        //===================================================
+        //==================Developer Commands===============
+        //===================================================
+
+        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
+        developer.a().toggleOnTrue(shooter.setTuningShooterOutputs());
     }
 
     /**
