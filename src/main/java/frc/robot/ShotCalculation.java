@@ -33,12 +33,13 @@ public class ShotCalculation {
      * @param targetPose
      * @return
      */
-    public Pose2d getVirtualTarget(ChassisSpeeds robotSpeeds, double timeOfFlight, Pose2d targetPose) {
-        double speedXComponent = robotSpeeds.vxMetersPerSecond;
-        double speedYComponent = robotSpeeds.vyMetersPerSecond;
+    public Pose2d getVirtualTarget(ChassisSpeeds robotSpeeds, Pose2d robotPose, double timeOfFlight, Pose2d targetPose) {
+        double speedXComponent = ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, robotPose.getRotation()).vxMetersPerSecond;    // robotSpeeds.vxMetersPerSecond;
+        double speedYComponent = ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, robotPose.getRotation()).vyMetersPerSecond;    // robotSpeeds.vyMetersPerSecond;
+        
         double offsetX = speedXComponent * timeOfFlight;
         double offsetY = speedYComponent * timeOfFlight;
-        return new Pose2d(targetPose.getTranslation().plus(new Translation2d(offsetX, offsetY)), targetPose.getRotation());
+        return new Pose2d(targetPose.getTranslation().minus(new Translation2d(offsetX, offsetY)), targetPose.getRotation());
     }
 
     

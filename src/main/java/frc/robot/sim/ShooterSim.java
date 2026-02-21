@@ -63,12 +63,12 @@ public class ShooterSim implements AutoCloseable {
     public MechanismLigament2d shooter_hood;
 
      /*new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, 0.001, 100.0), gearbox);*/
-    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterOne, TalonFXSimState shooterTwo, TalonFXSimState spindexer, TalonFXSimState kickup) {
+    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterLeft, TalonFXSimState shooterRight, TalonFXSimState spindexer, TalonFXSimState kickup) {
         this.shooterConfig = config;
         this.hood = hood;
         this.turret = turret;
-        this.shooterOne = shooterOne;
-        this.shooterTwo = shooterTwo;
+        this.shooterOne = shooterLeft;
+        this.shooterTwo = shooterRight;
         this.spindexer = spindexer;
         this.kickup = kickup;
 
