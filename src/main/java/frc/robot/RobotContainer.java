@@ -173,6 +173,9 @@ public class RobotContainer {
         driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         driver.povDown().onTrue(move.stopClimb());
 
+        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
+        driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
+
         //Driver POV Left: Autodrive Quick Climb Left
         //driver.povLeft().onTrue(Commands.select(Map.ofEntries(
 		//Map.entry("", drivetrain.pathPlannerToPose(vistion.getDesiredClimbPoseLeft())),

@@ -89,6 +89,10 @@ public class Shooter extends SubsystemBase {
   private double currentTurretAngle;
   private double currentFlywheelVelocity;
 
+  private double tuningHoodAngle;
+  private double tuningTurretAngle;
+  private double tuningFlywheelVelocity;
+
   private ShooterSim sim;
   private TalonFXSimState shooterLeftMotorSim;
   private TalonFXSimState shooterRightMotorSim;
@@ -102,7 +106,7 @@ public class Shooter extends SubsystemBase {
   public DutyCycleOut kickupDutyCycle;
   public DutyCycleOut spindexerDutyCycle;
 
-    private double simTime;
+  private double simTime;
 
   boolean turretZeroed;
   boolean requestShoot;
@@ -223,6 +227,12 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
   this.hoodMotor.setPosition(0);
   this.turretMotor.setPosition(0);
 
+  // Initialize the tuning parameters.
+  // This is not for PID tuning, but instead for interpolation tuning.
+  this.tuningHoodAngle = 0.0;
+  this.tuningTurretAngle = 0.0;
+  this.tuningFlywheelVelocity = 0.0;
+
 }
 
 /**
@@ -288,6 +298,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   /**
+   * Updates the hood angle setpoint to use while tuning the shooter interpolation.
+   * @param hoodAngle
+   */
+  private void setTuningHoodPosition(double hoodAngle) {
+    this.tuningHoodAngle = hoodAngle;
+  }
+
+  /**
    * Set the position of the turret angle.
    * @param position - The desired position of the turret, in rotations.
    */
@@ -317,6 +335,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   /**
+   * Updates the turret angle setpoint to use while tuning the shooter interpolation.
+   * @param tuningTurretAngle
+   */
+  private void setTuningTurretPosition(double tuningTurretAngle) {
+    this.tuningTurretAngle = tuningTurretAngle;
+  }
+
+  /**
    * Set the velocity of both shooter motors.
    * @param velocity - The desired velocity of the shooter motors, in rotations per second.
    */
@@ -337,6 +363,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    */
   private double getShooterOneVelocity() {
     return this.shooterLeftMotor.getVelocity().getValueAsDouble();
+  }
+
+  /**
+   * Updates the flywheel velocity setpoint to use while tuning the shooter interpolation.
+   * @param tuningFlywheelVelocity
+   */
+  private void setTuningShooterVelocity(double tuningFlywheelVelocity) {
+    this.tuningFlywheelVelocity = tuningFlywheelVelocity;
   }
 
   /**
@@ -423,6 +457,18 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
       this.setTurretPosition(this.virtualTurretAngle);
       this.setShooterVelocity(this.virtualFlywheelVelocity);
     }).withName("setShooterOutputs");
+  }
+
+  /**
+   * Sets the hood position, turret position, and shooter velocity based on the tuning parameters.
+   * @return
+   */
+  public Command setTuningShooterOutputs() {
+    return runOnce(() -> {
+      this.setHoodPosition(this.tuningHoodAngle);
+      this.setTurretPosition(this.tuningTurretAngle);
+      this.setShooterVelocity(this.tuningFlywheelVelocity);
+    }).withName("setTuningShooterOutputs");
   }
 
   /**
@@ -567,6 +613,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Current Turret Angle", () -> {return this.currentTurretAngle;}, null);
     builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
     builder.addDoubleProperty("Current Flywheel Velocity", () -> {return this.currentFlywheelVelocity;}, null);
+    builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
+    builder.addDoubleProperty("Tuning Turret Angle", () -> {return this.tuningTurretAngle;}, this::setTuningTurretPosition);
+    builder.addDoubleProperty("Tuning Flywheel Velocity", () -> {return this.tuningFlywheelVelocity;}, this::setTuningShooterVelocity);
   }
 
   @Override
