@@ -21,8 +21,8 @@ public final class MotorEnableConstants {
   public static final boolean kRotateClimb1MotorEnabled=true;
   public static final boolean kRotateClimb2MotorEnabled=true;
   public static final boolean kTurretMotorEnabled=true;
-  public static final boolean kShooter1MotorEnabled=true;
-  public static final boolean kShooter2MotorEnabled=true;
+  public static final boolean kShooterLeftMotorEnabled=true;
+  public static final boolean kShooterRightMotorEnabled=true;
   public static final boolean kSpindexerMotorEnabled=true;
   public static final boolean kKickupMotorEnabled=true;
   public static final boolean kHoodMotorEnabled=true;

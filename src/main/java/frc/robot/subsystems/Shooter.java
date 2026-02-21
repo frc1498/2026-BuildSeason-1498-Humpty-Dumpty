@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
   private TalonFX kickupMotor;     // Motor type definition
   private TalonFX hoodMotor;       // Motor type definition
 
-  private VelocityVoltage shooterMotorMode;   // Motor control type definition
+  private VelocityTorqueCurrentFOC shooterMotorMode;   // Motor control type definition
   private VelocityVoltage spindexerMotorMode; // Motor control type definition
   private VelocityTorqueCurrentFOC kickupMotorMode;    // Motor control type definition
 
@@ -90,8 +90,8 @@ public class Shooter extends SubsystemBase {
   private double currentFlywheelVelocity;
 
   private ShooterSim sim;
-  private TalonFXSimState shooter1MotorSim;
-  private TalonFXSimState shooter2MotorSim;
+  private TalonFXSimState shooterLeftMotorSim;
+  private TalonFXSimState shooterRightMotorSim;
   private TalonFXSimState spindexerMotorSim;
   private TalonFXSimState kickupMotorSim;
   private TalonFXSimState turretMotorSim;
@@ -169,7 +169,7 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
   this.configureMechanism(this.shooterLeftMotor, this.shooterConfig.shooterLeftMotorConfig);
 
   this.shooterRightMotor = new TalonFX(ShooterConfig.kShooterRightMotorCANID, "canivore");    // Create the second shooter motor.
-  this.shooterMotorMode = new VelocityVoltage(0);                                        // Set the control mode for both shooter motors.
+  this.shooterMotorMode = new VelocityTorqueCurrentFOC(0);                                        // Set the control mode for both shooter motors.
   this.configureMechanism(this.shooterRightMotor, this.shooterConfig.shooterRightMotorConfig);
   
   this.shooterLeftMotor.setControl(new Follower(shooterRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
@@ -190,8 +190,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
   this.hoodMotorMode = new PositionTorqueCurrentFOC(0);                                           // Set the contorl mode for the adjustment motor.
   this.configureMechanism(this.hoodMotor, this.shooterConfig.hoodMotorConfig);
 
-  this.shooter1MotorSim = this.shooterLeftMotor.getSimState();
-  this.shooter2MotorSim = this.shooterRightMotor.getSimState();
+  this.shooterLeftMotorSim = this.shooterLeftMotor.getSimState();
+  this.shooterRightMotorSim = this.shooterRightMotor.getSimState();
   this.spindexerMotorSim = this.spindexerMotor.getSimState();
   this.kickupMotorSim = this.kickupMotor.getSimState();
   this.turretMotorSim = this.turretMotor.getSimState();
@@ -201,8 +201,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
     this.shooterConfig,
     this.hoodMotorSim,
     this.turretMotorSim,
-    this.shooter1MotorSim,
-    this.shooter2MotorSim,
+    this.shooterLeftMotorSim,
+    this.shooterRightMotorSim,
     this.spindexerMotorSim,
     this.kickupMotorSim
     );
@@ -219,6 +219,9 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
   kickupDutyCycle = new DutyCycleOut(0.0);
 
   requestShoot = false;
+
+  this.hoodMotor.setPosition(0);
+  this.turretMotor.setPosition(0);
 
 }
 
@@ -322,7 +325,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.desiredShooterVelocity = velocity;
 
     // Use this constant to enable or disable motor output for debugging.
-    if (MotorEnableConstants.kShooter1MotorEnabled && MotorEnableConstants.kShooter2MotorEnabled) {
+    if (MotorEnableConstants.kShooterLeftMotorEnabled && MotorEnableConstants.kShooterRightMotorEnabled) {
       //this.shooterLeftMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
       this.shooterRightMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
     }

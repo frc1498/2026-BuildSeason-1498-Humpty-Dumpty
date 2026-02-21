@@ -91,11 +91,11 @@ public class ShooterConfig {
         shooterLeftFollower.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        shooterLeftFollower.Slot0.kP = 0;  // An error of 1 rotation per second results in 2V output
+        shooterLeftFollower.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
         shooterLeftFollower.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         shooterLeftFollower.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        shooterLeftFollower.Slot0.kS = 0;
-        shooterLeftFollower.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterLeftFollower.Slot0.kS = 5;
+        shooterLeftFollower.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         shooterLeftFollower.Slot0.kA = 0;
         shooterLeftFollower.Slot0.kG = 0.0;
 
@@ -122,11 +122,11 @@ public class ShooterConfig {
         shooterRightLeader.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        shooterRightLeader.Slot0.kP = 0;  // An error of 1 rotation per second results in 2V output
+        shooterRightLeader.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
         shooterRightLeader.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         shooterRightLeader.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        shooterRightLeader.Slot0.kS = 0;
-        shooterRightLeader.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterRightLeader.Slot0.kS = 5;
+        shooterRightLeader.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         shooterRightLeader.Slot0.kA = 0;
         shooterRightLeader.Slot0.kG = 0;
         shooterRightLeader.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;

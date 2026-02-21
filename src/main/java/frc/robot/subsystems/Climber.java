@@ -66,6 +66,8 @@ public class Climber extends SubsystemBase {
 
     dutyCycleOut = new DutyCycleOut(0.0);
 
+    this.liftClimbMotor.setPosition(0);
+
   }
 
   //===================Configuration=====================

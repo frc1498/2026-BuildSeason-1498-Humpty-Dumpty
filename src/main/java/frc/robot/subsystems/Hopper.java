@@ -31,6 +31,8 @@ public class Hopper extends SubsystemBase {
     hopperMotorMode = new PositionVoltage(0);  //Set the motor's control mode
 
     this.configureMechanism(hopperMotor, config.hopperConfig);
+
+    this.hopperMotor.setPosition(0);
   }
 
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
