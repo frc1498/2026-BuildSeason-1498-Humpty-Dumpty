@@ -103,11 +103,11 @@ public class Move {
     public Command primeClimb() {
         return Commands.parallel(hopper.hopperRetract(),intake.intakeStop()).andThen(
         Commands.sequence(
-            climber.retractPins(),
-            climber.rotateClimbExtend(),
+            // climber.retractPins(),
+            // climber.rotateClimbExtend(),
             climber.liftClimbExtend()
         ).andThen(
-            climber.extendPins()
+            // climber.extendPins()
         )
         );
     }
@@ -117,8 +117,8 @@ public class Move {
     public Command homeClimb() {  
         return shooter.turretClimbPosition().andThen(
             Commands.sequence(
-                climber.retractPins(),
-                climber.rotateClimbHome(),
+                // climber.retractPins(),
+                // climber.rotateClimbHome(),
                 climber.liftClimbHome()
             ).
         until(climber.isClimberHome));
@@ -128,25 +128,25 @@ public class Move {
     //============================================Climb 1================================================
     return Commands.parallel(hopper.hopperRetract(),
         Commands.sequence(
-            climber.liftClimbExtend(),
-            climber.rotateClimbExtend()
+            climber.liftClimbExtend() // ,
+            // climber.rotateClimbExtend()
         )).andThen(  //Verify hooks extended and hopper retracted
             climber.liftClimbHandoff()).andThen( //Lift pulls down to rotate hooks  
-            climber.rotateClimbHandoff()).andThen( //Rotate hooks are engaged
+            /*climber.rotateClimbHandoff()*/).andThen( //Rotate hooks are engaged
     //============================================Climb 2================================================
-        Commands.sequence(climber.liftClimbExtend(),climber.rotateClimbRetract())).andThen(  //Lift extends to climb ready while rotate retracts
-        climber.liftClimbHandoff(),climber.rotateClimbExtend()).andThen( //Lift pulls down while rotate hooks return upward 
-        climber.rotateClimbHandoff()).andThen( //Rotate hooks are engaged
+        Commands.sequence(climber.liftClimbExtend()/*,climber.rotateClimbRetract()*/)).andThen(  //Lift extends to climb ready while rotate retracts
+        climber.liftClimbHandoff()/*,climber.rotateClimbExtend()*/).andThen( //Lift pulls down while rotate hooks return upward 
+        /*climber.rotateClimbHandoff()*/).andThen( //Rotate hooks are engaged
     //============================================climb 3================================================
-        Commands.sequence(climber.liftClimbExtend(),climber.rotateClimbRetract())).andThen(  //Lift extends to climb ready while rotate retracts
-        climber.liftClimbRetract(),climber.rotateClimbExtend()); //Lift pulls down while rotate hooks return upward                 
+        Commands.sequence(climber.liftClimbExtend()/*,climber.rotateClimbRetract()*/)).andThen(  //Lift extends to climb ready while rotate retracts
+        climber.liftClimbRetract()/*,climber.rotateClimbExtend()*/); //Lift pulls down while rotate hooks return upward                 
     }
 
     // Commands of the same subsystem cannot be run in parallel (resource conflict).
     // Switching it to a command sequence.
     public Command stopClimb() {
         return Commands.sequence(
-            climber.rotateClimbStop(),
+            // climber.rotateClimbStop(),
             climber.liftClimbStop()
         );
     }
