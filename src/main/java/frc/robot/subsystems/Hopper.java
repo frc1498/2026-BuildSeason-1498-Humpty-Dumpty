@@ -11,6 +11,8 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -37,6 +39,8 @@ public class Hopper extends SubsystemBase {
     this.configureMechanism(hopperMotor, config.hopperConfig);
 
     this.hopperMotor.setPosition(0);
+
+    SmartDashboard.putData("Hopper", this);
   }
 
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
@@ -87,18 +91,27 @@ public class Hopper extends SubsystemBase {
   public Command hopperExtend() {
     return run(
       () -> {this.goToPosition(HopperConstants.kHopperExtend);}
-    ).until(isHopperExtended);
+    ).until(isHopperExtended).withName("hopperExtend");
   }
 
   public Command hopperRetract() {
     return run(
       () -> {this.goToPosition(HopperConstants.kHopperRetract);}
-    ).until(isHopperRetracted);
+    ).until(isHopperRetracted).withName("hopperRetract");
   }
 
 //================================Triggers================================  
   public Trigger isHopperExtended= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperExtend);});
   public Trigger isHopperRetracted= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperRetract);});
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
+    builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
+    builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
+    builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
+  }
 
   @Override
   public void periodic() {
