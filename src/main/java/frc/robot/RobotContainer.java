@@ -138,20 +138,22 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
+        /*
         driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
         driver.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))
         ));
+        */
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        //driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        //driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        //driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        //driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // Reset the field-centric heading on left bumper press.
-        driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        //driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -167,12 +169,18 @@ public class RobotContainer {
         //===================================================
 
         //Driver POV Up - Climb Hold (quick or otherwise, context sensitive)
+        /*
         driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         driver.povUp().and(climber.isClimberReadyToClimb).onTrue(move.climbSequence());
-      
+        */
+
         //Driver POV Down - Climb Stop
-        driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        /*driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         driver.povDown().onTrue(move.stopClimb());
+        */
+
+        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
+        //driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
 
         //Driver POV Left: Autodrive Quick Climb Left
         driver.povLeft().onTrue(move.quickClimbLeft());
@@ -181,35 +189,37 @@ public class RobotContainer {
         driver.povRight().onTrue(move.quickClimbRight());
 
         //Driver X button: Empty Hopper / Slow shot / Hopper In
-        driver.x().whileTrue(move.emptyHopper());
+        //driver.x().whileTrue(move.emptyHopper());
 
         //Driver Y button: Reverse spindexer and kickup
+        /*
         driver.b().whileTrue(move.stopSpinAndKick().andThen(move.reverseSpinAndKick())).onFalse(
             move.stopSpinAndKick());
+        */
 
         //Driver A button: Prime Climb - pulls hopper in and goes to slow shoot and readies hooks
-        driver.a().onTrue(move.primeClimb());
+        //driver.a().onTrue(move.primeClimb());
 
         //Driver B button: Hopper In/Out
-        driver.y().whileTrue(move.hopperRetract()).onFalse(move.hopperExtend());
+        //driver.y().whileTrue(move.hopperRetract()).onFalse(move.hopperExtend());
 
         //Driver RTrigger: Shoot off
-        driver.rightTrigger(0.1).onTrue(move.stopShoot());
+        //driver.rightTrigger(0.1).onTrue(move.stopShoot());
 
         //Driver RBumper: Shoot on 
-        driver.rightBumper().onTrue(move.startShoot());
+        //driver.rightBumper().onTrue(move.startShoot());
 
         //Driver LTrigger: Intake off / Hold to reverse
-        driver.leftTrigger(0.1).onTrue(move.stopOrReverseIntake());
+        //driver.leftTrigger(0.1).onTrue(move.stopOrReverseIntake());
 
         //Driver LBumper Intake on
-        driver.leftBumper().onTrue(move.intake());
+        //driver.leftBumper().onTrue(move.intake());
 
         //Driver Select: Zero drivetrain
-        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+        //driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
         //Driver Start: Home the Climb System (low current, will break hooks!)
-        driver.start().whileTrue(move.homeClimb());
+        //driver.start().whileTrue(move.homeClimb());
 
         //===================================================
         //==================Operator Commands================
