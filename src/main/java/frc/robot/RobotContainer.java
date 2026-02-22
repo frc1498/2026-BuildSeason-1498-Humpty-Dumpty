@@ -74,6 +74,7 @@ public class RobotContainer {
     //Instantiate 
     private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
     //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
+    private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -94,7 +95,7 @@ public class RobotContainer {
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy);
 
-    public final Move move = new Move(climber,hopper,intake,shooter);
+    public final Move move = new Move(climber,hopper,intake,shooter,drivetrain);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -182,13 +183,10 @@ public class RobotContainer {
         //driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
 
         //Driver POV Left: Autodrive Quick Climb Left
-        //driver.povLeft().onTrue(Commands.select(Map.ofEntries(
-		//Map.entry("", drivetrain.pathPlannerToPose(vistion.getDesiredClimbPoseLeft())),
-		//Map.entry("", drivetrain.pathPlannerToPose(vistion.getDesiredClimbPoseLeft()))),
-		//endEffector.getMode??????()));
+        driver.povLeft().onTrue(move.quickClimbLeft());
 
         //Driver POV Right: Autodrive Quick Climb Right
-        //driver.povRight().onTrue
+        driver.povRight().onTrue(move.quickClimbRight());
 
         //Driver X button: Empty Hopper / Slow shot / Hopper In
         //driver.x().whileTrue(move.emptyHopper());
@@ -268,6 +266,13 @@ public class RobotContainer {
 
         //Operator Start
         //operator.START().
+
+        //===================================================
+        //==================Developer Commands===============
+        //===================================================
+
+        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
+        developer.a().toggleOnTrue(shooter.setTuningShooterOutputs());
     }
 
     /**

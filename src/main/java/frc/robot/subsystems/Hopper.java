@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.HopperConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.HopperConstants;
+import dev.doglog.DogLog;
 
 public class Hopper extends SubsystemBase {
 
@@ -23,6 +24,8 @@ public class Hopper extends SubsystemBase {
   public TalonFX hopperMotor;  //Motor type definition
   
   public PositionVoltage hopperMotorMode; //Motor control type definition
+
+  private double desiredPosition;
 
   HopperConfig hopperConfig; //Create an object of type HopperConfig
 
@@ -50,6 +53,7 @@ public class Hopper extends SubsystemBase {
 
 //================Private Methods=========================
   private void goToPosition(double position) {
+    desiredPosition = position;
     if (MotorEnableConstants.kHopperMotorEnabled) {
       if (position <= HopperConstants.kHopperSafeExtend //Check that Value is below extended distance 
       && position >= HopperConstants.kHopperSafeRetract) { //Check that Value is above retracted distance
@@ -65,6 +69,17 @@ public class Hopper extends SubsystemBase {
   private boolean isHopperAtPosition(double position) {
     return ((position - HopperConstants.kDeadband) <= this.getHopperPosition()) 
     && ((position + HopperConstants.kDeadband) >= this.getHopperPosition());
+  }
+
+  private String getCurrentCommandName() {
+      if (this.getCurrentCommand() == null) {
+          return "No Command";
+      }
+      else {
+          return this.getCurrentCommand().getName();
+      }
+      // Refactoring this method with a ternary operator.
+      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
 //=================Public Methods=========================
@@ -87,6 +102,10 @@ public class Hopper extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    DogLog.log("Desired Hopper Position", desiredPosition);
+    DogLog.log("Actual Hopper Position", hopperMotor.getPosition().getValueAsDouble());
+    DogLog.log("Hopper Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
+    DogLog.log("Current Hopper Command", getCurrentCommandName());
   }
 
   @Override

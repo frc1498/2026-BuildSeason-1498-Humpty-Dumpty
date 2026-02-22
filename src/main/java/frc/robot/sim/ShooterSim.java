@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.config.ShooterConfig;
 import frc.robot.constants.ShooterConstants;
 
@@ -20,8 +22,8 @@ public class ShooterSim implements AutoCloseable {
     public ShooterConfig shooterConfig;
     public TalonFXSimState hood;
     public TalonFXSimState turret;
-    public TalonFXSimState shooterOne;
-    public TalonFXSimState shooterTwo;
+    public TalonFXSimState shooterLeft;
+    public TalonFXSimState shooterRight;
     public TalonFXSimState spindexer;
     public TalonFXSimState kickup;
 
@@ -62,13 +64,38 @@ public class ShooterSim implements AutoCloseable {
     public MechanismObject2d shooter_turret;
     public MechanismLigament2d shooter_hood;
 
+    private enum VisState {
+    AT_VELOCITY(new Color8Bit(Color.kGreen)),
+    AT_POSITION(new Color8Bit(Color.kGreen)),
+    FORWARD(new Color8Bit(Color.kAliceBlue)),
+    REVERSE(new Color8Bit(Color.kRed));
+
+    private Color8Bit color;
+
+    /**
+     * Constructor for the VisState enumeration.
+     * @param color - The intended color of the visual.
+     */
+    VisState(Color8Bit color) {
+      this.color = color;
+    }
+
+    /**
+     * Returns the color for this state.
+     * @return - Desired color for the visualization.
+     */
+    public Color8Bit color() {
+      return this.color;
+    }
+  }
+
      /*new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, 0.001, 100.0), gearbox);*/
-    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterOne, TalonFXSimState shooterTwo, TalonFXSimState spindexer, TalonFXSimState kickup) {
+    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterLeft, TalonFXSimState shooterRight, TalonFXSimState spindexer, TalonFXSimState kickup) {
         this.shooterConfig = config;
         this.hood = hood;
         this.turret = turret;
-        this.shooterOne = shooterOne;
-        this.shooterTwo = shooterTwo;
+        this.shooterLeft = shooterLeft;
+        this.shooterRight = shooterRight;
         this.spindexer = spindexer;
         this.kickup = kickup;
 
@@ -94,13 +121,13 @@ public class ShooterSim implements AutoCloseable {
         this.simVoltage = RoboRioSim.getVInVoltage();
         this.hood.setSupplyVoltage(this.simVoltage);
         this.turret.setSupplyVoltage(this.simVoltage);
-        this.shooterOne.setSupplyVoltage(this.simVoltage);
-        this.shooterTwo.setSupplyVoltage(this.simVoltage);
+        this.shooterLeft.setSupplyVoltage(this.simVoltage);
+        this.shooterRight.setSupplyVoltage(this.simVoltage);
         this.spindexer.setSupplyVoltage(this.simVoltage);
         this.kickup.setSupplyVoltage(this.simVoltage);
 
         // Run the simulation and update it.
-        this.shooterFlywheel.setInput(shooterOne.getMotorVoltage());
+        this.shooterFlywheel.setInput(shooterRight.getMotorVoltage());
         this.shooterFlywheel.update(this.simPeriod);
 
         this.hoodAdjustSim.setInput(hood.getMotorVoltage());
@@ -118,8 +145,10 @@ public class ShooterSim implements AutoCloseable {
         // Update sensor positions.
         this.flywheelVelocity = this.outputRPMToInputRPS(this.shooterFlywheel.getAngularVelocityRPM(), ShooterConstants.kShooterFlywheelGearing);
         this.flywheelPosition = this.flywheelVelocity * this.simPeriod;
-        this.shooterOne.setRotorVelocity(this.flywheelVelocity);
-        this.shooterOne.addRotorPosition(this.flywheelPosition);
+        this.shooterLeft.setRotorVelocity(this.flywheelVelocity);
+        this.shooterLeft.addRotorPosition(this.flywheelPosition);
+        this.shooterRight.setRotorVelocity(this.flywheelVelocity);
+        this.shooterRight.addRotorPosition(this.flywheelPosition);
 
         this.hoodVelocity = this.outputRPMToInputRPS(this.hoodAdjustSim.getAngularVelocityRPM(), ShooterConstants.kHoodGearing);
         this.hoodPositionDelta = this.hoodVelocity * this.simPeriod;
@@ -184,9 +213,10 @@ public class ShooterSim implements AutoCloseable {
         return this.shooter_vis;
     }
 
-    public void updateShooterHoodVis(double velocity, double angle) {
+    public void updateShooterHoodVis(double velocity, double angle, boolean atVelocity) {
         this.shooter_hood.setLength((velocity / ShooterConstants.kShooterMaxSpeed) * 10.0);
         this.shooter_hood.setAngle(angle);
+        this.shooter_hood.setColor(atVelocity ? VisState.AT_POSITION.color() : VisState.REVERSE.color());
     }
 
     @Override

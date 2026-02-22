@@ -6,7 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class IntakeConfig {
     //Constants go here
-    public static final int kIntakeCANID=0;
+    public static final int kIntakeCANID = 9;
    
     //Variables
     public TalonFXConfiguration intakeConfig;  //Create variable of type TalonFXConfiguration

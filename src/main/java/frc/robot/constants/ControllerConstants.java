@@ -16,6 +16,9 @@ public class ControllerConstants {
 
  //=======================Constants================================
   public static final int kDriverControllerPort = 0;
-  public static final int kOperatorControllerPort = 0;
+  public static final int kOperatorControllerPort = 1;
+
+  // Super secret.  Don't use.
+  public static final int kDeveloperControllerPort = 3;
 
 }
