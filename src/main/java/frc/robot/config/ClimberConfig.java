@@ -62,15 +62,15 @@ public class ClimberConfig {
 
         liftClimber.CurrentLimits.StatorCurrentLimit = 120.0;
         liftClimber.CurrentLimits.StatorCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLimit = 20;    //Was 20
+        liftClimber.CurrentLimits.SupplyCurrentLimit = 60;    //Was 20
         liftClimber.CurrentLimits.SupplyCurrentLimitEnable = true;
         liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
         liftClimber.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        liftClimber.Slot0.kP = 0;  // An error of 1 rotation per second results in 2V output
+        liftClimber.Slot0.kP = 30;  // An error of 1 rotation per second results in 2V output
         liftClimber.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        liftClimber.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
+        liftClimber.Slot0.kD = 0.9;  // A change of 1 rotation per second squared results in 0.01 volts output
         liftClimber.Slot0.kS = 0;
         liftClimber.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         liftClimber.Slot0.kA = 0;
@@ -92,7 +92,7 @@ public class ClimberConfig {
 
         rotateClimber.CurrentLimits.StatorCurrentLimit = 120.0;
         rotateClimber.CurrentLimits.StatorCurrentLimitEnable = true;
-        rotateClimber.CurrentLimits.SupplyCurrentLimit = 20;    //Was 20
+        rotateClimber.CurrentLimits.SupplyCurrentLimit = 20;
         rotateClimber.CurrentLimits.SupplyCurrentLimitEnable = true;
         rotateClimber.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
         rotateClimber.CurrentLimits.SupplyCurrentLowerTime = 1;

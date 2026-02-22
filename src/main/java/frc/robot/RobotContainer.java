@@ -262,7 +262,13 @@ public class RobotContainer {
         //===================================================
 
         // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
-        developer.a().toggleOnTrue(shooter.setTuningShooterOutputs());
+        developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
+
+        // A test of the sysID functionality.
+        developer.back().and(developer.a()).whileTrue(shooter.sysIdKickupDynamic(Direction.kForward));
+        developer.back().and(developer.b()).whileTrue(shooter.sysIdKickupDynamic(Direction.kReverse));
+        developer.start().and(developer.x()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kForward));
+        developer.start().and(developer.y()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kReverse));
     }
 
     /**

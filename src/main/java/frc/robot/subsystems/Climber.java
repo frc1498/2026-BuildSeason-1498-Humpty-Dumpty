@@ -23,6 +23,9 @@ import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ClimberConstants;
 import dev.doglog.DogLog;
 
+
+//For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
+
 public class Climber extends SubsystemBase {
 //==================Variables=======================
   public TalonFX liftClimbMotor;  //Motor type definition

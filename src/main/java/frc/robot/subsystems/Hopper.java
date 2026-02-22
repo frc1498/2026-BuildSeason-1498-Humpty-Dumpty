@@ -7,6 +7,7 @@
 package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -23,7 +24,7 @@ public class Hopper extends SubsystemBase {
 //======================Variables==========================
   public TalonFX hopperMotor;  //Motor type definition
   
-  public PositionVoltage hopperMotorMode; //Motor control type definition
+  public PositionTorqueCurrentFOC hopperMotorMode; //Motor control type definition
 
   private double desiredPosition;
 
@@ -31,7 +32,7 @@ public class Hopper extends SubsystemBase {
 
   public Hopper(HopperConfig config) {
     hopperMotor = new TalonFX(HopperConfig.kHopperExtendCANID, "canivore");  //Create a motor for this subsystem
-    hopperMotorMode = new PositionVoltage(0);  //Set the motor's control mode
+    hopperMotorMode = new PositionTorqueCurrentFOC(0);  //Set the motor's control mode
 
     this.configureMechanism(hopperMotor, config.hopperConfig);
 
