@@ -13,6 +13,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.config.IntakeConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.IntakeConstants;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import dev.doglog.DogLog;
@@ -25,7 +27,7 @@ public class Intake extends SubsystemBase {
 
   IntakeConfig intakeConfig; //Create an object of type IntakeConfig
 
-  public String intakeState="stopped";
+  public String intakeState = "stopped";
 
   public DutyCycleOut intakeDutyCycle;
 
@@ -38,6 +40,8 @@ public class Intake extends SubsystemBase {
     this.configureMechanism(intakeMotor, config.intakeConfig);
 
     intakeDutyCycle = new DutyCycleOut(0);
+
+    SmartDashboard.putData("Intake", this);
 
   }
 
@@ -60,12 +64,12 @@ public class Intake extends SubsystemBase {
 
   private void intake(){
     if (MotorEnableConstants.kIntakeMotorEnabled) {
-      if (intakeState=="outtaking") {
-        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kIntakeDutyCycleStop));
-        intakeState="stopped";
+      if (intakeState == "outtaking") {
+        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
+        intakeState = "stopped";
       } else if (intakeState == "stopped") {
-        intakeMotor.setControl(intakeMotorMode.withVelocity(IntakeConstants.kIntakeSpeed));
-        intakeState="intaking";
+        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kIntakeSpeed));
+        intakeState = "intaking";
       }
     }
   }
@@ -73,18 +77,18 @@ public class Intake extends SubsystemBase {
   private void outtake(){
     if (MotorEnableConstants.kIntakeMotorEnabled) {
       if (intakeState == "intaking") {
-        intakeMotor.setControl(intakeMotorMode.withVelocity(IntakeConstants.kStopSpeed));
+        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
         intakeState = "stopped";
-      } else if (intakeState=="stopped") {
-        intakeMotor.setControl(intakeMotorMode.withVelocity(IntakeConstants.kOuttakeSpeed));
-        intakeState="outtaking";
+      } else if (intakeState == "stopped") {
+        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kOuttakeSpeed));
+        intakeState = "outtaking";
       }
     }
   }
 
   private void stop(){
     if (MotorEnableConstants.kIntakeMotorEnabled) {
-      intakeMotor.setControl(intakeMotorMode.withVelocity(IntakeConstants.kStopSpeed));
+      intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
     }
   }
 
@@ -106,19 +110,25 @@ public class Intake extends SubsystemBase {
   public Command intakeSuck() {
     return run(
       () -> {this.intake();}
-    );
+    ).withName("intakeSuck");
   }
 
   public Command intakeSpit() {
     return run(
       () -> {this.outtake();}
-    );
+    ).withName("intakeSpit");
   }
 
     public Command intakeStop() {
     return run(
       () -> {this.stop();}
-    );
+    ).withName("intakeStop");
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    builder.addStringProperty("Intake State", () -> {return this.intakeState;}, null);
   }
 
   @Override
