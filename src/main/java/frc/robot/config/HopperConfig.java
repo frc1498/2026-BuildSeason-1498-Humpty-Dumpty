@@ -27,9 +27,9 @@ public class HopperConfig {
         hopper.MotorOutput.PeakForwardDutyCycle = 1;
         hopper.MotorOutput.PeakReverseDutyCycle = -1;
 
-        hopper.CurrentLimits.StatorCurrentLimit = 120.0;
+        hopper.CurrentLimits.StatorCurrentLimit = 70.0;
         hopper.CurrentLimits.StatorCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
+        hopper.CurrentLimits.SupplyCurrentLimit = 10;    //Set 2-17-26
         hopper.CurrentLimits.SupplyCurrentLimitEnable = true;
         hopper.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Set 2-17-26
         hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
