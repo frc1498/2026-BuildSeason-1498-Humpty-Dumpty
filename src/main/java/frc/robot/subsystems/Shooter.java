@@ -6,8 +6,11 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -16,6 +19,7 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -29,7 +33,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Voltage;
 import frc.robot.ShotCalculation;
 import frc.robot.config.ShooterConfig;
 import frc.robot.sim.ShooterSim;
@@ -159,6 +165,86 @@ public class Shooter extends SubsystemBase {
       return this.direction;
     }
   }
+
+  /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
+  private SysIdRoutine sysIdRoutineHood = new SysIdRoutine(
+    new SysIdRoutine.Config(
+      null,        // Use default ramp rate (1 V/s)
+      Volts.of(7), // Use dynamic voltage of 7 V
+      null,        // Use default timeout (10 s)
+      // Log state with SignalLogger class
+      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
+    ),
+    new SysIdRoutine.Mechanism(
+      volts -> this.hoodMotor.setControl(new VoltageOut(0).withOutput(volts)),
+      null,
+      this
+    )
+  );
+
+  /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
+  private SysIdRoutine sysIdRoutineTurret = new SysIdRoutine(
+    new SysIdRoutine.Config(
+      null,        // Use default ramp rate (1 V/s)
+      Volts.of(7), // Use dynamic voltage of 7 V
+      null,        // Use default timeout (10 s)
+      // Log state with SignalLogger class
+      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
+    ),
+    new SysIdRoutine.Mechanism(
+      volts -> this.turretMotor.setControl(new VoltageOut(0).withOutput(volts)),
+      null,
+      this
+    )
+  );
+
+  /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
+  private SysIdRoutine sysIdRoutineFlywheel = new SysIdRoutine(
+    new SysIdRoutine.Config(
+      null,        // Use default ramp rate (1 V/s)
+      Volts.of(7), // Use dynamic voltage of 7 V
+      null,        // Use default timeout (10 s)
+      // Log state with SignalLogger class
+      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
+    ),
+    new SysIdRoutine.Mechanism(
+      volts -> this.shooterRightMotor.setControl(new VoltageOut(0).withOutput(volts)),
+      null,
+      this
+    )
+  );
+
+    /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
+  private SysIdRoutine sysIdRoutineKickup = new SysIdRoutine(
+    new SysIdRoutine.Config(
+      null,           // Use default ramp rate (1 V/s)
+      Volts.of(7),  // Use dynamic voltage of 7 V
+      null,           // Use default timeout (10 s)
+      // Log state with SignalLogger class
+      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
+    ),
+    new SysIdRoutine.Mechanism(
+      volts -> this.kickupMotor.setControl(new VoltageOut(0).withOutput(volts)),
+      null,
+      this
+    )
+  );
+
+    /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
+  private SysIdRoutine sysIdRoutineSpindexer = new SysIdRoutine(
+    new SysIdRoutine.Config(
+      null,        // Use default ramp rate (1 V/s)
+      Volts.of(7), // Use dynamic voltage of 7 V
+      null,        // Use default timeout (10 s)
+      // Log state with SignalLogger class
+      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
+    ),
+    new SysIdRoutine.Mechanism(
+      volts -> this.spindexerMotor.setControl(new VoltageOut(0).withOutput(volts)),
+      null,
+      this
+    )
+  );
 
 /**
  * Creates a new instance of the shooter subsystem.
@@ -499,6 +585,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
       this.logTuningResult();
     });
   }
+
+  public Command sysIdKickupQuasistatic(SysIdRoutine.Direction direction) {
+  return sysIdRoutineKickup.quasistatic(direction);
+  }
+
+  public Command sysIdKickupDynamic(SysIdRoutine.Direction direction) {
+  return sysIdRoutineKickup.dynamic(direction);
+  } 
 
   /**
    * Sets the spindexer and kickup velocity based on the supplied state.
