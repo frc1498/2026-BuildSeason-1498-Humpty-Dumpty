@@ -6,7 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class HopperConfig {
     //Constants go here
-    public static final int kHopperExtendCANID=10;
+    public static final int kHopperExtendCANID = 10;
    
     //Variables
     public TalonFXConfiguration hopperConfig;  //Create variable of type TalonFXConfiguration

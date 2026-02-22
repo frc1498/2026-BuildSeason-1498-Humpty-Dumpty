@@ -9,9 +9,9 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 public class ClimberConfig {
     //Constants go here
-    public static final int kLiftClimbMotorCANID=17;
-    public static final int kRotateClimb1MotorCANID=18;
-    public static final int kRotateClimb2MotorCANID=19;
+    public static final int kLiftClimbMotorCANID = 17;
+    public static final int kRotateClimb1MotorCANID = 18;
+    public static final int kRotateClimb2MotorCANID = 19;
     //public static final int kLiftEncoderCANID=0;
     //public static final int kHookRotateEncoderCANID=0;
 
