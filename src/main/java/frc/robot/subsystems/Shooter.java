@@ -574,7 +574,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command slowShoot() {
-    return run(() -> {this.setShooterVelocity(ShooterConstants.kSlowShoot);});
+    return run(() -> {this.setShooterVelocity(ShooterConstants.kSlowShoot);}).until(isShooterAtVelocity);
   }
 
   public Command turretSlowShootPosition() {

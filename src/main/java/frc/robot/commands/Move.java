@@ -57,49 +57,41 @@ public class Move {
     //==========================================================
 
     //================================Hopper================================
-
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
-    public Command emptyHopper() {
-        return Commands.sequence(
+    public Command emptyHopper() {  //Reviewed 2/21/26 should work now
+        return Commands.sequence(shooter.turretSlowShootPosition(),
             shooter.slowShoot(),
-            shooter.turretSlowShootPosition(),
-            shooter.forwardSpindexer(), 
-            shooter.forwardKickup()
+            shooter.forwardKickup(), 
+            shooter.forwardSpindexer()
         );
     }   
 
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
-    public Command stopEmptyHopper () {
+    public Command stopEmptyHopper () {  //Reviewed 2/21/26 should work now
         return Commands.sequence(
-            shooter.stopShoot(),
             shooter.stopSpindexer(),
-            shooter.stopKickup()
+            shooter.stopKickup(),
+            shooter.stopShoot()
         );
     }
 
-    public Command hopperRetract() {
-        return hopper.hopperRetract();
+    public Command hopperRetract() {  //Reviewed 2/21/26 should work now
+        return Commands.sequence(Commands.parallel( //Need to run intake to clear balls stuck while we intake
+        intake.intakeSuck(), hopper.hopperRetract()), 
+        intake.intakeStop());
     }
 
-    public Command hopperExtend() {
+    public Command hopperExtend() {  //Reviewed 2/21/26 should work now
         return hopper.hopperExtend();
     }
 
     //==============================Spin and Kick================================
-
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.    
-    public Command reverseSpinAndKick() {  //Need to make sure they are stopped first
+    public Command reverseSpinAndKick() {  //Reviewed 2/21/26 should work now
         return Commands.sequence(
+            this.stopSpinAndKick(),
             shooter.reverseSpindexer(),
             shooter.reverseKickup()
         );
     }
 
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
     public Command stopSpinAndKick() {
         return Commands.sequence(
             shooter.stopSpindexer(),
@@ -108,9 +100,6 @@ public class Move {
     }
 
     //==================================Climb====================================
-
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
     public Command primeClimb() {
         return Commands.parallel(hopper.hopperRetract(),intake.intakeStop()).andThen(
         Commands.sequence(
