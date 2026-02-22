@@ -101,7 +101,7 @@ public class RobotContainer {
     public RobotContainer() {
         // Create DogLog
         DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
-        DogLog.setPdh(new PowerDistribution());     // allows battery and pdp logging
+        //DogLog.setPdh(new PowerDistribution());     // allows battery and pdp logging
         DogLog.log("ExampleLog", "Hello world!");   // test log item
         // Configure the trigger bindings
         configureBindings();
@@ -116,20 +116,19 @@ public class RobotContainer {
     * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
     * joysticks}.
     */
-
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            drivetrain.applyRequest(() -> new SwerveRequest.Idle()
+                //drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                //    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                //    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
-        shooter.setDefaultCommand(shooter.setShooterOutputs());
+        //shooter.setDefaultCommand(shooter.setShooterOutputs());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -271,14 +270,26 @@ public class RobotContainer {
         //==================Developer Commands===============
         //===================================================
 
+        // developer.a().onTrue(hopper.hopperExtend());
+        // developer.b().onTrue(hopper.hopperRetract());
+
+        // developer.leftBumper().and(hopper.isHopperExtended).whileTrue(intake.intakeSuck()).onFalse(intake.intakeStop());
+        // developer.rightBumper().and(hopper.isHopperExtended).whileTrue(intake.intakeSpit()).onFalse(intake.intakeStop());
+        // hopper.isHopperExtended.whileFalse(intake.intakeStop());
+
+        // developer.x().onTrue(climber.liftClimbExtend());
+        // developer.y().onTrue(climber.liftClimbRetract());
+        // developer.back().onTrue(climber.zeroRoutine());
+        
+
         // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
-        developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
+        //developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
 
         // A test of the sysID functionality.
-        developer.back().and(developer.a()).whileTrue(shooter.sysIdKickupDynamic(Direction.kForward));
-        developer.back().and(developer.b()).whileTrue(shooter.sysIdKickupDynamic(Direction.kReverse));
-        developer.start().and(developer.x()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kForward));
-        developer.start().and(developer.y()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kReverse));
+        //developer.back().and(developer.a()).whileTrue(shooter.sysIdKickupDynamic(Direction.kForward));
+        //developer.back().and(developer.b()).whileTrue(shooter.sysIdKickupDynamic(Direction.kReverse));
+        //developer.start().and(developer.x()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kForward));
+        //developer.start().and(developer.y()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kReverse));
     }
 
     /**
