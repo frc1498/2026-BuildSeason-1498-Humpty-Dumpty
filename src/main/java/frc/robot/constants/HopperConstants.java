@@ -15,7 +15,7 @@ package frc.robot.constants;
 public class HopperConstants {
 
   //=====================Positions=====================
-  public static final int kHopperExtend = 15;
+  public static final double kHopperExtend = 14.8;
   public static final int kHopperRetract = 0;
   public static final double kDeadband = 0.5;
 
