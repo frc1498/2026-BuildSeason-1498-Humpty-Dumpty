@@ -305,9 +305,9 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
     );
 
   // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Shooter", this);
-  SmartDashboard.putData("Shooter/Pose", this.targetingField);
-  SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
+  // SmartDashboard.putData("Shooter", this);
+  // SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  // SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
   turretDutyCycle = new DutyCycleOut(0.0);
@@ -838,7 +838,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-    this.sim.simulationPeriodic();
-    this.sim.updateShooterHoodVis(this.currentShooterVelocity, this.currentHoodAngle, this.hoodAtPosition);
+    //this.sim.simulationPeriodic();
+    //this.sim.updateShooterHoodVis(this.currentShooterVelocity, this.currentHoodAngle, this.hoodAtPosition);
   }
 }
