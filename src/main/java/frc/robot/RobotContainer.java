@@ -74,7 +74,7 @@ public class RobotContainer {
     //Instantiate 
     //private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
     //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
-    private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
+    // private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -291,8 +291,8 @@ public class RobotContainer {
         //developer.y().onTrue(move.climbExtend());
         //developer.a().onTrue(move.climbRetract());
 
-        developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-        developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        // developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        // developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
         //developer.x().onTrue(move.primeClimb());
 
