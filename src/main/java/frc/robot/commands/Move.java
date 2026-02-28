@@ -140,36 +140,26 @@ public class Move {
     // Commands of the same subsystem cannot be run in parallel (resource conflict).
     // Switching it to a command sequence.
     public Command stopShoot() {
-        return shooter.stopShoot();
-        /*
-        return Commands.sequence(
+        //return shooter.stopShoot();  
+        return Commands.sequence(shooter.hood0(),
             shooter.stopSpindexer(),
             shooter.stopKickup()).andThen
-            (shooter.stopShoot()
-        );
-        */
+            (shooter.stopShoot());       
     }
 
     public Command startShootFast() {
-        return shooter.startShootFast();
-        /*
-        return Commands.sequence(
-            shooter.startShoot()).andThen
-                (shooter.forwardKickup(),
-                shooter.forwardSpindexer()
-        );
-        */
+        //return shooter.startShootFast();  
+        return Commands.sequence(shooter.hood30(),shooter.startShootFast()).andThen
+                (Commands.sequence(shooter.forwardKickup(),
+                shooter.forwardSpindexer()));
     }
 
     public Command startShootMedium() {
-        return shooter.startShootMedium();
-        /*
-        return Commands.sequence(
-            shooter.startShoot()).andThen
-                (shooter.forwardKickup(),
-                shooter.forwardSpindexer()
-        );
-        */
+        //return shooter.startShootMedium();
+        return Commands.sequence(shooter.hood30(),
+            shooter.startShootMedium()).andThen
+            (shooter.forwardKickup(),
+            shooter.forwardSpindexer());
     }
 
     public Command turretClockWise45Degrees(){
