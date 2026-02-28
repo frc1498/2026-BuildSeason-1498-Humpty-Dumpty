@@ -41,7 +41,7 @@ public class Vision extends SubsystemBase {
 
     public LimelightHelpers.PoseEstimate megaTag2 = new PoseEstimate();
 
-    public Field2d limelightField = new Field2d();
+    public Field2d visionField = new Field2d();
 
     public Matrix<N3, N1> currentStdDevs = limelight.kMegaTag2StdDevs;
 
@@ -82,7 +82,7 @@ public class Vision extends SubsystemBase {
         rightCamera = new PhotonCamera(photonvision.kRightName);
 
         SmartDashboard.putData("Vision", this);
-        SmartDashboard.putData("Vision/Pose", this.limelightField);
+        SmartDashboard.putData("Vision/Pose", this.visionField);
     }
 
     /**
@@ -394,7 +394,8 @@ public class Vision extends SubsystemBase {
         LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
-        limelightField.setRobotPose(this.getCurrentLimelightPose());
+        visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
+        visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose(this.leftCameraEstimator));
 
         /* This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
