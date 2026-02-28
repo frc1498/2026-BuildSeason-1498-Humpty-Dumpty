@@ -303,9 +303,9 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
     );
 
   // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Shooter", this);
-  SmartDashboard.putData("Shooter/Pose", this.targetingField);
-  SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
+  // SmartDashboard.putData("Shooter", this);
+  // SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  // SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
   turretDutyCycle = new DutyCycleOut(0.0);
