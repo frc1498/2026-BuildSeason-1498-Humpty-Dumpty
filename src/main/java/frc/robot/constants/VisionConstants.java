@@ -24,6 +24,7 @@ public class VisionConstants {
         public static final double kRollOffset = 0.0;          // degrees from vertical.
         public static final double kPitchOffset = 0.0;         // degrees from vertical.
         public static final double kYawOffset = 0.0;           // degrees from vertical.
+        public static final Transform3d kRobotToLimelight = new Transform3d(new Translation3d(0.3048, -0.1047, 0.2937), new Rotation3d(0,0,0));
 
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
     }
