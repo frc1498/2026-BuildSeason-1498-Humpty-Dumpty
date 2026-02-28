@@ -25,15 +25,15 @@ public class IntakeConfig {
         intake.MotorOutput.PeakForwardDutyCycle = 1;
         intake.MotorOutput.PeakReverseDutyCycle = -1;
 
-        intake.CurrentLimits.StatorCurrentLimit = 40.0;
+        intake.CurrentLimits.StatorCurrentLimit = 150;  //Updated 2-24-26 - is correct
         intake.CurrentLimits.StatorCurrentLimitEnable = true;
-        intake.CurrentLimits.SupplyCurrentLimit = 20;    //Was 20
+        intake.CurrentLimits.SupplyCurrentLimit = 40;    //Updated 2-24-26 - is correct
         intake.CurrentLimits.SupplyCurrentLimitEnable = true;
         intake.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
         intake.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        intake.Slot0.kP = 0.1;  // An error of 1 rotation per second results in 2V output
+        intake.Slot0.kP = 0;  // An error of 1 rotation per second results in 2V output
         intake.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         intake.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         intake.Slot0.kS = 0;

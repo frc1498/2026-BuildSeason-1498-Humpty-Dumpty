@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.HopperConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.HopperConstants;
-import dev.doglog.DogLog;
+//import dev.doglog.DogLog;
 
 public class Hopper extends SubsystemBase {
 
@@ -116,10 +116,12 @@ public class Hopper extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    /* Temporary - loop overruns
     DogLog.log("Desired Hopper Position", desiredPosition);
     DogLog.log("Actual Hopper Position", hopperMotor.getPosition().getValueAsDouble());
     DogLog.log("Hopper Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
     DogLog.log("Current Hopper Command", getCurrentCommandName());
+    */
   }
 
   @Override

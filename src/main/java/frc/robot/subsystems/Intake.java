@@ -17,7 +17,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import dev.doglog.DogLog;
+//import dev.doglog.DogLog;
 
 public class Intake extends SubsystemBase {
   //Variables
@@ -134,11 +134,13 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    /*
     DogLog.log("Current Intake Command", getCurrentCommandName());
     DogLog.log("Intake Current", intakeMotor.getSupplyCurrent().getValueAsDouble());
     DogLog.log("Actual Intake State", intakeState);
     DogLog.log("Actual Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
-  }
+    */
+    }
 
   @Override
   public void simulationPeriodic() {

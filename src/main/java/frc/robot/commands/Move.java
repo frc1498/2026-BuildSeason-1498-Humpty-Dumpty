@@ -14,6 +14,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.constants.ClimberConstants;
+import frc.robot.constants.ShooterConstants;
 
 
 public class Move {
@@ -57,22 +58,7 @@ public class Move {
     //==========================================================
 
     //================================Hopper================================
-    public Command emptyHopper() {  //Reviewed 2/21/26 should work now
-        return Commands.sequence(shooter.turretSlowShootPosition(),
-            shooter.slowShoot(),
-            shooter.forwardKickup(), 
-            shooter.forwardSpindexer()
-        );
-    }   
-
-    public Command stopEmptyHopper () {  //Reviewed 2/21/26 should work now
-        return Commands.sequence(
-            shooter.stopSpindexer(),
-            shooter.stopKickup(),
-            shooter.stopShoot()
-        );
-    }
-
+    
     public Command hopperRetract() {  //Reviewed 2/21/26 should work now
         return Commands.sequence(Commands.parallel( //Need to run intake to clear balls stuck while we intake
         intake.intakeSuck(), hopper.hopperRetract()), 
@@ -84,6 +70,7 @@ public class Move {
     }
 
     //==============================Spin and Kick================================
+    /* Not tested yet
     public Command reverseSpinAndKick() {  //Reviewed 2/21/26 should work now
         return Commands.sequence(
             this.stopSpinAndKick(),
@@ -91,59 +78,34 @@ public class Move {
             shooter.reverseKickup()
         );
     }
+    */
 
+    /* Not tested yet 
     public Command stopSpinAndKick() {
         return Commands.sequence(
             shooter.stopSpindexer(),
             shooter.stopKickup()
         );
     }
+    */
 
     //==================================Climb====================================
+    /*
     public Command primeClimb() {
         return Commands.parallel(hopper.hopperRetract(),intake.intakeStop()).andThen(
         Commands.sequence(
-            // climber.retractPins(),
-            // climber.rotateClimbExtend(),
-            climber.liftClimbExtend()
-        ).andThen(
-            // climber.extendPins()
-        )
-        );
+            shooter.turretClimbPosition(),
+            //climber.liftClimbExtend()
+        ));
     }
+     */
     
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
     public Command homeClimb() {  
         return shooter.turretClimbPosition().andThen(
-            Commands.sequence(
-                // climber.retractPins(),
-                // climber.rotateClimbHome(),
-                climber.liftClimbHome()
-            ).
-        until(climber.isClimberHome));
+            Commands.sequence(climber.liftClimbHome()
+                ).until(climber.isClimberHome));
     }
 
- public Command climbSequence() {
-    //============================================Climb 1================================================
-    return Commands.parallel(hopper.hopperRetract(),
-        Commands.sequence(
-            climber.liftClimbExtend() // ,
-            // climber.rotateClimbExtend()
-        )).andThen(  //Verify hooks extended and hopper retracted
-            climber.liftClimbHandoff()).andThen( //Lift pulls down to rotate hooks  
-            /*climber.rotateClimbHandoff()*/).andThen( //Rotate hooks are engaged
-    //============================================Climb 2================================================
-        Commands.sequence(climber.liftClimbExtend()/*,climber.rotateClimbRetract()*/)).andThen(  //Lift extends to climb ready while rotate retracts
-        climber.liftClimbHandoff()/*,climber.rotateClimbExtend()*/).andThen( //Lift pulls down while rotate hooks return upward 
-        /*climber.rotateClimbHandoff()*/).andThen( //Rotate hooks are engaged
-    //============================================climb 3================================================
-        Commands.sequence(climber.liftClimbExtend()/*,climber.rotateClimbRetract()*/)).andThen(  //Lift extends to climb ready while rotate retracts
-        climber.liftClimbRetract()/*,climber.rotateClimbExtend()*/); //Lift pulls down while rotate hooks return upward                 
-    }
-
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
     public Command stopClimb() {
         return Commands.sequence(
             // climber.rotateClimbStop(),
@@ -165,30 +127,83 @@ public class Move {
         });
     }
 
+    public Command climbExtend() {
+        return climber.liftClimbExtend();
+    }
+
+    public Command climbRetract() {
+        return climber.liftClimbRetract();
+    }
+
     //==============================Shoot========================================
 
     // Commands of the same subsystem cannot be run in parallel (resource conflict).
     // Switching it to a command sequence.
     public Command stopShoot() {
+        return shooter.stopShoot();
+        /*
         return Commands.sequence(
             shooter.stopSpindexer(),
-            shooter.stopKickup()
-        ).andThen(
-            shooter.stopShoot()
+            shooter.stopKickup()).andThen
+            (shooter.stopShoot()
         );
+        */
     }
 
-    public Command startShoot() {
-        return shooter.startShoot();
+    public Command startShootFast() {
+        return shooter.startShootFast();
+        /*
+        return Commands.sequence(
+            shooter.startShoot()).andThen
+                (shooter.forwardKickup(),
+                shooter.forwardSpindexer()
+        );
+        */
     }
+
+    public Command startShootMedium() {
+        return shooter.startShootMedium();
+        /*
+        return Commands.sequence(
+            shooter.startShoot()).andThen
+                (shooter.forwardKickup(),
+                shooter.forwardSpindexer()
+        );
+        */
+    }
+
+    public Command turretClockWise45Degrees(){
+        return shooter.turretClockwise45();
+    }
+
+    public Command turret0Degrees(){
+        return shooter.turret0();
+    }
+
+    public Command turretCounterClockwise45Degrees() {
+        return shooter.turretCounterClockwise45();
+    }
+
+    public Command hood30(){
+        return shooter.hood30();
+    }
+
+    public Command hood0(){
+        return shooter.hood0();
+    }
+
 
     //==============================Intake=======================================
-    public Command stopOrReverseIntake() { 
-        return Commands.parallel(hopper.hopperExtend(),intake.intakeSpit());
+    public Command reverseIntake() { 
+        return intake.intakeSpit();
     }
 
     public Command intake() {
         return Commands.parallel(hopper.hopperExtend(),intake.intakeSuck());
+    }
+
+    public Command stopIntake() {
+        return Commands.parallel(intake.intakeStop());
     }
 
     //======================================================

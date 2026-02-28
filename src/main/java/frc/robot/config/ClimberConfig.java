@@ -18,8 +18,8 @@ public class ClimberConfig {
     //Variables
     public TalonFXConfiguration liftClimbMotorConfig;
     public TalonFXConfiguration liftClimbMotorZeroConfig;
-    public TalonFXConfiguration rotateClimb1MotorConfig;
-    public TalonFXConfiguration rotateClimb2MotorConfig;
+    //public TalonFXConfiguration rotateClimb1MotorConfig;
+    //public TalonFXConfiguration rotateClimb2MotorConfig;
     public CANcoderConfiguration hookRotateCANcoderConfig;
     public CANcoderConfiguration liftCANcoderConfig;
 
@@ -31,7 +31,7 @@ public class ClimberConfig {
 
         liftClimbMotorZeroConfig = new TalonFXConfiguration();
         this.configureLiftClimberZero(liftClimbMotorZeroConfig);
-
+/*
         rotateClimb1MotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
         this.configureRotateClimber1(rotateClimb1MotorConfig);  //Fill in framework 
 
@@ -43,8 +43,10 @@ public class ClimberConfig {
 
         liftCANcoderConfig = new CANcoderConfiguration();
         this.configureLiftCANcoder(liftCANcoderConfig);
+*/
     }
-    
+ 
+    /*
     public void configureHookRotateCANcoder(CANcoderConfiguration CANcoderConfig){
         CANcoderConfig.MagnetSensor.MagnetOffset = 0;
         CANcoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
@@ -56,6 +58,7 @@ public class ClimberConfig {
         CANcoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
         CANcoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
     }
+    */
 
     public void configureLiftClimber(TalonFXConfiguration liftClimber){
         //configure motor
@@ -64,11 +67,11 @@ public class ClimberConfig {
         liftClimber.MotorOutput.PeakForwardDutyCycle = 1;
         liftClimber.MotorOutput.PeakReverseDutyCycle = -1;
 
-        liftClimber.CurrentLimits.StatorCurrentLimit = 120.0;
+        liftClimber.CurrentLimits.StatorCurrentLimit = 30.0; //30 for testing - 120 for actual climb
         liftClimber.CurrentLimits.StatorCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLimit = 60;    //Was 20
+        liftClimber.CurrentLimits.SupplyCurrentLimit = 5.0;    //5 for testing - 60 for actual climb
         liftClimber.CurrentLimits.SupplyCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
+        liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 5.0; //60 for testing
         liftClimber.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -117,6 +120,7 @@ public class ClimberConfig {
         liftClimber.Audio.AllowMusicDurDisable = true;
     }
 
+    /*
     public void configureRotateClimber1(TalonFXConfiguration rotateClimber){
         //configure motor
         rotateClimber.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -176,6 +180,6 @@ public class ClimberConfig {
 
         rotateClimber.Audio.AllowMusicDurDisable = true;   
     }
-
+*/
 
 }

@@ -19,24 +19,24 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 public class ShooterConstants {
 
   /*===============Speeds===================*/
-  public static final double kKickupIntake = 10.0;
-  public static final double kKickupOuttake = -10.0;
-  public static final double kSpindexerIntake = 10.0;
-  public static final double kSpindexerOuttake = -10.0;
+  public static final double kKickupIntake = 11.0;  //Verified 2/25/26
+  public static final double kKickupOuttake = -11.0;  //Verified 2/25/26
+  public static final double kSpindexerIntake = 11.0;  //Verified 2/25/26
+  public static final double kSpindexerOuttake = -11.0;  //Verified 2/25/26
 
   /* Deadbands */
-  public static final double kHoodPositionDeadband = 5.0;
-  public static final double kTurretPositionDeadband = 5.0;
+  public static final double kHoodPositionDeadband = 0.5;  //In degrees - tentative
+  public static final double kTurretPositionDeadband = 0.5;  //In degrees - tentative
   public static final double kShooterVelocityDeadband = 20.0;
   public static final double kKickupVelocityDeadband = 20.0;
   public static final double kSpindexerVelocityDeadband = 20.0;
 
   /*===============Safeties==================*/
-  public static final double kHoodSafeExtend = 90.0;
-  public static final double kHoodSafeRetract = 0.0;
+  public static final double kHoodSafeExtend = 30.0;  //In degrees.  May be able to go slightly higher
+  public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home
   
-  public static final double kTurretSafeClockwise = 180.0;
-  public static final double kTurretSafeCounterClockwise = -180.0;
+  public static final double kTurretSafeClockwise = 100.0;  //May be able to go further.  + is counterclockwise
+  public static final double kTurretSafeCounterClockwise = -100.0;  //May be able to go further. - is clockwise
 
   public static final double kShooterMaxSpeed = 100.0;
   public static final double kShooterMinSpeed = -100.0;
@@ -52,13 +52,24 @@ public class ShooterConstants {
 
   //==============Positions=================
   public static final double kTurretZeroPosition = 0;
-  public static final double kTurretSlowShootPosition = 0;
   public static final double kTurretClimbPosition = 0;
 
   public static final double kSpindexerStoppedVelocityTolerance = 0;
   public static final double kKickupStoppedVelocityTolerance = 0;
 
-  public static final double kSlowShoot = 0;
+  //==============Gear Ratios================
+  public static final double kTurretMotorPinion=8; //Gear teeth
+  public static final double kTurretDrivenGear1=48;
+  public static final double kTurretPinion2=0.9;  //Pitch diameter of an 18 tooth gear
+  public static final double kTurretGear=9.382;  //Pitch diameter
+  public static final double kTurretGearRatio = (kTurretGear / kTurretPinion2) * (kTurretDrivenGear1 / kTurretMotorPinion);
+
+
+  public static final double kHoodPinion = 8;
+  public static final double kHoodDrivenGear1 = 42;
+  public static final double kHoodPinion2 = 1.3;  //Pitch diameter of a 26 tooth gear
+  public static final double kHoodGear = 8.75;  //Pitch diameter inches
+  public static final double kHoodGearRatio = (kHoodGear / kHoodPinion2) * (kHoodDrivenGear1 / kHoodPinion);
 
   //=================Misc========================
   public static final int kTurretZeroCurrentLimit = 0;

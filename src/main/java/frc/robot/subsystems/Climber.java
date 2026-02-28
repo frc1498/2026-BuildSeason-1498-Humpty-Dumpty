@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.ClimberConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ClimberConstants;
-import dev.doglog.DogLog;
+//import dev.doglog.DogLog;
 
 
 //For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
@@ -226,8 +226,8 @@ public class Climber extends SubsystemBase {
    * Should return true if the supply limit has been exceeded.
    * @return
    */
-  private boolean liftClimberCurrentLimitTripped() {
-    return this.liftClimbMotor.getFault_SupplyCurrLimit().getValue();
+  private boolean liftClimberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
+    return (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 4.5);
   }
 
 //=======================================================
@@ -366,10 +366,13 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    /* Temporary - loop overruns
     DogLog.log("Current Climber Command", getCurrentCommandName());
     DogLog.log("Desired Lift Motor Position", desiredLiftMotorPosition);
     DogLog.log("Actual Lift Motor Position", getLiftClimbPosition());
     DogLog.log("Actual Lift Motor Current", liftClimbMotor.getSupplyCurrent().getValueAsDouble());
+    */
 
     // DogLog.log("Desired Rotate1 Motor Position", desiredRotate1MotorPosition);
     // DogLog.log("Actual Rotate1 Motor Position", getRotateClimb1Position());

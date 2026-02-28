@@ -72,7 +72,7 @@ public class RobotContainer {
 
     //Gamepad assignment
     //Instantiate 
-    private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
+    //private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
     //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
     private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
@@ -182,10 +182,10 @@ public class RobotContainer {
         //driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
 
         //Driver POV Left: Autodrive Quick Climb Left
-        driver.povLeft().onTrue(move.quickClimbLeft());
+        //driver.povLeft().onTrue(move.quickClimbLeft());
 
         //Driver POV Right: Autodrive Quick Climb Right
-        driver.povRight().onTrue(move.quickClimbRight());
+        //driver.povRight().onTrue(move.quickClimbRight());
 
         //Driver X button: Empty Hopper / Slow shot / Hopper In
         //driver.x().whileTrue(move.emptyHopper());
@@ -205,20 +205,23 @@ public class RobotContainer {
         //Driver RTrigger: Shoot off
         //driver.rightTrigger(0.1).onTrue(move.stopShoot());
 
-        //Driver RBumper: Shoot on 
-        //driver.rightBumper().onTrue(move.startShoot());
 
-        //Driver LTrigger: Intake off / Hold to reverse
-        //driver.leftTrigger(0.1).onTrue(move.stopOrReverseIntake());
-
-        //Driver LBumper Intake on
-        //driver.leftBumper().onTrue(move.intake());
 
         //Driver Select: Zero drivetrain
         //driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
         //Driver Start: Home the Climb System (low current, will break hooks!)
         //driver.start().whileTrue(move.homeClimb());
+
+        //======================Current Driving Commands=======================
+        //Driver RBumper: Shoot  
+        //driver.rightBumper().onTrue(move.startShootMedium()).OnFalse(move.stopShoot());
+
+        //Driver LTrigger: Intake Reverse - Check 2/26/26 ready for testing
+        //driver.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
+        //Driver LBumper Intake on  -Checked 2/26/26 ready for testing
+        //driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
         //===================================================
         //==================Operator Commands================
@@ -269,19 +272,35 @@ public class RobotContainer {
         //===================================================
         //==================Developer Commands===============
         //===================================================
+        //These are tested and work
+        //developer.start().onTrue(hopper.hopperExtend());
+        //developer.back().onTrue(hopper.hopperRetract());
 
-        // developer.a().onTrue(hopper.hopperExtend());
-        // developer.b().onTrue(hopper.hopperRetract());
+        //developer.x().onTrue(move.turretCounterClockwise45Degrees());
+        //developer.y().onTrue(move.turret0Degrees());
+        //developer.b().onTrue(move.turretClockWise45Degrees());
+
+        //developer.y().onTrue(move.hood30());
+        //developer.a().onTrue(move.hood0());
+
+        //developer.y().onTrue(move.startShootFast());
+        //developer.x().onTrue(move.startShootMedium());
+        //developer.a().onTrue(move.stopShoot());
+
+        //Working on these
+        //developer.y().onTrue(move.climbExtend());
+        //developer.a().onTrue(move.climbRetract());
+
+        developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
+        //developer.x().onTrue(move.primeClimb());
+
+        //developer.b().onTrue(climber.zeroRoutine());  //Which button is the back button!!!!
 
         // developer.leftBumper().and(hopper.isHopperExtended).whileTrue(intake.intakeSuck()).onFalse(intake.intakeStop());
         // developer.rightBumper().and(hopper.isHopperExtended).whileTrue(intake.intakeSpit()).onFalse(intake.intakeStop());
         // hopper.isHopperExtended.whileFalse(intake.intakeStop());
-
-        // developer.x().onTrue(climber.liftClimbExtend());
-        // developer.y().onTrue(climber.liftClimbRetract());
-        // developer.back().onTrue(climber.zeroRoutine());
-        
-
         // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
         //developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
 

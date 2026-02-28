@@ -27,21 +27,25 @@ public class HopperConfig {
         hopper.MotorOutput.PeakForwardDutyCycle = 1;
         hopper.MotorOutput.PeakReverseDutyCycle = -1;
 
-        hopper.CurrentLimits.StatorCurrentLimit = 70.0;
+        hopper.CurrentLimits.StatorCurrentLimit = 150.0;  //70
         hopper.CurrentLimits.StatorCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLimit = 10;    //Set 2-17-26
+        hopper.CurrentLimits.SupplyCurrentLimit = 40.0;    //Set 2/25/26
         hopper.CurrentLimits.SupplyCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Set 2-17-26
+        hopper.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Set 2/25/26
         hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        hopper.Slot0.kP = 28;  // An error of 1 rotation per second results in 2V output
+        hopper.Slot0.kP = 20;  // 8
         hopper.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         hopper.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         hopper.Slot0.kS = 0;
-        hopper.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
-        hopper.Slot0.kA = 0;
+        hopper.Slot0.kV = 0.1666666;  // .1666666
+        hopper.Slot0.kA = 0.05; //0.05
         hopper.Slot0.kG = 0;
+
+        //Motion Magic
+        hopper.MotionMagic.MotionMagicAcceleration = 80;
+        hopper.MotionMagic.MotionMagicCruiseVelocity = 30;
 
         hopper.Voltage.PeakForwardVoltage = 11;
         hopper.Voltage.PeakReverseVoltage = -11;
