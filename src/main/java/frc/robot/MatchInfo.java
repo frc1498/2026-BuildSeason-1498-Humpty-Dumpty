@@ -102,24 +102,32 @@ public class MatchInfo {
      * @return if your hub will be active in the next shift
      */
     
-     public boolean isNextScoringHubActive(double sec) {
+     public String isNextScoringHubActive(double sec) {
+        boolean isNextFlag = true;
         if ((DriverStation.getMatchTime() <= 130.0 + sec) && (DriverStation.getMatchTime() >= 130.0)) { //Next Shift = Shift 1
-            return (DriverStation.getAlliance().get() == this.getInitialScoringHub());
+            isNextFlag = (DriverStation.getAlliance().get() == this.getInitialScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 105.0 + sec) && (DriverStation.getMatchTime() >= 105.0 + sec)) { //Next Shift = Shift 2
-            return !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
+        else if ((DriverStation.getMatchTime() <= 105.0 + sec) && (DriverStation.getMatchTime() >= 105.0)) { //Next Shift = Shift 2
+            isNextFlag = !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 80.0 + sec) && (DriverStation.getMatchTime() >= 80.0 + sec)) { //Next Shift = Shift 3
-            return !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
+        else if ((DriverStation.getMatchTime() <= 80.0 + sec) && (DriverStation.getMatchTime() >= 80.0)) { //Next Shift = Shift 3
+            isNextFlag = !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 55.0 + sec) && (DriverStation.getMatchTime() >= 55.0 + sec)) { //Next Shift = Shift 4
-            return !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
+        else if ((DriverStation.getMatchTime() <= 55.0 + sec) && (DriverStation.getMatchTime() >= 55.0)) { //Next Shift = Shift 4
+            isNextFlag = !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 30.0 + sec) && (DriverStation.getMatchTime() >= 30.0 + sec)) { //Next Shift = End Game
-            return true;
+        else if ((DriverStation.getMatchTime() <= 30.0 + sec) && (DriverStation.getMatchTime() >= 30.0)) { //Next Shift = End Game
+            isNextFlag = true;
         }
         else {                                                                                                                                 
-            return false;
+            isNextFlag = false;
+        }
+
+        if (isNextFlag == true) {
+            return "true";
+        }
+        else {
+            return "false";
         }
      }
 }
