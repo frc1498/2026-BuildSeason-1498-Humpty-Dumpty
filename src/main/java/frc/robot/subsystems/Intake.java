@@ -64,25 +64,13 @@ public class Intake extends SubsystemBase {
 
   private void intake(){
     if (MotorEnableConstants.kIntakeMotorEnabled) {
-      if (intakeState == "outtaking") {
-        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
-        intakeState = "stopped";
-      } else if (intakeState == "stopped") {
         intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kIntakeSpeed));
-        intakeState = "intaking";
-      }
     }
   }
   
   private void outtake(){
     if (MotorEnableConstants.kIntakeMotorEnabled) {
-      if (intakeState == "intaking") {
-        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
-        intakeState = "stopped";
-      } else if (intakeState == "stopped") {
         intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kOuttakeSpeed));
-        intakeState = "outtaking";
-      }
     }
   }
 

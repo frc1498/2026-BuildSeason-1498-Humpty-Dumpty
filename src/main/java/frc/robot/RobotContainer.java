@@ -287,12 +287,16 @@ public class RobotContainer {
         //developer.x().onTrue(move.startShootMedium());
         //developer.a().onTrue(move.stopShoot());
 
+        developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+
+        developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
         //Working on these
         //developer.y().onTrue(move.climbExtend());
         //developer.a().onTrue(move.climbRetract());
 
-        developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-        developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
 
         //developer.x().onTrue(move.primeClimb());
 
