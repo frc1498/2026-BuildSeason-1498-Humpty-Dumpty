@@ -19,17 +19,18 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 public class ShooterConstants {
 
   /*===============Speeds===================*/
-  public static final double kKickupIntake = 11.0;  //Verified 2/25/26
-  public static final double kKickupOuttake = -11.0;  //Verified 2/25/26
-  public static final double kSpindexerIntake = 11.0;  //Verified 2/25/26
-  public static final double kSpindexerOuttake = -11.0;  //Verified 2/25/26
+  public static final double kKickupIntake = 90.0;  //Verified 2/25/26
+  public static final double kKickupOuttake = -12.0;  //Verified 2/25/26
+  public static final double kSpindexerIntake = 50.0;  
+  public static final double kSpindexerOuttake = -10.0;  
+    public static final double kSpindexerStoppedVelocityTolerance = 2;
 
   /* Deadbands */
   public static final double kHoodPositionDeadband = 0.5;  //In degrees - tentative
   public static final double kTurretPositionDeadband = 0.5;  //In degrees - tentative
-  public static final double kShooterVelocityDeadband = 20.0;
+  public static final double kShooterVelocityDeadband = 2;
   public static final double kKickupVelocityDeadband = 20.0;
-  public static final double kSpindexerVelocityDeadband = 20.0;
+  public static final double kSpindexerVelocityDeadband = 2;
 
   /*===============Safeties==================*/
   public static final double kHoodSafeExtend = 30.0;  //In degrees.  May be able to go slightly higher
@@ -54,8 +55,7 @@ public class ShooterConstants {
   public static final double kTurretZeroPosition = 0;
   public static final double kTurretClimbPosition = 0;
 
-  public static final double kSpindexerStoppedVelocityTolerance = 0;
-  public static final double kKickupStoppedVelocityTolerance = 0;
+
 
   //==============Gear Ratios================
   public static final double kTurretMotorPinion=8; //Gear teeth

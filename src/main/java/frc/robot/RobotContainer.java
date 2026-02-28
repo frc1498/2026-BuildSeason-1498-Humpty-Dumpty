@@ -72,7 +72,7 @@ public class RobotContainer {
 
     //Gamepad assignment
     //Instantiate 
-    //private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
+    private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
     //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
     // private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
@@ -121,10 +121,10 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() -> new SwerveRequest.Idle()
-                //drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                //    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                //    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            drivetrain.applyRequest(() -> 
+                drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -287,12 +287,14 @@ public class RobotContainer {
         //developer.x().onTrue(move.startShootMedium());
         //developer.a().onTrue(move.stopShoot());
 
+        developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+
+        developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
         //Working on these
         //developer.y().onTrue(move.climbExtend());
         //developer.a().onTrue(move.climbRetract());
-
-        // developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-        // developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
         //developer.x().onTrue(move.primeClimb());
 
