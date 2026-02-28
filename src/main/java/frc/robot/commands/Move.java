@@ -66,7 +66,11 @@ public class Move {
     }
 
     public Command hopperExtend() {  //Reviewed 2/21/26 should work now
-        return hopper.hopperExtend();
+        return Commands.parallel(hopper.hopperExtend(),intake.intakeStop());
+    }
+
+    public Command hopperMid() {
+        return Commands.parallel(hopper.hopperMidPosition(),intake.intakeSuck());
     }
 
     //==============================Spin and Kick================================

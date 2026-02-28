@@ -100,6 +100,13 @@ public class Hopper extends SubsystemBase {
     ).until(isHopperRetracted).withName("hopperRetract");
   }
 
+  public Command hopperMidPosition() {
+    return runOnce(
+      () -> {this.goToPosition(HopperConstants.kHopperMidPosition);}
+    );
+
+  }
+
 //================================Triggers================================  
   public Trigger isHopperExtended= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperExtend);});
   public Trigger isHopperRetracted= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperRetract);});

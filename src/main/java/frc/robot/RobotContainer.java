@@ -223,6 +223,13 @@ public class RobotContainer {
         //Driver LBumper Intake on  -Checked 2/26/26 ready for testing
         //driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
+        driver.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+
+        driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        driver.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
+        driver.a().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
+
         //===================================================
         //==================Operator Commands================
         //===================================================
@@ -287,10 +294,10 @@ public class RobotContainer {
         //developer.x().onTrue(move.startShootMedium());
         //developer.a().onTrue(move.stopShoot());
 
-        developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+        //developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
 
-        developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-        developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        //developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        //developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
         //Working on these
         //developer.y().onTrue(move.climbExtend());
