@@ -821,7 +821,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, ShooterConstants.kRedHubCenter);
+    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, ShooterConstants.kBlueHubCenter);
     this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose, ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
     this.distanceToVirtualTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, this.currentTarget);

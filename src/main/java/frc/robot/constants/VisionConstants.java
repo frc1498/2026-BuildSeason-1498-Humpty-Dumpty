@@ -18,23 +18,30 @@ public class VisionConstants {
 
     public static class limelight {
         public static final String kName = "limelight";
-        public static final double kForwardOffset = 0.01905;   // 3/4 inches (0.01905 meters) from the center of the robot.
-        public static final double kSideOffset = 0.130175;     // 5-1/8 inches (0.130175 meters) from the center of the robot.
-        public static final double kUpOffset = 0.2794;      // 11 inches (0.2794 meters) from the center of the robot.
+        public static final double kForwardOffset = 0.3048;   // 12 inches (0.3048 meters) from the center of the robot.
+        public static final double kSideOffset = -0.1047;     // 4-1/8 inches (-0.104775) from the center of the robot.
+        public static final double kUpOffset = 0.2937;      // 11-9/16 inches (0.2936875 meters) from the bottom of the floor.
         public static final double kRollOffset = 0.0;          // degrees from vertical.
         public static final double kPitchOffset = 0.0;         // degrees from vertical.
         public static final double kYawOffset = 0.0;           // degrees from vertical.
+        public static final Transform3d kRobotToLimelight = new Transform3d(new Translation3d(0.3048, -0.1047, 0.2937), new Rotation3d(0,0,0));
 
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
     }
 
     public static class photonvision {
-        public static final String kLeftName = "Left Swerve Camera";
-        public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-
-        public static final String kRightName = "Right Swerve Camera";
-        public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
-
+        public static final String kRightName = "swerveRightCamera";
+        public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.3302, 0.1810), new Rotation3d(0, 0, 1.5708));
+        // 11 in. (0.279400558801118 in meters) X
+        // 13 in. (-0.330200660401321 in meters) Y
+        // 7-1/8 in. (0.180975361950724 in meters) Z
+        // 1.5707963267949 rad (pi / 2) 90 deg
+        public static final String kLeftName = "swerveLeftCamera";
+        public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.2794, 0.3080, 0.1810), new Rotation3d(0, 0, -1.5708));
+        // 11 in. (0.279400558801118 in meters) X
+        // 12-1/8 in. (0.307975615951232 in meters) Y
+        // 7-1/8 in. (0.180975361950724 in meters) Z
+        // -1.5707963267949 rad (-pi / 2) -90 deg
         public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);  // FiM fields are welded.
 
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);  // Setting these to the same as the Limelight until they can be experimentally found.
