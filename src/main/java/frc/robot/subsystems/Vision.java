@@ -207,7 +207,7 @@ public class Vision extends SubsystemBase {
      */
     private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
         //3.3 radian per second is currently 75% of our maximum rotational speed.
-        return this.arePhotonTagsSeen(result, 1) && this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10) && this.isRobotSlowEnough(3.3);
+        return this.arePhotonTagsSeen(result, 1) /*&& this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10)*/ && this.isRobotSlowEnough(3.3);
     }
 
     /**
@@ -273,7 +273,7 @@ public class Vision extends SubsystemBase {
                 visionEst.ifPresent( est -> {
                     var stddev = getEstimationStdDevs();
                     poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
-                                    switch (photonCamera) {
+                    switch (photonCamera) {
                     case SWERVE_LEFT_CAMERA:
                         this.leftPhotonPose = est.estimatedPose.toPose2d();
                     break;
@@ -414,6 +414,10 @@ public class Vision extends SubsystemBase {
         this.cachedRobotHeading = this.getRobotHeading();
         this.cachedRobotRotationRate = this.getRobotRotationRate();
         this.cachedIsRobotSlowEnough = this.isRobotSlowEnough(3.3);
+
+        // Every loop, seed the limelight IMU with the current robot heading.
+        LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
+        
         this.cachedMegaTag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.kName);
         this.cachedMegaTagValid = this.isMegaTagValid(this.cachedMegaTag2);
 
@@ -440,9 +444,6 @@ public class Vision extends SubsystemBase {
 
         this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
         this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
-
-        // Every loop, seed the limelight IMU with the current robot heading.
-        LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
