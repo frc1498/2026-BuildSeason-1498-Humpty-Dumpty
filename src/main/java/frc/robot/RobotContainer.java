@@ -205,14 +205,6 @@ public class RobotContainer {
         //Driver RTrigger: Shoot off
         //driver.rightTrigger(0.1).onTrue(move.stopShoot());
 
-
-
-        //Driver Select: Zero drivetrain
-        //driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
-
-        //Driver Start: Home the Climb System (low current, will break hooks!)
-        //driver.start().whileTrue(move.homeClimb());
-
         //======================Current Driving Commands=======================
         //Driver RBumper: Shoot  
         //driver.rightBumper().onTrue(move.startShootMedium()).OnFalse(move.stopShoot());
@@ -223,12 +215,23 @@ public class RobotContainer {
         //Driver LBumper Intake on  -Checked 2/26/26 ready for testing
         //driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
+        //Shoot medium
         driver.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
 
+        //Hopper out and intake
         driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        
+        //Reverse intake rollers
         driver.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
+        //Agitate Hopper
         driver.a().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
+
+        //Driver Select: Zero drivetrain
+        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+
+        //Driver Start: Home the Climb System (low current, will break hooks!)
+        driver.back().whileTrue(move.homeClimb());
 
         //===================================================
         //==================Operator Commands================

@@ -67,17 +67,17 @@ public class ClimberConfig {
         liftClimber.MotorOutput.PeakForwardDutyCycle = 1;
         liftClimber.MotorOutput.PeakReverseDutyCycle = -1;
 
-        liftClimber.CurrentLimits.StatorCurrentLimit = 30.0; //30 for testing - 120 for actual climb
+        liftClimber.CurrentLimits.StatorCurrentLimit = 150; //30 for testing - 120 for actual climb
         liftClimber.CurrentLimits.StatorCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLimit = 5.0;    //5 for testing - 60 for actual climb
+        liftClimber.CurrentLimits.SupplyCurrentLimit = 40;    //5 for testing - 60 for actual climb
         liftClimber.CurrentLimits.SupplyCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 5.0; //60 for testing
+        liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 40; //60 for testing
         liftClimber.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        liftClimber.Slot0.kP = 30;  // An error of 1 rotation per second results in 2V output
+        liftClimber.Slot0.kP = 5.0;  // An error of 1 rotation per second results in 2V output
         liftClimber.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        liftClimber.Slot0.kD = 0.9;  // A change of 1 rotation per second squared results in 0.01 volts output
+        liftClimber.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         liftClimber.Slot0.kS = 0;
         liftClimber.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         liftClimber.Slot0.kA = 0;
