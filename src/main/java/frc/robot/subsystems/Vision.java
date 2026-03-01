@@ -131,7 +131,11 @@ public class Vision extends SubsystemBase {
      * @return
      */
     private boolean isPhotonEstimateValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
-        return !camera.estimateCoprocMultiTagPose(result).isEmpty();
+        return true;
+        // Commenting out, because I suspect this might not be the best way to check if the estimate is valid.
+        // Besides, the photonvision processes poses in a different way.
+        // I think I should be checking if the *result* is valid.
+        //return !camera.estimateCoprocMultiTagPose(result).isEmpty();
     }
 
     /**
@@ -249,20 +253,20 @@ public class Vision extends SubsystemBase {
                 }
                 this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
                 // I would like a way to reliably update the pose estimate of both cameras for logging purposes.
-                switch (photonCamera) {
-                    case SWERVE_LEFT_CAMERA:
-                        this.leftPhotonPose = visionEst.get().estimatedPose.toPose2d();
-                    break;
-                    case SWERVE_RIGHT_CAMERA:
-                        this.leftPhotonPose = visionEst.get().estimatedPose.toPose2d();
-                    break;
-                    default:
-                    break;
-                }
 
                 visionEst.ifPresent( est -> {
                     var stddev = getEstimationStdDevs();
                     poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
+                                    switch (photonCamera) {
+                    case SWERVE_LEFT_CAMERA:
+                        this.leftPhotonPose = est.estimatedPose.toPose2d();
+                    break;
+                    case SWERVE_RIGHT_CAMERA:
+                        this.rightPhotonPose = est.estimatedPose.toPose2d();
+                    break;
+                    default:
+                    break;
+                }
                 });
             }
             // this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
@@ -418,7 +422,7 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
-        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
+        // this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
         this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, seed the limelight IMU with the current robot heading.
