@@ -139,6 +139,22 @@ public class Vision extends SubsystemBase {
     }
 
     /**
+     * Checks every target within a result and returns true if the highest measured ambiguity is less than the threshold passed into the method.
+     * @param targets
+     * @param ambiguityThreshold
+     * @return
+     */
+    private boolean isResultAmbiguityBelowThreshold(List<PhotonTrackedTarget> targets, double ambiguityThreshold) {
+        double highestAmbiguity = 0;
+        for (var tgt : targets) {
+            if (tgt.getPoseAmbiguity() >= highestAmbiguity) {
+                highestAmbiguity = tgt.getPoseAmbiguity();
+            }
+        }
+        return highestAmbiguity <= ambiguityThreshold;
+    }
+
+    /**
      * Returns true if the latest megaTag estimate identifies at least the amount of tags passed into this method.
      * @param megaTag2Estimate
      * @param tagCount
@@ -189,9 +205,9 @@ public class Vision extends SubsystemBase {
      * @param result
      * @return
      */
-    private boolean isPhotonvisionPoseValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
+    private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
         //3.3 radian per second is currently 75% of our maximum rotational speed.
-        return this.isPhotonEstimateValid(camera, result) && this.arePhotonTagsSeen(result, 1) && this.isRobotSlowEnough(3.3);
+        return this.arePhotonTagsSeen(result, 1) && this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10) && this.isRobotSlowEnough(3.3);
     }
 
     /**
@@ -246,14 +262,14 @@ public class Vision extends SubsystemBase {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : photonResults) {
             // Check if the pose is valid, and ignore everything if it isn't.
-            if (this.isPhotonvisionPoseValid(photonEstimator, result)) {
+            if (this.isPhotonvisionResultValid(photonEstimator, result)) {
                 visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
                 if (visionEst.isEmpty()) {
                     visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
                 }
                 this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
-                // I would like a way to reliably update the pose estimate of both cameras for logging purposes.
 
+                //Don't bother if the ambiguity is above a threshold.
                 visionEst.ifPresent( est -> {
                     var stddev = getEstimationStdDevs();
                     poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
