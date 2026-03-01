@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.RGBWColor;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.MotorEnableConstants;
 
 public class LED extends SubsystemBase{
 
@@ -29,6 +31,21 @@ public class LED extends SubsystemBase{
     /** Create a new LED subsystem. */
     public LED() {
 
+    }
+
+    /**
+     * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+     * @param logLevel - The level of logging to enable.
+     */
+    private void log(MotorEnableConstants.LogLevel logLevel) {
+        switch (logLevel) {
+        case NONE:
+            break;
+        case FULL:
+            break;
+        default:
+            break;
+        }
     }
     
     /*private Command setColor(LEDState state) {
