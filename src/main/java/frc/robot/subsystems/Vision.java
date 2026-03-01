@@ -33,10 +33,12 @@ import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
+import frc.robot.constants.VisionConstants.photonvision.Camera;
 
 public class Vision extends SubsystemBase {
     
     public CommandSwerveDrivetrain drivetrain;
+    private Supplier<SwerveDriveState> swerveStateSupplier;
     public poseEstimateConsumer poseConsumer;
 
     public LimelightHelpers.PoseEstimate megaTag2 = new PoseEstimate();
@@ -71,6 +73,7 @@ public class Vision extends SubsystemBase {
      */
     public Vision(CommandSwerveDrivetrain drivetrain, Supplier<SwerveDriveState> swerveDriveState, poseEstimateConsumer poseConsumer) {
         this.drivetrain = drivetrain;
+        this.swerveStateSupplier = swerveDriveState;
         
         this.poseConsumer = poseConsumer;
         //this.poseConsumer = this.drivetrain::addVisionMeasurement;
@@ -128,7 +131,7 @@ public class Vision extends SubsystemBase {
      * @return
      */
     private boolean isPhotonEstimateValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
-        return camera.estimateCoprocMultiTagPose(result).isEmpty();
+        return !camera.estimateCoprocMultiTagPose(result).isEmpty();
     }
 
     /**
@@ -192,7 +195,7 @@ public class Vision extends SubsystemBase {
      * The current heading is based on the robot pose, because the pigeon yaw doesn't wrap around 0 - 360 degrees.
      */
     private double getRobotHeading() {
-        return this.drivetrain.getState().Pose.getRotation().getDegrees();
+        return this.swerveStateSupplier.get().Pose.getRotation().getDegrees();
     }
 
     /**
@@ -200,7 +203,7 @@ public class Vision extends SubsystemBase {
      * @return
      */
     private double getRobotRotationRate() {
-        return Math.abs(this.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+        return Math.abs(this.swerveStateSupplier.get().Speeds.omegaRadiansPerSecond);
     }
 
     /**
@@ -235,21 +238,33 @@ public class Vision extends SubsystemBase {
      * @param photonResults
      * @param photonEstimator
      */
-    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator, Pose2d cameraPose) {
+    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator, photonvision.Camera photonCamera) {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : photonResults) {
-            visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
+            // Check if the pose is valid, and ignore everything if it isn't.
+            if (this.isPhotonvisionPoseValid(photonEstimator, result)) {
+                visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
+                if (visionEst.isEmpty()) {
+                    visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
+                }
+                this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
+                // I would like a way to reliably update the pose estimate of both cameras for logging purposes.
+                switch (photonCamera) {
+                    case SWERVE_LEFT_CAMERA:
+                        this.leftPhotonPose = visionEst.get().estimatedPose.toPose2d();
+                    break;
+                    case SWERVE_RIGHT_CAMERA:
+                        this.leftPhotonPose = visionEst.get().estimatedPose.toPose2d();
+                    break;
+                    default:
+                    break;
+                }
+
+                visionEst.ifPresent( est -> {
+                    var stddev = getEstimationStdDevs();
+                    poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
+                });
             }
-            this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
-            cameraPose = visionEst.get().estimatedPose.toPose2d();
-
-            visionEst.ifPresent( est -> {
-                var stddev = getEstimationStdDevs();
-                poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
-            });
-
             // this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
         } 
     }
@@ -403,8 +418,8 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
-        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, this.leftPhotonPose);
-        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, this.rightPhotonPose);
+        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
+        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, seed the limelight IMU with the current robot heading.
         LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
