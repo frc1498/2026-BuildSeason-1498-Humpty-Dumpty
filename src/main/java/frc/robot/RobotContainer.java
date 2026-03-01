@@ -212,6 +212,9 @@ public class RobotContainer {
         //Shoot medium
         driver.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
 
+        //Test agitate
+        driver.b().whileTrue(hopper.agitate()).onFalse(move.stopShoot());
+
         //Hopper out and intake
         driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
         
@@ -225,10 +228,11 @@ public class RobotContainer {
         driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
         //Driver Start: Home the Climb System (low current, will break hooks!)
-        driver.back().whileTrue(move.homeClimb());
+        driver.y().onTrue(move.zeroClimb());
 
         //===================================================
         //==================Operator Commands================
+        
         //===================================================
 
         //Operator POV Up

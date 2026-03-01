@@ -104,10 +104,8 @@ public class Move {
     }
      */
     
-    public Command homeClimb() {  
-        return shooter.turretClimbPosition().andThen(
-            Commands.sequence(climber.liftClimbHome()
-                ).until(climber.isClimberHome));
+    public Command zeroClimb() {  
+        return climber.zeroRoutine();
     }
 
     public Command stopClimb() {
@@ -148,7 +146,7 @@ public class Move {
         return Commands.sequence(shooter.hood0(),
             shooter.stopSpindexer(),
             shooter.stopKickup()).andThen
-            (shooter.stopShoot());       
+            (shooter.stopShoot(), hopper.hopperExtend(), intake.intakeStop());       
     }
 
     public Command startShootFast() {
@@ -163,7 +161,8 @@ public class Move {
         return Commands.sequence(shooter.hood30(),
             shooter.startShootMedium()).andThen
             (shooter.forwardKickup(),
-            shooter.forwardSpindexer());
+            shooter.forwardSpindexer()).andThen(
+            hopper.agitate().alongWith(intake.intakeSuck()));
     }
 
     public Command turretClockWise45Degrees(){

@@ -15,7 +15,9 @@ import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.HopperConfig;
 import frc.robot.constants.MotorEnableConstants;
@@ -85,9 +87,18 @@ public class Hopper extends SubsystemBase {
       else {
           return this.getCurrentCommand().getName();
       }
-      // Refactoring this method with a ternary operator.
-      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
   }
+
+  private void agitateHopper(){
+    if (isHopperAtPosition(HopperConstants.kHopperExtend)){
+      this.goToPosition(HopperConstants.kHopperMidPosition);
+    } else if (isHopperAtPosition(HopperConstants.kHopperMidPosition)){
+      this.goToPosition(HopperConstants.kHopperExtend);
+    } else {
+    this.goToPosition(HopperConstants.kHopperExtend);
+    }
+  }
+
 
   /**
    * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
@@ -122,15 +133,26 @@ public class Hopper extends SubsystemBase {
   }
 
   public Command hopperMidPosition() {
-    return runOnce(
+    return run(
       () -> {this.goToPosition(HopperConstants.kHopperMidPosition);}
-    );
+    ).until(isHopperMidpoint).withName("hopperMidpoint");
 
+  }
+
+  public Command agitate() {
+    return (this.hopperExtend()
+      .andThen(Commands.waitSeconds(0.5))
+      .andThen(this.hopperMidPosition())
+      .andThen(Commands.waitSeconds(0.5))
+      ).repeatedly().withName("agitate");
+    //return runOnce(() -> {this.agitateHopper();}).andThen(
+    //  Commands.waitSeconds(0.5));
   }
 
 //================================Triggers================================  
   public Trigger isHopperExtended= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperExtend);});
   public Trigger isHopperRetracted= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperRetract);});
+  public Trigger isHopperMidpoint = new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperMidPosition);});
 
   @Override
   public void initSendable(SendableBuilder builder) {
@@ -139,6 +161,7 @@ public class Hopper extends SubsystemBase {
     builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
     builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
     builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
+    builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
   }
 
   @Override

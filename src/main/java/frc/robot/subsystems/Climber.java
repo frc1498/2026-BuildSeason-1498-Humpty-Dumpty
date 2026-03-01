@@ -44,7 +44,7 @@ public class Climber extends SubsystemBase {
     liftClimbMotor = new TalonFX(ClimberConfig.kLiftClimbMotorCANID, "canivore");  //Create a motor for this subsystem
     liftClimbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
     this.configureMechanism(liftClimbMotor, config.liftClimbMotorConfig);
-
+    this.climberConfig=config;
     this.dutyCycleOut = new DutyCycleOut(0.0);
 
     this.liftClimbMotor.setPosition(0);
@@ -119,7 +119,7 @@ public class Climber extends SubsystemBase {
    * @return
    */
   private boolean liftClimberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
-    return (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 4.5);
+    return (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 20);
   }
 
   /**
@@ -140,16 +140,6 @@ public class Climber extends SubsystemBase {
         break;
     }
 
-
-    /* These motors don't exist at the moment, but I want to keep the calls commented out until a decision is made on the level 3 climb
-    DogLog.log("Desired Rotate1 Motor Position", desiredRotate1MotorPosition);
-    DogLog.log("Actual Rotate1 Motor Position", getRotateClimb1Position());
-    DogLog.log("Actual Rotate1 Motor Current", rotateClimb1Motor.getSupplyCurrent().getValueAsDouble());
-
-    DogLog.log("Desired Rotate2 Motor Position", desiredRotate2MotorPosition);
-    DogLog.log("Actual Rotate2 Motor Position", getRotateClimb2Position());
-    DogLog.log("Actual Rotate2 Motor Current", rotateClimb2Motor.getSupplyCurrent().getValueAsDouble());
-    */
   }
 
 //=======================================================
@@ -166,15 +156,16 @@ public class Climber extends SubsystemBase {
       () -> {
         isLiftClimberCurrentLimitLatched=false;
         this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorZeroConfig);
-        this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(0.25));
+        this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(-0.25));
       }
     ).until(this.isLiftClimberCurrentLimitTripped)
     .andThen(
       runOnce(
         () -> {
-          this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorConfig);
+          this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(0));
           this.liftClimbMotor.setPosition(0);
-          if (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 4.5) {isLiftClimberCurrentLimitLatched=true;}
+          if (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 20) {isLiftClimberCurrentLimitLatched=true;}
+          this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorConfig);
         }
       )
     ).withName("zeroRoutine");
