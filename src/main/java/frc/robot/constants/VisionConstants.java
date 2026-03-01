@@ -48,5 +48,10 @@ public class VisionConstants {
 
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);  // Setting these to the same as the Limelight until they can be experimentally found.
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);
+
+        public static enum Camera {
+            SWERVE_RIGHT_CAMERA,
+            SWERVE_LEFT_CAMERA
+        }
     }
 }
