@@ -53,6 +53,8 @@ public class Vision extends SubsystemBase {
     
     private LimelightHelpers.PoseEstimate cachedMegaTag2 = new PoseEstimate();
     private Pose2d testPose = new Pose2d(5.0, 5.0, new Rotation2d(90.0));
+    private Pose2d leftPhotonPose = new Pose2d(0, 0, new Rotation2d(0.0));
+    private Pose2d rightPhotonPose = new Pose2d(0, 0, new Rotation2d(0.0));
     private double cachedRobotHeading = 0.0;
     private double cachedRobotRotationRate = 0.0;
     private boolean cachedMegaTagValid = false;
@@ -214,9 +216,18 @@ public class Vision extends SubsystemBase {
      * @param camera
      * @return
      */
-    private Pose2d getCurrentLeftPhotonPose(PhotonPoseEstimator camera) {
-        return this.megaTag2.pose;
+    private Pose2d getCurrentLeftPhotonPose() {
+        return this.leftPhotonPose;
     }
+
+    /**
+     * Return the pose component of the current right swerve camera estimate.
+     * @param camera
+     * @return
+     */
+    private Pose2d getCurrentRightPhotonPose() {
+        return this.rightPhotonPose;
+    }    
 
     /**
      * Process the latest camera results from the photon camera.
@@ -224,7 +235,7 @@ public class Vision extends SubsystemBase {
      * @param photonResults
      * @param photonEstimator
      */
-    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator) {
+    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator, Pose2d cameraPose) {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : photonResults) {
             visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
@@ -232,12 +243,14 @@ public class Vision extends SubsystemBase {
                 visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
             }
             this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
+            cameraPose = visionEst.get().estimatedPose.toPose2d();
+
             visionEst.ifPresent( est -> {
                 var stddev = getEstimationStdDevs();
                 poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
             });
 
-            this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
+            // this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
         } 
     }
 
@@ -390,15 +403,19 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
+        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, this.leftPhotonPose);
+        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, this.rightPhotonPose);
+
         // Every loop, seed the limelight IMU with the current robot heading.
         LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
-        visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose(this.leftCameraEstimator));
+        visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
+        visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
 
-        /* This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
+        // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
+        /* Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : leftCamera.getAllUnreadResults()) {
             visionEst = leftCameraEstimator.estimateCoprocMultiTagPose(result);
             if (visionEst.isEmpty()) {
@@ -407,8 +424,7 @@ public class Vision extends SubsystemBase {
             this.updateEstimationStdDevs(leftCameraEstimator, visionEst, result.getTargets());
 
             this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
-        }
-        */
+        } */
     }
 
     @Override
