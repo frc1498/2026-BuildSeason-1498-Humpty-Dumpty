@@ -10,8 +10,11 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import dev.doglog.DogLog;
 import frc.robot.config.IntakeConfig;
 import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.IntakeConstants;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -91,6 +94,25 @@ public class Intake extends SubsystemBase {
       // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
+    /**
+   * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+   * @param logLevel - The level of logging to enable.
+   */
+  private void log(MotorEnableConstants.LogLevel logLevel) {
+    switch (logLevel) {
+      case NONE:
+        break;
+      case FULL:
+        DogLog.log("Current Intake Command", getCurrentCommandName());
+        DogLog.log("Intake Current", intakeMotor.getSupplyCurrent().getValueAsDouble());
+        DogLog.log("Actual Intake State", intakeState);
+        DogLog.log("Actual Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
+        break;
+      default:
+        break;
+    }
+  }
+
   //=====================================================
   //=============Public Methods==========================
   //=====================================================
@@ -122,12 +144,7 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    /*
-    DogLog.log("Current Intake Command", getCurrentCommandName());
-    DogLog.log("Intake Current", intakeMotor.getSupplyCurrent().getValueAsDouble());
-    DogLog.log("Actual Intake State", intakeState);
-    DogLog.log("Actual Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
-    */
+    this.log(LogLevel.NONE);
     }
 
   @Override

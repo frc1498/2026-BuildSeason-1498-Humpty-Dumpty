@@ -23,23 +23,18 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -101,8 +96,7 @@ public class RobotContainer {
     public RobotContainer() {
         // Create DogLog
         DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
-        //DogLog.setPdh(new PowerDistribution());     // allows battery and pdp logging
-        DogLog.log("ExampleLog", "Hello world!");   // test log item
+        DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
         // Configure the trigger bindings
         configureBindings();
     }

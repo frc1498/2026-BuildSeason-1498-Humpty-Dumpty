@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,9 +20,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.ClimberConfig;
 import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.ClimberConstants;
-//import dev.doglog.DogLog;
-
 
 //For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
 
@@ -49,7 +50,6 @@ public class Climber extends SubsystemBase {
     this.liftClimbMotor.setPosition(0);
 
     SmartDashboard.putData("Climber", this);
-
   }
 
   //===================Configuration=====================
@@ -120,6 +120,36 @@ public class Climber extends SubsystemBase {
    */
   private boolean liftClimberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
     return (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 4.5);
+  }
+
+  /**
+   * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+   * @param logLevel - The level of logging to enable.
+   */
+  private void log(MotorEnableConstants.LogLevel logLevel) {
+    switch (logLevel) {
+      case NONE:
+        break;
+      case FULL:
+        DogLog.log("Current Climber Command", this.getCurrentCommandName());
+        DogLog.log("Desired Lift Motor Position", this.desiredLiftMotorPosition);
+        DogLog.log("Actual Lift Motor Position", this.getLiftClimbPosition());
+        DogLog.log("Actual Lift Motor Current", this.liftClimbMotor.getSupplyCurrent().getValueAsDouble());
+        break;
+      default:
+        break;
+    }
+
+
+    /* These motors don't exist at the moment, but I want to keep the calls commented out until a decision is made on the level 3 climb
+    DogLog.log("Desired Rotate1 Motor Position", desiredRotate1MotorPosition);
+    DogLog.log("Actual Rotate1 Motor Position", getRotateClimb1Position());
+    DogLog.log("Actual Rotate1 Motor Current", rotateClimb1Motor.getSupplyCurrent().getValueAsDouble());
+
+    DogLog.log("Desired Rotate2 Motor Position", desiredRotate2MotorPosition);
+    DogLog.log("Actual Rotate2 Motor Position", getRotateClimb2Position());
+    DogLog.log("Actual Rotate2 Motor Current", rotateClimb2Motor.getSupplyCurrent().getValueAsDouble());
+    */
   }
 
 //=======================================================
@@ -200,21 +230,7 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
-    /* Temporary - loop overruns
-    DogLog.log("Current Climber Command", getCurrentCommandName());
-    DogLog.log("Desired Lift Motor Position", desiredLiftMotorPosition);
-    DogLog.log("Actual Lift Motor Position", getLiftClimbPosition());
-    DogLog.log("Actual Lift Motor Current", liftClimbMotor.getSupplyCurrent().getValueAsDouble());
-    */
-
-    // DogLog.log("Desired Rotate1 Motor Position", desiredRotate1MotorPosition);
-    // DogLog.log("Actual Rotate1 Motor Position", getRotateClimb1Position());
-    // DogLog.log("Actual Rotate1 Motor Current", rotateClimb1Motor.getSupplyCurrent().getValueAsDouble());
-
-    // DogLog.log("Desired Rotate2 Motor Position", desiredRotate2MotorPosition);
-    // DogLog.log("Actual Rotate2 Motor Position", getRotateClimb2Position());
-    // DogLog.log("Actual Rotate2 Motor Current", rotateClimb2Motor.getSupplyCurrent().getValueAsDouble());
+    this.log(LogLevel.NONE);
   }
 
   @Override
