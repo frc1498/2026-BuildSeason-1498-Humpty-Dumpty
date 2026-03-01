@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.HopperConfig;
 import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.HopperConstants;
 //import dev.doglog.DogLog;
 
@@ -87,6 +89,25 @@ public class Hopper extends SubsystemBase {
       // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
+  /**
+   * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+   * @param logLevel - The level of logging to enable.
+   */
+  private void log(MotorEnableConstants.LogLevel logLevel) {
+    switch (logLevel) {
+      case NONE:
+        break;
+      case FULL:
+        DogLog.log("Desired Hopper Position", desiredPosition);
+        DogLog.log("Actual Hopper Position", hopperMotor.getPosition().getValueAsDouble());
+        DogLog.log("Hopper Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
+        DogLog.log("Current Hopper Command", getCurrentCommandName());
+        break;
+      default:
+        break;
+    }
+  }
+
 //=================Public Methods=========================
   public Command hopperExtend() {
     return run(
@@ -123,12 +144,7 @@ public class Hopper extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    /* Temporary - loop overruns
-    DogLog.log("Desired Hopper Position", desiredPosition);
-    DogLog.log("Actual Hopper Position", hopperMotor.getPosition().getValueAsDouble());
-    DogLog.log("Hopper Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
-    DogLog.log("Current Hopper Command", getCurrentCommandName());
-    */
+    this.log(LogLevel.NONE);
   }
 
   @Override

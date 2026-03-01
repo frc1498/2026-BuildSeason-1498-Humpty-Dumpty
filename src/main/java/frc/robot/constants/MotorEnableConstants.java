@@ -24,5 +24,15 @@ public final class MotorEnableConstants {
   public static final boolean kSpindexerMotorEnabled = true;
   public static final boolean kKickupMotorEnabled = true;
   public static final boolean kHoodMotorEnabled = true;
+
+  public static enum LogLevel {
+    NONE,
+    FULL
+  }
+
+  public static enum TelemetryLevel {
+    NONE,
+    FULL
+  }
   
 }
