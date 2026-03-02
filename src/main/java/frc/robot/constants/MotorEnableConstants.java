@@ -17,12 +17,22 @@ public final class MotorEnableConstants {
 
   public static final boolean kIntakeMotorEnabled = true;
   public static final boolean kHopperMotorEnabled = true;
-  public static final boolean kLiftClimbMotorEnabled = false;
+  public static final boolean kLiftClimbMotorEnabled = true;
   public static final boolean kTurretMotorEnabled = true;
   public static final boolean kShooterLeftMotorEnabled = true;
   public static final boolean kShooterRightMotorEnabled = true;
   public static final boolean kSpindexerMotorEnabled = true;
   public static final boolean kKickupMotorEnabled = true;
   public static final boolean kHoodMotorEnabled = true;
+
+  public static enum LogLevel {
+    NONE,
+    FULL
+  }
+
+  public static enum TelemetryLevel {
+    NONE,
+    FULL
+  }
   
 }

@@ -25,6 +25,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import dev.doglog.DogLog;
 //import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -42,6 +43,7 @@ import frc.robot.sim.ShooterSim;
 
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.ShooterConstants.ShooterFault;
 
 /**
@@ -575,6 +577,21 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   /**
+   * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+   * @param logLevel - The level of logging to enable.
+   */
+  private void log(MotorEnableConstants.LogLevel logLevel) {
+    switch (logLevel) {
+      case NONE:
+        break;
+      case FULL:
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
    * Set the result of the last tuning shot.  True is successful, false is unsuccessful.
    * @param tuningShotSuccessful
    */
@@ -833,6 +850,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     // Every loop, update the odometry with the pose of the virtual target.
     this.targetingField.setRobotPose(this.currentTarget);
+    this.log(LogLevel.NONE);
   }
 
   @Override

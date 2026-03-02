@@ -23,23 +23,18 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import dev.doglog.DogLog;
 import dev.doglog.DogLogOptions;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -101,8 +96,7 @@ public class RobotContainer {
     public RobotContainer() {
         // Create DogLog
         DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
-        //DogLog.setPdh(new PowerDistribution());     // allows battery and pdp logging
-        DogLog.log("ExampleLog", "Hello world!");   // test log item
+        DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
         // Configure the trigger bindings
         configureBindings();
     }
@@ -205,14 +199,6 @@ public class RobotContainer {
         //Driver RTrigger: Shoot off
         //driver.rightTrigger(0.1).onTrue(move.stopShoot());
 
-
-
-        //Driver Select: Zero drivetrain
-        //driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
-
-        //Driver Start: Home the Climb System (low current, will break hooks!)
-        //driver.start().whileTrue(move.homeClimb());
-
         //======================Current Driving Commands=======================
         //Driver RBumper: Shoot  
         //driver.rightBumper().onTrue(move.startShootMedium()).OnFalse(move.stopShoot());
@@ -223,8 +209,30 @@ public class RobotContainer {
         //Driver LBumper Intake on  -Checked 2/26/26 ready for testing
         //driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
+        //Shoot medium
+        driver.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+
+        //Test agitate
+        driver.b().whileTrue(hopper.agitate()).onFalse(move.stopShoot());
+
+        //Hopper out and intake
+        driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        
+        //Reverse intake rollers
+        driver.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
+        //Agitate Hopper
+        driver.a().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
+
+        //Driver Select: Zero drivetrain
+        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+
+        //Driver Start: Home the Climb System (low current, will break hooks!)
+        driver.y().onTrue(move.zeroClimb());
+
         //===================================================
         //==================Operator Commands================
+        
         //===================================================
 
         //Operator POV Up
@@ -287,10 +295,10 @@ public class RobotContainer {
         //developer.x().onTrue(move.startShootMedium());
         //developer.a().onTrue(move.stopShoot());
 
-        // developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+        //developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
 
-        // developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-        // developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        //developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        //developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
         //Working on these
         //developer.y().onTrue(move.climbExtend());

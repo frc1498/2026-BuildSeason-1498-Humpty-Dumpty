@@ -31,6 +31,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
 import frc.robot.constants.VisionConstants.photonvision.Camera;
@@ -290,6 +292,25 @@ public class Vision extends SubsystemBase {
     }
 
     /**
+    * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+    * @param logLevel - The level of logging to enable.
+    */
+    private void log(MotorEnableConstants.LogLevel logLevel) {
+        switch (logLevel) {
+        case NONE:
+            break;
+        case FULL:
+            // Log Limelight pose estimate
+            DogLog.log("Vision/Limelight/X" , this.megaTag2.pose.getX());
+            DogLog.log("Vision/Limelight/Y" , this.megaTag2.pose.getY());
+            DogLog.log("Vision/Limelight/RotDeg" , this.megaTag2.pose.getRotation().getDegrees());
+            break;
+        default:
+            break;
+        }
+    }
+
+    /**
      * Calculates new standard deviations. This algorithm is a heuristic that creates dynamic standard deviations based on number of tags, estimation strategy, and distance from the tags.
      * @param camera
      * @param estimatedPose The estimated pose to guess the standard deviations for.
@@ -427,11 +448,7 @@ public class Vision extends SubsystemBase {
             this.cachedAreTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag2, 1);
             this.cachedIsLimelightPoseValid = this.isLimelightPoseValid(this.cachedMegaTag2);
             this.megaTag2 = this.cachedMegaTag2;
-            // Log Limelight pose estimate
-            Pose2d llPose = this.megaTag2.pose;
-            DogLog.log("Vision/Limelight/X" , llPose.getX());
-            DogLog.log("Vision/Limelight/Y" , llPose.getY());
-            DogLog.log("Vision/Limelight/RotDeg" , llPose.getRotation().getDegrees());
+            this.log(LogLevel.NONE);
         } else {
             // If the megaTag isn't valid, obviously no tags can be seen and the pose isn't valid.
             this.cachedAreTagsSeen = false;

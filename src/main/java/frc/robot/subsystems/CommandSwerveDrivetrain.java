@@ -34,7 +34,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -235,6 +236,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     /**
+     * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+     * @param logLevel - The level of logging to enable.
+     */
+    private void log(MotorEnableConstants.LogLevel logLevel) {
+        switch (logLevel) {
+        case NONE:
+            break;
+        case FULL:
+            /*
+            * Create and log CTRE pose estimate
+            */
+            Pose2d pose = getState().Pose;
+            DogLog.log("Pose/Robot/X", pose.getX());
+            DogLog.log("Pose/Robot/Y", pose.getY());
+            DogLog.log("Pose/Robot/RotDeg", pose.getRotation().getDegrees());
+            break;
+        default:
+            break;
+        }
+    }
+
+    /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
      * @param request Function returning the request to apply
@@ -305,13 +328,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
         }
 
-        /*
-         * Create and log CTRE pose estimate
-         */
-        Pose2d pose = getState().Pose;
-        DogLog.log("Pose/Robot/X", pose.getX());
-        DogLog.log("Pose/Robot/Y", pose.getY());
-        DogLog.log("Pose/Robot/RotDeg", pose.getRotation().getDegrees());
+        this.log(LogLevel.NONE);
     }
 
     private void startSimThread() {
