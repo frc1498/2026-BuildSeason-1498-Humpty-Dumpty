@@ -31,5 +31,8 @@
   "brModuleY": -0.273,
   "bumperOffsetX": 0.0,
   "bumperOffsetY": 0.0,
-  "robotFeatures": []
+  "robotFeatures": [
+    "{\"name\":\"rightCamera\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":0.279,\"y\":-0.3302},\"radius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}",
+    "{\"name\":\"leftCamera\",\"type\":\"circle\",\"data\":{\"center\":{\"x\":0.2794,\"y\":0.308},\"radius\":0.05,\"strokeWidth\":0.02,\"filled\":false}}"
+  ]
 }
