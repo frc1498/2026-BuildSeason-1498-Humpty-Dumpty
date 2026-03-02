@@ -73,10 +73,12 @@ public class RobotContainer {
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-
+    private double precisionDampener = 1.0; //This makes it sound just as cool as it sounded last year.  It's like a dampening field from Star Trek.  Que theremin music.
+    //On another note, this is actually just a speed and rotation limiter for the robot, in percent.
+    
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 5% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -116,9 +118,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampener,3)) * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampener,3)) * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * precisionDampener) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -145,9 +147,6 @@ public class RobotContainer {
         //driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         //driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // Reset the field-centric heading on left bumper press.
-        //driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
         drivetrain.registerTelemetry(logger::telemeterize);
 
         this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
@@ -160,18 +159,7 @@ public class RobotContainer {
         //===================================================
         //===================Driver Commands=================
         //===================================================
-
-        //Driver POV Up - Climb Hold (quick or otherwise, context sensitive)
-        /*
-        driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povUp().and(climber.isClimberReadyToClimb).onTrue(move.climbSequence());
-        */
-
-        //Driver POV Down - Climb Stop
-        /*driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().onTrue(move.stopClimb());
-        */
-
+          
         // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
         //driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
 
@@ -180,9 +168,6 @@ public class RobotContainer {
 
         //Driver POV Right: Autodrive Quick Climb Right
         //driver.povRight().onTrue(move.quickClimbRight());
-
-        //Driver X button: Empty Hopper / Slow shot / Hopper In
-        //driver.x().whileTrue(move.emptyHopper());
 
         //Driver Y button: Reverse spindexer and kickup
         /*
@@ -200,39 +185,37 @@ public class RobotContainer {
         //driver.rightTrigger(0.1).onTrue(move.stopShoot());
 
         //======================Current Driving Commands=======================
-        //Driver RBumper: Shoot  
-        //driver.rightBumper().onTrue(move.startShootMedium()).OnFalse(move.stopShoot());
-
-        //Driver LTrigger: Intake Reverse - Check 2/26/26 ready for testing
-        //driver.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
-
-        //Driver LBumper Intake on  -Checked 2/26/26 ready for testing
-        //driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-
-        //Shoot medium
-        driver.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
-
-        //Test agitate
-        driver.b().whileTrue(hopper.agitate()).onFalse(move.stopShoot());
-
-        //Hopper out and intake
-        driver.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        //Driver POV Up/Down - Auton Select (only in disabled)
+        driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povDown().onTrue(move.stopClimb());
         
-        //Reverse intake rollers
-        driver.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        //Driver RTrigger: Intake Reverse - Check 2/26/26 ready for testing
+        driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
-        //Agitate Hopper
-        driver.a().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
+        //Driver RBumper Intake on  -Checked 2/26/26 ready for testing
+        driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
-        //Driver Select: Zero drivetrain
+        //Driver LBumper Shoot medium
+        driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+
+        //Driver Start: Zero drivetrain
         driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
-        //Driver Start: Home the Climb System (low current, will break hooks!)
-        driver.y().onTrue(move.zeroClimb());
+        //Driver Back: Zero the Climb System
+        driver.x().onTrue(move.zeroClimb());
 
-        //===================================================
-        //==================Operator Commands================
+        //Driver back: Hopper Retract (this needs a timeout, and the intake should run)
+        //driver.back().onTrue(hopper.hopperRetract());
+
+        //Driver y: Climb Ready (check for turret interference with climber up, move the hood to zero and lock it out)
+        //driver.y().onTrue(move.climbExtend());
+
+        //Driver a: Climb Retract
+        //driver.a().onTrue(move.climbRetract());
         
+        //===================================================
+        //==================Operator Commands================ 
         //===================================================
 
         //Operator POV Up
@@ -279,38 +262,7 @@ public class RobotContainer {
 
         //===================================================
         //==================Developer Commands===============
-        //===================================================
-        //These are tested and work
-        //developer.start().onTrue(hopper.hopperExtend());
-        //developer.back().onTrue(hopper.hopperRetract());
-
-        //developer.x().onTrue(move.turretCounterClockwise45Degrees());
-        //developer.y().onTrue(move.turret0Degrees());
-        //developer.b().onTrue(move.turretClockWise45Degrees());
-
-        //developer.y().onTrue(move.hood30());
-        //developer.a().onTrue(move.hood0());
-
-        //developer.y().onTrue(move.startShootFast());
-        //developer.x().onTrue(move.startShootMedium());
-        //developer.a().onTrue(move.stopShoot());
-
-        //developer.rightBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
-
-        //developer.leftBumper().onTrue(move.intake()).onFalse(move.stopIntake());
-        //developer.leftTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
-
-        //Working on these
-        //developer.y().onTrue(move.climbExtend());
-        //developer.a().onTrue(move.climbRetract());
-
-        //developer.x().onTrue(move.primeClimb());
-
-        //developer.b().onTrue(climber.zeroRoutine());  //Which button is the back button!!!!
-
-        // developer.leftBumper().and(hopper.isHopperExtended).whileTrue(intake.intakeSuck()).onFalse(intake.intakeStop());
-        // developer.rightBumper().and(hopper.isHopperExtended).whileTrue(intake.intakeSpit()).onFalse(intake.intakeStop());
-        // hopper.isHopperExtended.whileFalse(intake.intakeStop());
+        //===================================================        
         // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
         //developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
 
