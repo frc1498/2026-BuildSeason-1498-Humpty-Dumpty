@@ -26,6 +26,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.math.filter.LinearFilter;
 //import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -122,6 +123,8 @@ public class Shooter extends SubsystemBase {
   public DutyCycleOut spindexerDutyCycle;
 
   private double simTime;
+
+  private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
 
   //boolean turretZeroed;
   boolean requestShoot;
@@ -308,8 +311,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
 
   // Publish subsystem data to SmartDashboard.
   SmartDashboard.putData("Shooter", this);
-  // SmartDashboard.putData("Shooter/Pose", this.targetingField);
-  // SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
+  //SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
   turretDutyCycle = new DutyCycleOut(0.0);
@@ -321,6 +324,9 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
 
   this.hoodMotor.setPosition(0);
   this.turretMotor.setPosition(0);
+
+  this.setHoodAngle(0);
+  this.setTurretAngle(0);
 
   // Initialize the tuning parameters.
   // This is not for PID tuning, but instead for interpolation tuning.
@@ -397,6 +403,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void stopShooting() {
     this.shooterLeftMotor.setControl(this.shooterDutyCycle.withOutput(0));
     this.shooterRightMotor.setControl(this.shooterDutyCycle.withOutput(0));
+    this.desiredShooterVelocity=0;
   }
 
   private double getHoodRotations() {
@@ -486,7 +493,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * @return - The current velocity of the first shooter motor, in rotations per second.
    */
   private double getShooterVelocity() {
-    return this.shooterRightMotor.getVelocity().getValueAsDouble();
+    double velocity = velocityFilter.calculate(this.shooterRightMotor.getVelocity().getValueAsDouble());
+    return velocity;
   }
 
   /**
@@ -697,7 +705,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   //====================Public Methods=====================
   //=======================Public Spindexer Commands==================
   public Command stopSpindexer() {
-    return runOnce(() -> {this.stopSpindex();}).until(isSpindexerStopped);
+    return run(() -> {this.stopSpindex();}).until(isSpindexerStopped);
   }
 
   public Command reverseSpindexer() {

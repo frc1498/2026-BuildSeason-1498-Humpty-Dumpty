@@ -200,19 +200,19 @@ public class RobotContainer {
         driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
 
         //Driver Start: Zero drivetrain
-        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+        driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
         //Driver Back: Zero the Climb System
         driver.x().onTrue(move.zeroClimb());
 
         //Driver back: Hopper Retract (this needs a timeout, and the intake should run)
-        //driver.back().onTrue(hopper.hopperRetract());
+        driver.start().onTrue(move.hopperRetract());
 
-        //Driver y: Climb Ready (check for turret interference with climber up, move the hood to zero and lock it out)
-        //driver.y().onTrue(move.climbExtend());
+        //Driver y: Climb Ready 
+        driver.y().onTrue(move.climbExtend());
 
         //Driver a: Climb Retract
-        //driver.a().onTrue(move.climbRetract());
+        driver.a().onTrue(move.climbRetract());
         
         //===================================================
         //==================Operator Commands================ 
