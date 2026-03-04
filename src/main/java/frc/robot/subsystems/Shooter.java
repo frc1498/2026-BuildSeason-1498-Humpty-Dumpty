@@ -29,6 +29,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.LinearFilter;
 //import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -311,7 +312,7 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
 
   // Publish subsystem data to SmartDashboard.
   SmartDashboard.putData("Shooter", this);
-  //SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  SmartDashboard.putData("Shooter/Pose", this.targetingField);
   //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
@@ -768,6 +769,17 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     .until(isTurretAtPosition);
   }
 
+  /**
+   * Development command.  Use this command to set the turret angle based on where the robot thinks the blue hub is, and where the robot thinks it is.
+   * IMPORTANT - This assumes the turret faces the intake (the back of the robot) when it is zeroed.  If this is not true, remove the unaryMinus() method from the virtualTurretAngle calculation.
+   * ALSO IMPORTANT - Consider keeping the allowable range for turret angle low while testing this.
+   * @return
+   */
+  public Command turretTrackToBlueHub() {
+    return runOnce(() -> {this.setTurretAngle(this.virtualTurretAngle);})
+      .until(this.isTurretAtPosition);
+  }
+
   //=====================Public Hood Commands================
   public Command hood0() {
     return runOnce(() -> {this.setHoodAngle(0);});
@@ -817,6 +829,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Current Spindexer Velocity", () -> {return this.currentSpindexerVelocity;}, null);
     builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
     builder.addBooleanProperty("Spindexer At Velocity", () -> {return this.spindexerAtVelocity;},null);
+    builder.addDoubleProperty("Debug Turret Angle", () -> {return this.virtualTurretAngle;}, null);
 
     /*  Overruning sendable loop
     builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
@@ -854,10 +867,11 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
-    this.virtualTurretAngle = this.currentTarget.minus(this.swerveStateSupplier.get().Pose).getTranslation().getAngle().getDegrees();
+    this.virtualTurretAngle = ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose).getTranslation().unaryMinus().getAngle().getDegrees();
 
     // Every loop, update the odometry with the pose of the virtual target.
-    this.targetingField.setRobotPose(this.currentTarget);
+    this.targetingField.getObject("Hub Target").setPose(ShooterConstants.kBlueHubCenter);
+    this.targetingField.getObject("Angler").setPose(0.0,0.0,Rotation2d.kZero);
     this.log(LogLevel.NONE);
   }
 
