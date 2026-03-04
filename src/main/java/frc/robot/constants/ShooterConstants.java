@@ -36,8 +36,8 @@ public class ShooterConstants {
   public static final double kHoodSafeExtend = 30.0;  //In degrees.  May be able to go slightly higher
   public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home
   
-  public static final double kTurretSafeClockwise = 100.0;  //May be able to go further.  + is counterclockwise
-  public static final double kTurretSafeCounterClockwise = -100.0;  //May be able to go further. - is clockwise
+  public static final double kTurretSafeClockwise = 45.0;  //May be able to go further.  + is counterclockwise
+  public static final double kTurretSafeCounterClockwise = -45;  //May be able to go further. - is clockwise
 
   public static final double kShooterMaxSpeed = 100.0;
   public static final double kShooterMinSpeed = -100.0;
@@ -81,8 +81,8 @@ public class ShooterConstants {
   public static final double kSpindexerGearing = 3.0;
   public static final double kKickupGearing = 5.0;
 
-  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(180.0));
-  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, new Rotation2d(0.0));
+  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0));
+  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
 
   public static final InterpolatingDoubleTreeMap hoodAngleMap = new InterpolatingDoubleTreeMap(); // First column is distance (in meters), second column is angle (in degrees).
   public static final InterpolatingDoubleTreeMap flywheelSpeedMap = new InterpolatingDoubleTreeMap(); // First column is distance (in meters), second column is speed (in rotations per minute).
