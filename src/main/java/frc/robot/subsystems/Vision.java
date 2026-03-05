@@ -419,11 +419,11 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty("Command", this::getCurrentCommandName, null);
-        builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
-        builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
-        builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
-        builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
+        //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+        //builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
+        //builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
+        //builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
+        //builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
     }
 
     @Override
@@ -464,8 +464,8 @@ public class Vision extends SubsystemBase {
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
-        visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
-        visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
+        //visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
+        //visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
 
         // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
         /* Optional<EstimatedRobotPose> visionEst = Optional.empty();

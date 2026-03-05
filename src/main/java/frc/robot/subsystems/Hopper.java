@@ -156,12 +156,12 @@ public class Hopper extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
-    builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
+    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    //builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
+    //builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
     builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
     builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
-    builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
+    //builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
   }
 
   @Override

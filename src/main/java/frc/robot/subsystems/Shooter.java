@@ -327,6 +327,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
 
   this.setHoodAngle(0);
   this.setTurretAngle(0);
+  this.desiredShooterVelocity=-10;
+  
 
   // Initialize the tuning parameters.
   // This is not for PID tuning, but instead for interpolation tuning.
@@ -530,6 +532,11 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return this.kickupMotor.getVelocity().getValueAsDouble();
   }
 
+  private void stopKick(){
+    kickupMotor.setControl(kickupDutyCycle.withOutput(ShooterConstants.kKickupZeroDutyCycle));
+  }
+
+
   //===========================Spindexer Private Methods=====================================
 
   /**
@@ -544,6 +551,16 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     if (MotorEnableConstants.kSpindexerMotorEnabled) {
       this.spindexerMotor.setControl(this.spindexerMotorMode.withVelocity(this.desiredSpindexerVelocity));
     }
+  }
+
+  private boolean isSpindexerAtSpeed () {
+      return ((spindexerMotor.getVelocity().getValueAsDouble() < (this.desiredSpindexerVelocity + ShooterConstants.kSpindexerVelocityDeadband)) 
+    && (spindexerMotor.getVelocity().getValueAsDouble() > (this.desiredSpindexerVelocity - ShooterConstants.kSpindexerVelocityDeadband)));
+  }
+
+  private void stopSpindex(){
+    this.desiredSpindexerVelocity=0;
+    spindexerMotor.setControl(spindexerDutyCycle.withOutput(ShooterConstants.kSpindexerZeroDutyCycle));
   }
 
   /**
@@ -682,14 +699,6 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     }).withName("setSpindeerAndKickup: " + state.name());
   }
  
-  private void stopKick(){
-    kickupMotor.setControl(kickupDutyCycle.withOutput(ShooterConstants.kKickupZeroDutyCycle));
-  }
-
-  private void stopSpindex(){
-    spindexerMotor.setControl(spindexerDutyCycle.withOutput(ShooterConstants.kSpindexerZeroDutyCycle));
-  }
-
   private void requestStopShooting() {
     requestShoot=false;
   }
@@ -697,15 +706,33 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void requestStartShooting() {
     requestShoot=true;
   }
-
+  /*
   private boolean isSpindexerStopped() {
     return (spindexerMotor.getVelocity().getValueAsDouble() < ShooterConstants.kSpindexerStoppedVelocityTolerance);
+  }
+  */
+
+
+
+  private boolean isShooterAtSpeed() {
+    return ((this.getShooterVelocity() < (this.desiredShooterVelocity + ShooterConstants.kShooterVelocityDeadband)) 
+    && (this.getShooterVelocity() > (this.desiredShooterVelocity - ShooterConstants.kShooterVelocityDeadband)));
+  }
+
+  private boolean isTurretAtPosition() {
+    return ((this.getTurretAngle() < (this.desiredTurretAngle + ShooterConstants.kTurretPositionDeadband)) 
+    && (this.getTurretAngle() > (this.desiredTurretAngle - ShooterConstants.kTurretPositionDeadband)));
+  }
+
+  private boolean isHoodAtPosition() {
+    return ((this.getHoodAngle() < (this.desiredHoodAngle + ShooterConstants.kHoodPositionDeadband)) 
+    && (this.getHoodAngle() > (this.desiredHoodAngle - ShooterConstants.kHoodPositionDeadband)));
   }
 
   //====================Public Methods=====================
   //=======================Public Spindexer Commands==================
   public Command stopSpindexer() {
-    return run(() -> {this.stopSpindex();}).until(isSpindexerStopped);
+    return run(() -> {this.stopSpindex();}).until(isSpindexerAtVelocity);
   }
 
   public Command reverseSpindexer() {
@@ -783,17 +810,17 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   public Command setSpindexerAndKickupIdle() {return this.setSpindexerAndKickup(ShooterState.IDLE);};
 
   //======================Triggers=========================
-  public Trigger isHoodAtPosition = new Trigger(() -> {return this.hoodAtPosition;});
-  public Trigger isTurretAtPosition = new Trigger(() -> {return this.turretAtPosition;});
-  public Trigger isShooterAtVelocity = new Trigger(() -> {return this.shooterAtVelocity;});
-  public Trigger isSpindexerAtVelocity = new Trigger(() -> {return this.spindexerAtVelocity;});
+  public Trigger isHoodAtPosition = new Trigger(() -> {return isHoodAtPosition();});
+  public Trigger isTurretAtPosition = new Trigger(() -> {return isTurretAtPosition();});
+  public Trigger isShooterAtVelocity = new Trigger(() -> {return isShooterAtSpeed();});
+  public Trigger isSpindexerAtVelocity = new Trigger(() -> {return isSpindexerAtSpeed();});
   public Trigger isReadyToFire = new Trigger(() -> {return this.readyToFire;});
-  public Trigger isSpindexerStopped = new Trigger(() -> {return this.isSpindexerStopped();});
+  //public Trigger isSpindexerStopped = new Trigger(() -> {return this.isSpindexerStopped();});
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
+    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    //builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
     //builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
     
     /* Issues with too many sendables overruning loop.  Removed these for now to test
@@ -802,6 +829,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Virtual Turret Angle", () -> {return this.virtualTurretAngle;}, null);
     */
 
+    /*
     builder.addDoubleProperty("Desired Hood Angle", () -> {return this.desiredHoodAngle;}, null);
     builder.addDoubleProperty("Desired Turret Angle", () -> {return this.desiredTurretAngle;}, null);
     builder.addDoubleProperty("Desired Hood Motor Rotations", () -> {return this.desiredHoodMotorRotations;}, null);
@@ -815,8 +843,12 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
     builder.addDoubleProperty("Current Shooter Velocity", () -> {return this.currentShooterVelocity;}, null);
     builder.addDoubleProperty("Current Spindexer Velocity", () -> {return this.currentSpindexerVelocity;}, null);
+    */
+
     builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
     builder.addBooleanProperty("Spindexer At Velocity", () -> {return this.spindexerAtVelocity;},null);
+    
+
 
     /*  Overruning sendable loop
     builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
@@ -831,10 +863,10 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   public void periodic() {
     // This method will be called once per scheduler run
     // Evaluate boolean conditions for triggers.
-    this.hoodAtPosition = this.atSetpoint(this.desiredHoodAngle, this.getHoodAngle(), ShooterConstants.kHoodPositionDeadband);
-    this.turretAtPosition = this.atSetpoint(this.desiredTurretAngle, this.getTurretAngle(), ShooterConstants.kTurretPositionDeadband);
-    this.shooterAtVelocity = this.atSetpoint(this.desiredShooterVelocity, this.getShooterVelocity(), ShooterConstants.kShooterVelocityDeadband);
-    this.spindexerAtVelocity = this.atSetpoint(this.desiredSpindexerVelocity, this.getSpindexerVelocity(), ShooterConstants.kSpindexerVelocityDeadband);
+    //this.hoodAtPosition = this.atSetpoint(this.desiredHoodAngle, this.getHoodAngle(), ShooterConstants.kHoodPositionDeadband);
+    //this.turretAtPosition = this.atSetpoint(this.desiredTurretAngle, this.getTurretAngle(), ShooterConstants.kTurretPositionDeadband);
+    //this.shooterAtVelocity = this.atSetpoint(this.desiredShooterVelocity, this.getShooterVelocity(), ShooterConstants.kShooterVelocityDeadband);
+    //this.spindexerAtVelocity = this.atSetpoint(this.desiredSpindexerVelocity, this.getSpindexerVelocity(), ShooterConstants.kSpindexerVelocityDeadband);
 
     this.currentHoodAngle = this.getHoodAngle();
     this.currentHoodRotations = this.getHoodRotations();
