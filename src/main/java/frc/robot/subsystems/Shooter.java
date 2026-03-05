@@ -441,7 +441,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.desiredTurretMotorRotations = this.desiredTurretAngle / 360 * ShooterConstants.kTurretGearRatio;
 
     if (MotorEnableConstants.kTurretMotorEnabled) {     // Use this constant to enable or disable motor output for debugging.
-      if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeCounterClockwise, ShooterConstants.kTurretSafeClockwise)) {
+      if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeClockwise, ShooterConstants.kTurretSafeCounterClockwise)) {
         this.turretMotor.setControl(this.turretMotorMode.withPosition(this.desiredTurretMotorRotations));
       } else {
         // Log a fault with DogLog if the desired turret position was out of range.
@@ -618,6 +618,24 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     DogLog.log("Tuning Flywheel Velocity", this.tuningFlywheelVelocity);
     DogLog.log("Shot Successful", this.tuningShotSuccessful);
     */
+  }
+
+  /**
+   * Converts the desired angle of the turret (-180 to 180) to an angle that the motor can use.
+   * If the counterclockwise limit is greater than 180.0, this will convert a negative desired angle to an equivalent positive angle for use by the setTurret method.
+   * @return
+   */
+  private double convertTurretOverturn(double desiredTurretAngle) {
+    // WPI rotation wraps at 180 to -180, but the turret motor expects rotations.
+    // If the angle determined goes from + to - at this point, the motor should accept it when converted down to a rotation.
+    // The amount that the turret can turn past 180 was calculated in the constants file.
+    double negativeLimit = -180.0 + ShooterConstants.kTurretOverturn;
+
+    // If the desired angle is greater than 180 (which is actually -180 or less in this reference) but less than the overturn, add the difference to 180 for the 'turret motor friendly' angle.
+    if(this.isSetpointWithinSafetyRange(desiredTurretAngle, -180.0, negativeLimit)) {
+      return 180.0 + (180.0 - Math.abs(desiredTurretAngle));
+    }
+    else return desiredTurretAngle;
   }
 
   //=========================================================
@@ -867,7 +885,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
-    this.virtualTurretAngle = ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose).getTranslation().unaryMinus().getAngle().getDegrees();
+    this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose).getTranslation().getAngle().getDegrees());
 
     // Every loop, update the odometry with the pose of the virtual target.
     this.targetingField.getObject("Hub Target").setPose(ShooterConstants.kBlueHubCenter);
