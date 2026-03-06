@@ -212,10 +212,10 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
-    builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
-    builder.addBooleanProperty("Climber Latched", () -> {return isLiftClimberCurrentLimitLatched;}, null);
+    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    //builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
+    //builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
+    //builder.addBooleanProperty("Climber Latched", () -> {return isLiftClimberCurrentLimitLatched;}, null);
   }  
 
   @Override

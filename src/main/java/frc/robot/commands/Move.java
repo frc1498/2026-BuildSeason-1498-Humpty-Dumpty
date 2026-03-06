@@ -60,9 +60,8 @@ public class Move {
     //================================Hopper================================
     
     public Command hopperRetract() {  //Reviewed 2/21/26 should work now
-        return Commands.sequence(Commands.deadline(intake.intakeSuck(),
-        hopper.hopperRetract()).withTimeout(1.5),
-        intake.intakeStop());
+        return Commands.deadline(hopper.hopperRetract(),intake.intakeSuck()).
+        andThen(intake.intakeStop());
     }
 
     public Command hopperExtend() {  //Reviewed 2/21/26 should work now
@@ -155,10 +154,11 @@ public class Move {
     }
 
     public Command startShootMedium() {
-        //return shooter.startShootMedium();
-        return Commands.sequence(shooter.hood30(), shooter.startShootMedium(), shooter.forwardKickup(),
-            shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()));
-        
+       return Commands.sequence(shooter.hood30(),
+            shooter.startShootMedium()).andThen
+            (shooter.forwardKickup(),
+            shooter.forwardSpindexer()).andThen(
+            hopper.agitate().alongWith(intake.intakeSuck()));
     }
 
     public Command turretClockWise45Degrees(){
