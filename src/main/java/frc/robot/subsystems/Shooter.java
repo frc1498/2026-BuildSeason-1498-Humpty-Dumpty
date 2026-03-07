@@ -769,6 +769,13 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return run(() -> {this.setShooterVelocity(80);}).until(isShooterAtVelocity);
   }
 
+  /**
+   * Set the shooter velocity based on the distance to the hub.
+   * @return
+   */
+  public Command autoShoot() {
+    return runOnce(() -> {this.setShooterVelocity(this.virtualFlywheelVelocity);});
+  }
   //===================Public Turret Commands=====================
   public Command turretCounterClockwise45() {
     return runOnce(() -> {this.setTurretAngle(45);});
@@ -798,6 +805,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
       .until(this.isTurretAtPosition);
   }
 
+  /**
+   * Set the turret based on the angle to the hub.
+   * @return
+   */
+  public Command autoTurret() {
+    return runOnce(() -> {this.setTurretAngle(this.virtualTurretAngle);});
+  }
+
   //=====================Public Hood Commands================
   public Command hood0() {
     return runOnce(() -> {this.setHoodAngle(0);});
@@ -805,6 +820,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
   public Command hood30() {
     return runOnce(() -> {this.setHoodAngle(30);});
+  }
+
+  /**
+   * Set the hood based on the distance to the hub.
+   * @return
+   */
+  public Command autoHood() {
+    return runOnce(() -> {this.setHoodAngle(this.virtualHoodAngle);});
   }
 
   //=====================Public State Commands===============
@@ -877,13 +900,13 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, ShooterConstants.kBlueHubCenter);
-    this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose, ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
+    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
+    this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
     this.distanceToVirtualTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, this.currentTarget);
 
-    this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
-    this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
+    this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
+    this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
     this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
