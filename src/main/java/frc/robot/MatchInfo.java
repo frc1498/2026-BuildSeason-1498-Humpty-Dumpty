@@ -61,8 +61,8 @@ public class MatchInfo {
     }
 
     /**
-     * Determine which scoring hub can be used.
-     * @return
+     * Determine which alliance hub is active.
+     * @return Alliance
      */
     public DriverStation.Alliance getCurrentScoringHub() {
         // During the transition shift or the end game, any hub can be scored in, so return the current robot alliance.
@@ -70,7 +70,7 @@ public class MatchInfo {
             return DriverStation.getAlliance().get();
         }
         else if ((DriverStation.getMatchTime() <= 129.98) && (DriverStation.getMatchTime() >= 105.0)) { //shift 1 - 2:10 - 1:45
-            return this.getInitialScoringHub();
+            return getInitialScoringHub();
         }
         else if ((DriverStation.getMatchTime() <= 104.98) && (DriverStation.getMatchTime() >= 80.0)) { //shift 2 - 1:45 - 1:20
             if (this.getInitialScoringHub() == DriverStation.Alliance.Blue) {
@@ -81,7 +81,8 @@ public class MatchInfo {
             }
         }
         else if ((DriverStation.getMatchTime() <= 79.98) && (DriverStation.getMatchTime() >= 55.0)) { //shift 3 - 1:20 - 0:55
-            return this.getInitialScoringHub(); //the active hub in shift 3 == active hub from shift 1
+            //the active hub in shift 3 == active hub from shift 1
+            return getInitialScoringHub();
         }
         else if ((DriverStation.getMatchTime() <= 54.98) && (DriverStation.getMatchTime() >= 30.0)) { //shift 4 - 0:55 - 0:30
             if (this.getInitialScoringHub() == DriverStation.Alliance.Blue) {
@@ -93,6 +94,19 @@ public class MatchInfo {
         }
         else {                                                                                     //endgame - 0:30 - 0:00
             return DriverStation.getAlliance().get();
+        }
+    }
+
+    /**
+     * Determine if our hub is active.
+     * @return
+     */
+    public String isCurrentHubActive() {
+        if (getCurrentScoringHub() == DriverStation.getAlliance().get()) {
+            return "Hub is Active";
+        }
+        else {
+            return "Hub is NOT Active";
         }
     }
 
@@ -124,10 +138,10 @@ public class MatchInfo {
         }
 
         if (isNextFlag == true) {
-            return "true";
+            return "Hub will be active";
         }
         else {
-            return "false";
+            return "Hub will be inactive";
         }
      }
 }

@@ -119,7 +119,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    SmartDashboard.putString("Active Hub", MatchInfo.getInstance().getCurrentScoringHub().toString());
+    SmartDashboard.putString("Is Hub Active?", MatchInfo.getInstance().isCurrentHubActive());
     SmartDashboard.putString("Next Hub Active?", MatchInfo.getInstance().isNextScoringHubActive(5));
   }
 
