@@ -31,17 +31,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
+import frc.robot.constants.VisionConstants.photonvision.Camera;
 
 public class Vision extends SubsystemBase {
     
     public CommandSwerveDrivetrain drivetrain;
+    private Supplier<SwerveDriveState> swerveStateSupplier;
     public poseEstimateConsumer poseConsumer;
 
     public LimelightHelpers.PoseEstimate megaTag2 = new PoseEstimate();
 
-    public Field2d limelightField = new Field2d();
+    public Field2d visionField = new Field2d();
 
     public Matrix<N3, N1> currentStdDevs = limelight.kMegaTag2StdDevs;
 
@@ -53,6 +57,8 @@ public class Vision extends SubsystemBase {
     
     private LimelightHelpers.PoseEstimate cachedMegaTag2 = new PoseEstimate();
     private Pose2d testPose = new Pose2d(5.0, 5.0, new Rotation2d(90.0));
+    private Pose2d leftPhotonPose = new Pose2d(0, 0, new Rotation2d(0.0));
+    private Pose2d rightPhotonPose = new Pose2d(0, 0, new Rotation2d(0.0));
     private double cachedRobotHeading = 0.0;
     private double cachedRobotRotationRate = 0.0;
     private boolean cachedMegaTagValid = false;
@@ -69,6 +75,7 @@ public class Vision extends SubsystemBase {
      */
     public Vision(CommandSwerveDrivetrain drivetrain, Supplier<SwerveDriveState> swerveDriveState, poseEstimateConsumer poseConsumer) {
         this.drivetrain = drivetrain;
+        this.swerveStateSupplier = swerveDriveState;
         
         this.poseConsumer = poseConsumer;
         //this.poseConsumer = this.drivetrain::addVisionMeasurement;
@@ -82,7 +89,7 @@ public class Vision extends SubsystemBase {
         rightCamera = new PhotonCamera(photonvision.kRightName);
 
         SmartDashboard.putData("Vision", this);
-        SmartDashboard.putData("Vision/Pose", this.limelightField);
+        SmartDashboard.putData("Vision/Pose", this.visionField);
     }
 
     /**
@@ -126,7 +133,27 @@ public class Vision extends SubsystemBase {
      * @return
      */
     private boolean isPhotonEstimateValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
-        return camera.estimateCoprocMultiTagPose(result).isEmpty();
+        return true;
+        // Commenting out, because I suspect this might not be the best way to check if the estimate is valid.
+        // Besides, the photonvision processes poses in a different way.
+        // I think I should be checking if the *result* is valid.
+        //return !camera.estimateCoprocMultiTagPose(result).isEmpty();
+    }
+
+    /**
+     * Checks every target within a result and returns true if the highest measured ambiguity is less than the threshold passed into the method.
+     * @param targets
+     * @param ambiguityThreshold
+     * @return
+     */
+    private boolean isResultAmbiguityBelowThreshold(List<PhotonTrackedTarget> targets, double ambiguityThreshold) {
+        double highestAmbiguity = 0;
+        for (var tgt : targets) {
+            if (tgt.getPoseAmbiguity() >= highestAmbiguity) {
+                highestAmbiguity = tgt.getPoseAmbiguity();
+            }
+        }
+        return highestAmbiguity <= ambiguityThreshold;
     }
 
     /**
@@ -180,9 +207,9 @@ public class Vision extends SubsystemBase {
      * @param result
      * @return
      */
-    private boolean isPhotonvisionPoseValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
+    private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
         //3.3 radian per second is currently 75% of our maximum rotational speed.
-        return this.isPhotonEstimateValid(camera, result) && this.arePhotonTagsSeen(result, 1) && this.isRobotSlowEnough(3.3);
+        return this.arePhotonTagsSeen(result, 1) /*&& this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10)*/ && this.isRobotSlowEnough(3.3);
     }
 
     /**
@@ -190,7 +217,7 @@ public class Vision extends SubsystemBase {
      * The current heading is based on the robot pose, because the pigeon yaw doesn't wrap around 0 - 360 degrees.
      */
     private double getRobotHeading() {
-        return this.drivetrain.getState().Pose.getRotation().getDegrees();
+        return this.swerveStateSupplier.get().Pose.getRotation().getDegrees();
     }
 
     /**
@@ -198,7 +225,7 @@ public class Vision extends SubsystemBase {
      * @return
      */
     private double getRobotRotationRate() {
-        return Math.abs(this.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+        return Math.abs(this.swerveStateSupplier.get().Speeds.omegaRadiansPerSecond);
     }
 
     /**
@@ -214,9 +241,18 @@ public class Vision extends SubsystemBase {
      * @param camera
      * @return
      */
-    private Pose2d getCurrentLeftPhotonPose(PhotonPoseEstimator camera) {
-        return this.megaTag2.pose;
+    private Pose2d getCurrentLeftPhotonPose() {
+        return this.leftPhotonPose;
     }
+
+    /**
+     * Return the pose component of the current right swerve camera estimate.
+     * @param camera
+     * @return
+     */
+    private Pose2d getCurrentRightPhotonPose() {
+        return this.rightPhotonPose;
+    }    
 
     /**
      * Process the latest camera results from the photon camera.
@@ -224,21 +260,54 @@ public class Vision extends SubsystemBase {
      * @param photonResults
      * @param photonEstimator
      */
-    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator) {
+    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator, photonvision.Camera photonCamera) {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : photonResults) {
-            visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
-            }
-            this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
-            visionEst.ifPresent( est -> {
-                var stddev = getEstimationStdDevs();
-                poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
-            });
+            // Check if the pose is valid, and ignore everything if it isn't.
+            if (this.isPhotonvisionResultValid(photonEstimator, result)) {
+                visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
+                if (visionEst.isEmpty()) {
+                    visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
+                }
+                this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
 
-            this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
+                //Don't bother if the ambiguity is above a threshold.
+                visionEst.ifPresent( est -> {
+                    var stddev = getEstimationStdDevs();
+                    poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
+                    switch (photonCamera) {
+                    case SWERVE_LEFT_CAMERA:
+                        this.leftPhotonPose = est.estimatedPose.toPose2d();
+                    break;
+                    case SWERVE_RIGHT_CAMERA:
+                        this.rightPhotonPose = est.estimatedPose.toPose2d();
+                    break;
+                    default:
+                    break;
+                }
+                });
+            }
+            // this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
         } 
+    }
+
+    /**
+    * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
+    * @param logLevel - The level of logging to enable.
+    */
+    private void log(MotorEnableConstants.LogLevel logLevel) {
+        switch (logLevel) {
+        case NONE:
+            break;
+        case FULL:
+            // Log Limelight pose estimate
+            DogLog.log("Vision/Limelight/X" , this.megaTag2.pose.getX());
+            DogLog.log("Vision/Limelight/Y" , this.megaTag2.pose.getY());
+            DogLog.log("Vision/Limelight/RotDeg" , this.megaTag2.pose.getRotation().getDegrees());
+            break;
+        default:
+            break;
+        }
     }
 
     /**
@@ -350,11 +419,11 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty("Command", this::getCurrentCommandName, null);
-        builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
-        builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
-        builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
-        builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
+        //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+        //builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
+        //builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
+        //builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
+        //builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
     }
 
     @Override
@@ -366,6 +435,10 @@ public class Vision extends SubsystemBase {
         this.cachedRobotHeading = this.getRobotHeading();
         this.cachedRobotRotationRate = this.getRobotRotationRate();
         this.cachedIsRobotSlowEnough = this.isRobotSlowEnough(3.3);
+
+        // Every loop, seed the limelight IMU with the current robot heading.
+        LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
+        
         this.cachedMegaTag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.kName);
         this.cachedMegaTagValid = this.isMegaTagValid(this.cachedMegaTag2);
 
@@ -375,11 +448,7 @@ public class Vision extends SubsystemBase {
             this.cachedAreTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag2, 1);
             this.cachedIsLimelightPoseValid = this.isLimelightPoseValid(this.cachedMegaTag2);
             this.megaTag2 = this.cachedMegaTag2;
-            // Log Limelight pose estimate
-            Pose2d llPose = this.megaTag2.pose;
-            DogLog.log("Vision/Limelight/X" , llPose.getX());
-            DogLog.log("Vision/Limelight/Y" , llPose.getY());
-            DogLog.log("Vision/Limelight/RotDeg" , llPose.getRotation().getDegrees());
+            this.log(LogLevel.NONE);
         } else {
             // If the megaTag isn't valid, obviously no tags can be seen and the pose isn't valid.
             this.cachedAreTagsSeen = false;
@@ -390,14 +459,16 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
-        // Every loop, seed the limelight IMU with the current robot heading.
-        LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
+        // this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
+        // this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
-        limelightField.setRobotPose(this.getCurrentLimelightPose());
+        visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
+        visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
+        visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
 
-        /* This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
+        // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
+        /* Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : leftCamera.getAllUnreadResults()) {
             visionEst = leftCameraEstimator.estimateCoprocMultiTagPose(result);
             if (visionEst.isEmpty()) {
@@ -406,8 +477,7 @@ public class Vision extends SubsystemBase {
             this.updateEstimationStdDevs(leftCameraEstimator, visionEst, result.getTargets());
 
             this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
-        }
-        */
+        } */
     }
 
     @Override
