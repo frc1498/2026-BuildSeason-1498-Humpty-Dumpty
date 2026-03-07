@@ -91,7 +91,7 @@ public class ShooterConstants {
   public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0));
   public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
 
-  public static final Transform2d kRobotToTurret = new Transform2d(new Translation2d(0.1381, -0.1143), new Rotation2d(0.0));
+  public static final Transform2d kRobotToTurret = new Transform2d(new Translation2d(0.1143, -0.1381), new Rotation2d(0.0));
   // 0.138112776225552 m X from center of robot.
   // -0.114300228600457 m Y from centrer of robot.
 
@@ -109,32 +109,32 @@ public class ShooterConstants {
     SPINDEXER_SETPOINT_OUT_OF_RANGE
   }
 
-  // None of these values are currently 'real'.  We need theoretical values for testing the algorithm.
   static {
-    hoodAngleMap.put(0.5, 75.0);
-    hoodAngleMap.put(1.0, 65.0);
-    hoodAngleMap.put(1.5, 50.0);
-    hoodAngleMap.put(2.0, 45.0);
-    hoodAngleMap.put(2.5, 35.0);
-    hoodAngleMap.put(3.0, 35.0);
-    hoodAngleMap.put(3.5, 35.0);
-    hoodAngleMap.put(4.0, 35.0);
+    // In degrees.
+    hoodAngleMap.put(1.7272, 10.0);
+    hoodAngleMap.put(2.1336, 15.0);
+    hoodAngleMap.put(2.8194, 20.0);
+    hoodAngleMap.put(3.3528, 25.0);
+    hoodAngleMap.put(3.7338, 30.0);
+    hoodAngleMap.put(4.6990, 35.0);
+    hoodAngleMap.put(5.4102, 35.0);
 
-    flywheelSpeedMap.put(0.5, 50.0);
-    flywheelSpeedMap.put(1.0, 55.0);
-    flywheelSpeedMap.put(2.0, 62.0);
-    flywheelSpeedMap.put(2.5, 68.0);
-    flywheelSpeedMap.put(3.0, 75.0);
-    flywheelSpeedMap.put(3.5, 88.0);
-    flywheelSpeedMap.put(4.0, 100.0);
+    // In RPS.
+    flywheelSpeedMap.put(1.7272, 31.0);
+    flywheelSpeedMap.put(2.1336, 33.0);
+    flywheelSpeedMap.put(2.8194, 36.0);
+    flywheelSpeedMap.put(3.3528, 39.5);
+    flywheelSpeedMap.put(3.7338, 42.0);
+    flywheelSpeedMap.put(4.6990, 45.5);
+    flywheelSpeedMap.put(5.4102, 50.5);
 
-    timeOfFlightMap.put(0.5, 0.6);
-    timeOfFlightMap.put(1.0, 0.63);
-    timeOfFlightMap.put(1.5, 0.71);
-    timeOfFlightMap.put(2.0, 0.75);
-    timeOfFlightMap.put(2.5, 0.78);
-    timeOfFlightMap.put(3.0, 0.84);
-    timeOfFlightMap.put(3.5, 0.89);
-    timeOfFlightMap.put(4.0, 0.95);
+    // In ms, theses numbers are not real.
+    timeOfFlightMap.put(1.7272, 0.6);
+    timeOfFlightMap.put(2.1336, 0.63);
+    timeOfFlightMap.put(2.8194, 0.71);
+    timeOfFlightMap.put(3.3528, 0.75);
+    timeOfFlightMap.put(3.7338, 0.78);
+    timeOfFlightMap.put(4.6990, 0.84);
+    timeOfFlightMap.put(5.4102, 0.89);
   }
 }
