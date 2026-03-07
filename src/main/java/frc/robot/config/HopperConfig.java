@@ -10,6 +10,7 @@ public class HopperConfig {
    
     //Variables
     public TalonFXConfiguration hopperConfig;  //Create variable of type TalonFXConfiguration
+    public TalonFXConfiguration hopperZeroConfig;
 
     //Constructor
     public HopperConfig(){
@@ -17,7 +18,7 @@ public class HopperConfig {
         this.configureHopper(hopperConfig);  //Fill in framework 
     }
 
-      public void configureHopper(TalonFXConfiguration hopper){
+    public void configureHopper(TalonFXConfiguration hopper){
 
         //super low current limit to create software spring
 
@@ -51,7 +52,42 @@ public class HopperConfig {
         hopper.Voltage.PeakReverseVoltage = -11;
 
         hopper.Audio.AllowMusicDurDisable = true;
+    }
 
+    public void configureZeroHopper(TalonFXConfiguration hopper){
+
+        //super low current limit to create software spring
+
+        //configure motor
+        hopper.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;  //Set 2-17-26
+        hopper.MotorOutput.NeutralMode = NeutralModeValue.Coast;  //Set 2-17-26
+        hopper.MotorOutput.PeakForwardDutyCycle = 1;
+        hopper.MotorOutput.PeakReverseDutyCycle = -1;
+
+        hopper.CurrentLimits.StatorCurrentLimit = 150.0;  //70
+        hopper.CurrentLimits.StatorCurrentLimitEnable = true;
+        hopper.CurrentLimits.SupplyCurrentLimit = 40.0;    //Set 2/25/26
+        hopper.CurrentLimits.SupplyCurrentLimitEnable = true;
+        hopper.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Set 2/25/26
+        hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
+
+        //Slot 0 Configs
+        hopper.Slot0.kP = 20;  // 8
+        hopper.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
+        hopper.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
+        hopper.Slot0.kS = 0;
+        hopper.Slot0.kV = 0.1666666;  // .1666666
+        hopper.Slot0.kA = 0.05; //0.05
+        hopper.Slot0.kG = 0;
+
+        //Motion Magic
+        hopper.MotionMagic.MotionMagicAcceleration = 80;
+        hopper.MotionMagic.MotionMagicCruiseVelocity = 30;
+
+        hopper.Voltage.PeakForwardVoltage = 11;
+        hopper.Voltage.PeakReverseVoltage = -11;
+
+        hopper.Audio.AllowMusicDurDisable = true;
     }
 
 }

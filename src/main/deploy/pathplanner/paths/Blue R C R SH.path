@@ -20,12 +20,12 @@
         "y": 2.1249887387395496
       },
       "prevControl": {
-        "x": 6.218984959115465,
-        "y": 2.343989798070588
+        "x": 6.238080354904317,
+        "y": 2.3534656895883317
       },
       "nextControl": {
-        "x": 7.098691484643328,
-        "y": 0.7461851109515885
+        "x": 7.049869047616008,
+        "y": 0.5257738095231466
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 1.1546621621629742
       },
       "prevControl": {
-        "x": 7.7477805836339595,
-        "y": 0.1961552984169146
+        "x": 7.7733095238064855,
+        "y": 0.8604999999993368
       },
       "nextControl": {
-        "x": 7.788058155370114,
-        "y": 1.4045233983049596
+        "x": 7.785184779847466,
+        "y": 1.4046026399336724
       },
       "isLocked": false,
       "linkedName": null
@@ -96,54 +96,54 @@
     },
     {
       "anchor": {
-        "x": 2.693175675674952,
-        "y": 2.2884121621583686
+        "x": 3.957680150287799,
+        "y": 2.445052338897707
       },
       "prevControl": {
-        "x": 3.001892220356356,
-        "y": 2.5393080338638296
+        "x": 4.345025305432116,
+        "y": 2.535707587974037
       },
       "nextControl": {
-        "x": 1.9857857142870117,
-        "y": 1.7135119047676266
+        "x": 3.714258105588693,
+        "y": 2.3880812220532346
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.4461036036036041,
-        "y": 0.6643918918918927
+        "x": 2.8872409909909913,
+        "y": 2.298626126126127
       },
       "prevControl": {
-        "x": 1.8862725225190375,
-        "y": 0.6133220720720729
+        "x": 3.2778964043473984,
+        "y": 2.52468212414194
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue Outpost"
+      "linkedName": "Blue Right Shoot"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.04,
-      "rotationDegrees": 41.71948942019497
+      "rotationDegrees": -135.580402447707
     },
     {
       "waypointRelativePos": 1.9867549668874134,
-      "rotationDegrees": 91.25685578910368
+      "rotationDegrees": -89.829433587238
     },
     {
       "waypointRelativePos": 2.9642384105960193,
-      "rotationDegrees": 90.105687180367
+      "rotationDegrees": -89.4541100237827
     },
     {
       "waypointRelativePos": 4.774834437086083,
-      "rotationDegrees": -136.7312391576331
+      "rotationDegrees": 133.48691503379231
     },
     {
       "waypointRelativePos": 6.007947019867584,
-      "rotationDegrees": -131.3861725686019
+      "rotationDegrees": 129.94560647036158
     }
   ],
   "constraintZones": [],
@@ -159,13 +159,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 179.80400607907845
+    "rotation": 43.408859728805446
   },
   "reversed": false,
   "folder": "Blue",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 47.161079487882056
+    "rotation": -136.94776977070617
   },
   "useDefaultConstraints": true
 }

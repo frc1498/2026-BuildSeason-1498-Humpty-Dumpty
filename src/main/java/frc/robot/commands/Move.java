@@ -72,36 +72,8 @@ public class Move {
         return Commands.parallel(hopper.hopperMidPosition(),intake.intakeSuck());
     }
 
-    //==============================Spin and Kick================================
-    /* Not tested yet
-    public Command reverseSpinAndKick() {  //Reviewed 2/21/26 should work now
-        return Commands.sequence(
-            this.stopSpinAndKick(),
-            shooter.reverseSpindexer(),
-            shooter.reverseKickup()
-        );
-    }
-    */
-
-    /* Not tested yet 
-    public Command stopSpinAndKick() {
-        return Commands.sequence(
-            shooter.stopSpindexer(),
-            shooter.stopKickup()
-        );
-    }
-    */
 
     //==================================Climb====================================
-    /*
-    public Command primeClimb() {
-        return Commands.parallel(hopper.hopperRetract(),intake.intakeStop()).andThen(
-        Commands.sequence(
-            shooter.turretClimbPosition(),
-            //climber.liftClimbExtend()
-        ));
-    }
-     */
     
     public Command zeroClimb() {  
         return Commands.sequence(climber.zeroRoutine(),shooter.turret0());
