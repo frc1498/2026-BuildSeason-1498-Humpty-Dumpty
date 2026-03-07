@@ -6,6 +6,11 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 /**
@@ -85,6 +90,10 @@ public class ShooterConstants {
 
   public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0));
   public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
+
+  public static final Transform2d kRobotToTurret = new Transform2d(new Translation2d(0.1381, -0.1143), new Rotation2d(0.0));
+  // 0.138112776225552 m X from center of robot.
+  // -0.114300228600457 m Y from centrer of robot.
 
   public static final InterpolatingDoubleTreeMap hoodAngleMap = new InterpolatingDoubleTreeMap(); // First column is distance (in meters), second column is angle (in degrees).
   public static final InterpolatingDoubleTreeMap flywheelSpeedMap = new InterpolatingDoubleTreeMap(); // First column is distance (in meters), second column is speed (in rotations per minute).
