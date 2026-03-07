@@ -876,13 +876,13 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     //builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
     //builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
     
-    /* Issues with too many sendables overruning loop.  Removed these for now to test
+    // Issues with too many sendables overruning loop.  Removed these for now to test
     builder.addDoubleProperty("Virtual Hood Angle", () -> {return this.virtualHoodAngle;}, null);
     builder.addDoubleProperty("Virtual Flywheel Velocity", () -> {return this.virtualFlywheelVelocity;}, null);
     builder.addDoubleProperty("Virtual Turret Angle", () -> {return this.virtualTurretAngle;}, null);
-    */
+    
 
-    /*
+    
     builder.addDoubleProperty("Desired Hood Angle", () -> {return this.desiredHoodAngle;}, null);
     builder.addDoubleProperty("Desired Turret Angle", () -> {return this.desiredTurretAngle;}, null);
     builder.addDoubleProperty("Desired Hood Motor Rotations", () -> {return this.desiredHoodMotorRotations;}, null);
@@ -896,7 +896,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
     builder.addDoubleProperty("Current Shooter Velocity", () -> {return this.currentShooterVelocity;}, null);
     builder.addDoubleProperty("Current Spindexer Velocity", () -> {return this.currentSpindexerVelocity;}, null);
-    */
+    
 
     builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
     builder.addBooleanProperty("Spindexer At Velocity", () -> {return this.spindexerAtVelocity;},null);
