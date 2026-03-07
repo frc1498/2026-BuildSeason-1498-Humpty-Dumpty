@@ -38,7 +38,7 @@ public class ShooterConstants {
   public static final double kSpindexerVelocityDeadband = 2;
 
   /*===============Safeties==================*/
-  public static final double kHoodSafeExtend = 30.0;  //In degrees.  May be able to go slightly higher
+  public static final double kHoodSafeExtend = 35.0;  //In degrees.  May be able to go slightly higher
   public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home
   
   public static final double kTurretSafeClockwise = -90.0;  //May be able to go further.  - is clockwise
