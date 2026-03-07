@@ -28,12 +28,14 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj.DriverStation;
 
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -234,6 +236,41 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
     }
 
+    public String fieldLocationHelper(Pose2d pose) {
+        if (pose.getX() <= 4.029) {           // Blue side = 0 m to 4.029 m
+            return "Blue";
+        }
+        else if (pose.getX() > 4.029 && pose.getX() <= 12.512) {
+            return "Center";         // Center = 4.029 m to 12.512 m
+        }
+        else {
+            return "Red";            // Red side = 12.512 m to 16.541 m
+        }
+    }
+
+    public String currentFieldLocation(Pose2d pose) {
+        String currField = fieldLocationHelper(pose);
+        if (currField == "Blue") {
+            return "In Blue Field";
+        }
+        else if (currField == "Center") {
+            return "In Center Field";
+        }
+        else {
+            return "In Red Field";
+        }
+    }
+
+    public String isInScoringField(Pose2d pose) {
+        String currField = fieldLocationHelper(pose);
+        if (currField == DriverStation.getAlliance().get().toString()) {
+            return "In Scoring Field";
+        }
+        else {
+            return "Not in Scoring Field";
+        }
+    }
+
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.
      *
@@ -312,6 +349,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         DogLog.log("Pose/Robot/X", pose.getX());
         DogLog.log("Pose/Robot/Y", pose.getY());
         DogLog.log("Pose/Robot/RotDeg", pose.getRotation().getDegrees());
+        SmartDashboard.putString("Field Location", currentFieldLocation(pose));
+        SmartDashboard.putString("Is Robot in Field", isInScoringField(pose));
     }
 
     private void startSimThread() {
