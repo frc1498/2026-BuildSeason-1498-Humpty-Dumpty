@@ -198,7 +198,8 @@ public class RobotContainer {
         driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
         //Driver LBumper Shoot medium
-        driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+        // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
 
         //Driver Start: Zero drivetrain
         driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
@@ -214,6 +215,11 @@ public class RobotContainer {
 
         //Driver a: Climb Retract
         driver.a().onTrue(move.climbRetract());
+
+        // USE THIS BUTTON TO TEST THE FUNCTIONALITY OF TRACKING THE BLUE HUB WITH THE TURRET.
+        // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
+        // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
+        driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
         
         //===================================================
         //==================Operator Commands================ 

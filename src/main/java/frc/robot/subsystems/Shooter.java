@@ -29,6 +29,7 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.filter.LinearFilter;
 //import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -311,7 +312,7 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
 
   // Publish subsystem data to SmartDashboard.
   SmartDashboard.putData("Shooter", this);
-  //SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  SmartDashboard.putData("Shooter/Pose", this.targetingField);
   //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
@@ -442,7 +443,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.desiredTurretMotorRotations = this.desiredTurretAngle / 360 * ShooterConstants.kTurretGearRatio;
 
     if (MotorEnableConstants.kTurretMotorEnabled) {     // Use this constant to enable or disable motor output for debugging.
-      if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeCounterClockwise, ShooterConstants.kTurretSafeClockwise)) {
+      if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeClockwise, ShooterConstants.kTurretSafeCounterClockwise)) {
         this.turretMotor.setControl(this.turretMotorMode.withPosition(this.desiredTurretMotorRotations));
       } else {
         // Log a fault with DogLog if the desired turret position was out of range.
@@ -636,6 +637,24 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     */
   }
 
+  /**
+   * Converts the desired angle of the turret (-180 to 180) to an angle that the motor can use.
+   * If the counterclockwise limit is greater than 180.0, this will convert a negative desired angle to an equivalent positive angle for use by the setTurret method.
+   * @return
+   */
+  private double convertTurretOverturn(double desiredTurretAngle) {
+    // WPI rotation wraps at 180 to -180, but the turret motor expects rotations.
+    // If the angle determined goes from + to - at this point, the motor should accept it when converted down to a rotation.
+    // The amount that the turret can turn past 180 was calculated in the constants file.
+    double negativeLimit = -180.0 + ShooterConstants.kTurretOverturn;
+
+    // If the desired angle is greater than 180 (which is actually -180 or less in this reference) but less than the overturn, add the difference to 180 for the 'turret motor friendly' angle.
+    if(this.isSetpointWithinSafetyRange(desiredTurretAngle, -180.0, negativeLimit)) {
+      return 180.0 + (180.0 - Math.abs(desiredTurretAngle));
+    }
+    else return desiredTurretAngle;
+  }
+
   //=========================================================
   /*====================Public Methods=====================*/
   //=========================================================
@@ -777,6 +796,13 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return run(() -> {this.setShooterVelocity(80);}).until(isShooterAtVelocity);
   }
 
+  /**
+   * Set the shooter velocity based on the distance to the hub.
+   * @return
+   */
+  public Command autoShoot() {
+    return runOnce(() -> {this.setShooterVelocity(this.virtualFlywheelVelocity);});
+  }
   //===================Public Turret Commands=====================
   public Command turretCounterClockwise45() {
     return runOnce(() -> {this.setTurretAngle(45);});
@@ -795,6 +821,25 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     .until(isTurretAtPosition);
   }
 
+  /**
+   * Development command.  Use this command to set the turret angle based on where the robot thinks the blue hub is, and where the robot thinks it is.
+   * IMPORTANT - This assumes the turret faces the intake (the back of the robot) when it is zeroed.  If this is not true, remove the unaryMinus() method from the virtualTurretAngle calculation.
+   * ALSO IMPORTANT - Consider keeping the allowable range for turret angle low while testing this.
+   * @return
+   */
+  public Command turretTrackToBlueHub() {
+    return runOnce(() -> {this.setTurretAngle(this.virtualTurretAngle);})
+      .until(this.isTurretAtPosition);
+  }
+
+  /**
+   * Set the turret based on the angle to the hub.
+   * @return
+   */
+  public Command autoTurret() {
+    return runOnce(() -> {this.setTurretAngle(this.virtualTurretAngle);});
+  }
+
   //=====================Public Hood Commands================
   public Command hood0() {
     return runOnce(() -> {this.setHoodAngle(0);});
@@ -802,6 +847,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
   public Command hood30() {
     return runOnce(() -> {this.setHoodAngle(10);});
+  }
+
+  /**
+   * Set the hood based on the distance to the hub.
+   * @return
+   */
+  public Command autoHood() {
+    return runOnce(() -> {this.setHoodAngle(this.virtualHoodAngle);});
   }
 
   //=====================Public State Commands===============
@@ -847,7 +900,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
     builder.addBooleanProperty("Spindexer At Velocity", () -> {return this.spindexerAtVelocity;},null);
-    
+    builder.addDoubleProperty("Debug Turret Angle", () -> {return this.virtualTurretAngle;}, null);
 
 
     /*  Overruning sendable loop
@@ -878,18 +931,19 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, ShooterConstants.kBlueHubCenter);
-    this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose, ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
+    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
+    this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
     this.distanceToVirtualTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, this.currentTarget);
 
-    this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
-    this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
+    this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
+    this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
-    this.virtualTurretAngle = this.currentTarget.minus(this.swerveStateSupplier.get().Pose).getTranslation().getAngle().getDegrees();
+    this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     // Every loop, update the odometry with the pose of the virtual target.
-    this.targetingField.setRobotPose(this.currentTarget);
+    this.targetingField.getObject("Hub Target").setPose(ShooterConstants.kBlueHubCenter);
+    this.targetingField.getObject("Angler").setPose(0.0,0.0,Rotation2d.kZero);
     this.log(LogLevel.NONE);
   }
 
