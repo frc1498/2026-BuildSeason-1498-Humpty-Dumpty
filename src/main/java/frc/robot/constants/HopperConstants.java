@@ -17,7 +17,7 @@ public class HopperConstants {
   //=====================Positions=====================
   public static final double kHopperExtend = 16;
   public static final double kHopperRetract = 0;
-  public static final double kDeadband = 0.5;
+  public static final double kDeadband = 1.5;
   public static final double kHopperMidPosition = 8.0;
 
   //=====================Safeties======================

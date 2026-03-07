@@ -72,6 +72,9 @@ public class Move {
         return Commands.parallel(hopper.hopperMidPosition(),intake.intakeSuck());
     }
 
+    public Command setHopperZeroPosition() {
+        return hopper.setHopperZero();
+    }
 
     //==================================Climb====================================
     

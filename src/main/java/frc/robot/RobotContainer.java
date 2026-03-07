@@ -215,6 +215,9 @@ public class RobotContainer {
         //Driver a: Climb Retract
         driver.a().onTrue(move.climbRetract());
         
+        //Driver b: Zero Hopper position
+        driver.a().onTrue(move.setHopperZeroPosition());
+
         //===================================================
         //==================Operator Commands================ 
         //===================================================
