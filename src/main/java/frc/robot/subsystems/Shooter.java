@@ -885,7 +885,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
-    this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose).getTranslation().getAngle().getDegrees());
+    this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     // Every loop, update the odometry with the pose of the virtual target.
     this.targetingField.getObject("Hub Target").setPose(ShooterConstants.kBlueHubCenter);
