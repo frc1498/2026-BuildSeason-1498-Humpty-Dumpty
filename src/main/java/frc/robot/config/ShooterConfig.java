@@ -168,7 +168,7 @@ public class ShooterConfig {
         public void configureSpindexerMotor(TalonFXConfiguration spindexer){
         //configure motor
         spindexer.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
-        spindexer.MotorOutput.NeutralMode = NeutralModeValue.Coast;  //Set 2-17-26
+        spindexer.MotorOutput.NeutralMode = NeutralModeValue.Brake;  //Set 2-17-26
         spindexer.MotorOutput.PeakForwardDutyCycle = 1;
         spindexer.MotorOutput.PeakReverseDutyCycle = -1;
 

@@ -154,7 +154,6 @@ public class Climber extends SubsystemBase {
   public Command zeroRoutine() {
     return run(
       () -> {
-        isLiftClimberCurrentLimitLatched=false;
         this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorZeroConfig);
         this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(-0.25));
       }
@@ -164,8 +163,9 @@ public class Climber extends SubsystemBase {
         () -> {
           this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(0));
           this.liftClimbMotor.setPosition(0);
-          if (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 20) {isLiftClimberCurrentLimitLatched=true;}
-          this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorConfig);
+          if (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 20) {
+            this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorConfig);
+          }
         }
       )
     ).withName("zeroRoutine");
@@ -212,10 +212,9 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
-    builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
-    builder.addBooleanProperty("Climber Latched", () -> {return isLiftClimberCurrentLimitLatched;}, null);
+    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    //builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
+    //builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
   }  
 
   @Override

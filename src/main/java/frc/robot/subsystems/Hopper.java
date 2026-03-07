@@ -7,6 +7,7 @@
 package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -31,10 +32,11 @@ public class Hopper extends SubsystemBase {
   public TalonFX hopperMotor;  //Motor type definition
   
   public PositionTorqueCurrentFOC hopperMotorMode; //Motor control type definition
-
+  public DutyCycleOut dutyCycleOut;
   private double desiredPosition;
 
   HopperConfig hopperConfig; //Create an object of type HopperConfig
+  public boolean isHopperVelocityLimitLatched = false;
 
   public Hopper(HopperConfig config) {
     hopperMotor = new TalonFX(HopperConfig.kHopperExtendCANID, "canivore");  //Create a motor for this subsystem
@@ -119,6 +121,10 @@ public class Hopper extends SubsystemBase {
     }
   }
 
+  private boolean hopperCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
+    return (this.hopperMotor.getStatorCurrent().getValueAsDouble() > 20);
+  }
+
 //=================Public Methods=========================
   public Command hopperExtend() {
     return run(
@@ -136,7 +142,26 @@ public class Hopper extends SubsystemBase {
     return run(
       () -> {this.goToPosition(HopperConstants.kHopperMidPosition);}
     ).until(isHopperMidpoint).withName("hopperMidpoint");
+  }
 
+   public Command zeroRoutine() {  //This routine goes maximum out and sets that position
+    return run(
+      () -> {
+        this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperZeroConfig);
+        this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0.25));
+      }
+    ).until(this.isHopperCurrentLimitTripped)
+    .andThen(
+      runOnce(
+        () -> {
+          this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0));
+          this.hopperMotor.setPosition(0);
+          if (this.hopperMotor.getStatorCurrent().getValueAsDouble() > 20) {
+            this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperConfig);
+          }
+        }
+      )
+    ).withName("zeroRoutine");
   }
 
   public Command agitate() {
@@ -153,15 +178,16 @@ public class Hopper extends SubsystemBase {
   public Trigger isHopperExtended= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperExtend);});
   public Trigger isHopperRetracted= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperRetract);});
   public Trigger isHopperMidpoint = new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperMidPosition);});
+  public Trigger isHopperCurrentLimitTripped = new Trigger(this::hopperCurrentLimitTripped);
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
-    builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
+    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    //builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
+    //builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
     builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
     builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
-    builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
+    //builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
   }
 
   @Override

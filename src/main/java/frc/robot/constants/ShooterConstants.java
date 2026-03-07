@@ -35,8 +35,11 @@ public class ShooterConstants {
   public static final double kTurretPositionDeadband = 0.5;  //In degrees - tentative
   public static final double kShooterVelocityDeadband = 2;
   public static final double kKickupVelocityDeadband = 20.0;
-  public static final double kSpindexerVelocityDeadband = 2;
+  public static final double kSpindexerVelocityDeadband = 25;
 
+
+
+  
   /*===============Safeties==================*/
   public static final double kHoodSafeExtend = 35.0;  //In degrees.  May be able to go slightly higher
   public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home

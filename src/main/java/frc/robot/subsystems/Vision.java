@@ -419,11 +419,11 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty("Command", this::getCurrentCommandName, null);
-        builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
-        builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
-        builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
-        builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
+        //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+        //builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
+        //builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
+        //builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
+        //builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
     }
 
     @Override

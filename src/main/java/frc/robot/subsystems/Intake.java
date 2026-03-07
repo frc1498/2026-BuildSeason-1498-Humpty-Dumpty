@@ -137,8 +137,8 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    builder.addStringProperty("Intake State", () -> {return this.intakeState;}, null);
+    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
+    //builder.addStringProperty("Intake State", () -> {return this.intakeState;}, null);
   }
 
   @Override
