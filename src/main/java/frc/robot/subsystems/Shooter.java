@@ -770,7 +770,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command startShootMedium(){
-    return run(() -> {this.setShooterVelocity(40);}).until(isShooterAtVelocity);
+    return run(() -> {this.setShooterVelocity(31);}).until(isShooterAtVelocity);
   }
 
   public Command startShootFast(){
@@ -801,7 +801,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(30);});
+    return runOnce(() -> {this.setHoodAngle(10);});
   }
 
   //=====================Public State Commands===============

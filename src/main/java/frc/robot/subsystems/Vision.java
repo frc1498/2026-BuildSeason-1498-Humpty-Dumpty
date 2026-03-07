@@ -459,13 +459,13 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
-        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
-        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
+        //this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
+        //this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
-        //visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
-        //visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
+        visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
+        visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
 
         // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
         /* Optional<EstimatedRobotPose> visionEst = Optional.empty();

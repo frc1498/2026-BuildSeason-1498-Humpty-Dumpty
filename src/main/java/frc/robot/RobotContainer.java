@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -298,6 +299,12 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle)
         );
         */
+    }
+
+    public void registerAutoCommands(){
+        NamedCommands.registerCommand("intake", move.intake());
+        NamedCommands.registerCommand("shoot", move.startShootMedium());
+        
     }
 
     /**
