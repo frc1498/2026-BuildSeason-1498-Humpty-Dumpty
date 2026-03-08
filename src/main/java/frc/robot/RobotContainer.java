@@ -262,8 +262,7 @@ public class RobotContainer {
 
     public void registerAutoCommands(){
         NamedCommands.registerCommand("intake", move.intake());
-        NamedCommands.registerCommand("shoot", move.startShootMedium());
-        
+        NamedCommands.registerCommand("shoot", move.startAutoShoot());
     }
 
     /**
