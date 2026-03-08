@@ -72,6 +72,9 @@ public class Move {
         return Commands.parallel(hopper.hopperMidPosition(),intake.intakeSuck());
     }
 
+    public Command setHopperZeroPosition() {
+        return hopper.setHopperZero();
+    }
 
     //==================================Climb====================================
     
@@ -136,7 +139,7 @@ public class Move {
     public Command startAutoShoot() {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood(), shooter.autoTurret())
             .until(shooter.isShooterAtVelocity)
-            .andThen(shooter.forwardKickup(), shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()));
+            .andThen(shooter.forwardKickup(), Commands.parallel(shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
 
     public Command startWhileMoveShoot() {

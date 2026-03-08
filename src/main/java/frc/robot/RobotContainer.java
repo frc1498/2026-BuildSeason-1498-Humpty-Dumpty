@@ -97,11 +97,12 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        // Create DogLog
-        DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
-        DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
+        // Create DogLog - Temporarily disabled to stop loop overruns
+        //DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
+        //DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
         // Configure the trigger bindings
         configureBindings();
+        registerAutoCommands();
     }
 
     /**
@@ -134,13 +135,6 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        /*
-        driver.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        driver.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-driver.getLeftY(), -driver.getLeftX()))
-        ));
-        */
-
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         //driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
@@ -160,32 +154,6 @@ public class RobotContainer {
         //===================================================
         //===================Driver Commands=================
         //===================================================
-          
-        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
-        //driver.povLeft().whileTrue(shooter.setTuningShooterOutputs());
-
-        //Driver POV Left: Autodrive Quick Climb Left
-        //driver.povLeft().onTrue(move.quickClimbLeft());
-
-        //Driver POV Right: Autodrive Quick Climb Right
-        //driver.povRight().onTrue(move.quickClimbRight());
-
-        //Driver Y button: Reverse spindexer and kickup
-        /*
-        driver.b().whileTrue(move.stopSpinAndKick().andThen(move.reverseSpinAndKick())).onFalse(
-            move.stopSpinAndKick());
-        */
-
-        //Driver A button: Prime Climb - pulls hopper in and goes to slow shoot and readies hooks
-        //driver.a().onTrue(move.primeClimb());
-
-        //Driver B button: Hopper In/Out
-        //driver.y().whileTrue(move.hopperRetract()).onFalse(move.hopperExtend());
-
-        //Driver RTrigger: Shoot off
-        //driver.rightTrigger(0.1).onTrue(move.stopShoot());
-
-        //======================Current Driving Commands=======================
         //Driver POV Up/Down - Auton Select (only in disabled)
         driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
@@ -219,8 +187,13 @@ public class RobotContainer {
         // USE THIS BUTTON TO TEST THE FUNCTIONALITY OF TRACKING THE BLUE HUB WITH THE TURRET.
         // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
         // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
-        driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
-        
+
+        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
+        //driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
+  
+        //Driver b: Zero Hopper position
+        driver.b().onTrue(move.setHopperZeroPosition());
+
         //===================================================
         //==================Operator Commands================ 
         //===================================================
@@ -287,30 +260,12 @@ public class RobotContainer {
     */
     public Command getAutonomousCommand() {
         return selectedAuton;
-        /*
-        // Simple drive forward auton
-        final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
-        );
-        */
+
     }
 
     public void registerAutoCommands(){
         NamedCommands.registerCommand("intake", move.intake());
-        NamedCommands.registerCommand("shoot", move.startShootMedium());
-        
+        NamedCommands.registerCommand("shoot", move.startAutoShoot());
     }
 
     /**
