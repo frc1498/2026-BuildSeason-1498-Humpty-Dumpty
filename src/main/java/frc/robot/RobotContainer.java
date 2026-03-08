@@ -219,7 +219,7 @@ public class RobotContainer {
         // USE THIS BUTTON TO TEST THE FUNCTIONALITY OF TRACKING THE BLUE HUB WITH THE TURRET.
         // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
         // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
-        driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
+        driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
         
         //===================================================
         //==================Operator Commands================ 
