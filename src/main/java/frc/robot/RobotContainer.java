@@ -102,6 +102,7 @@ public class RobotContainer {
         //DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
         // Configure the trigger bindings
         configureBindings();
+        registerAutoCommands();
     }
 
     /**
