@@ -8,7 +8,9 @@ import frc.robot.constants.ControllerConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Kickup;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.Vision;
 import frc.robot.config.ClimberConfig;
 import frc.robot.config.HopperConfig;
@@ -92,8 +94,12 @@ public class RobotContainer {
 
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy);
+    // Because I'm lazy, I'm leaving the configurations for the kickup and spindexer motors in the shooter config.
+    // We'll just pass the shooter config into the kickup and spindexer subsystems to use the already in-place configurations.
+    public Kickup kickup = new Kickup(shooterConfig);
+    public Spindexer spindexer = new Spindexer(shooterConfig);
 
-    public final Move move = new Move(climber,hopper,intake,shooter,drivetrain);
+    public final Move move = new Move(climber,hopper,intake,shooter,drivetrain,kickup,spindexer);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {

@@ -11,7 +11,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Kickup;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.ShooterConstants;
@@ -24,13 +26,17 @@ public class Move {
     public Intake intake;
     public Shooter shooter;
     public CommandSwerveDrivetrain drivetrain;
+    public Kickup kickup;
+    public Spindexer spindexer;
 
-    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain) {
+    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, Kickup kickup, Spindexer spindexer) {
         this.climber = climber;
         this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
         this.drivetrain = drivetrain;
+        this.kickup = kickup;
+        this.spindexer = spindexer;
     }
 
     //==========================================================
@@ -104,7 +110,7 @@ public class Move {
     }
 
     public Command climbExtend() {
-        return Commands.sequence(shooter.stopShoot(),shooter.stopKickup(),shooter.stopSpindexer(),shooter.turretCounterClockwise45(),climber.liftClimbExtend());
+        return Commands.sequence(shooter.stopShoot(),kickup.stopKickup(),spindexer.stopSpindexer(),shooter.turretCounterClockwise45(),climber.liftClimbExtend());
     }
 
     public Command climbRetract() {
@@ -117,22 +123,22 @@ public class Move {
     // Switching it to a command sequence.
     public Command stopShoot() {
         //return shooter.stopShoot();  
-        return Commands.sequence(shooter.stopSpindexer(),shooter.stopKickup(),shooter.stopShoot(), 
+        return Commands.sequence(spindexer.stopSpindexer(),kickup.stopKickup(),shooter.stopShoot(), 
         Commands.parallel(hopper.hopperExtend(), intake.intakeStop(),shooter.hood0()));       
     }
 
     public Command startShootFast() {
         //return shooter.startShootFast();  
         return Commands.sequence(shooter.hood30(),shooter.startShootFast()).andThen
-                (Commands.sequence(shooter.forwardKickup(),
-                shooter.forwardSpindexer()));
+                (Commands.sequence(kickup.forwardKickup(),
+                spindexer.forwardSpindexer()));
     }
 
     public Command startShootMedium() {
        return Commands.sequence(shooter.hood30(),
             shooter.startShootMedium()).andThen
-            (shooter.forwardKickup(),
-            shooter.forwardSpindexer()).andThen(
+            (kickup.forwardKickup(),
+            spindexer.forwardSpindexer()).andThen(
             hopper.agitate().alongWith(intake.intakeSuck()));
     }
 
@@ -143,9 +149,10 @@ public class Move {
     }
 
     public Command startWhileMoveShoot() {
-        return Commands.sequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()).repeatedly()
-            .until(shooter.isShooterAtVelocity)
-            .andThen(shooter.forwardKickup(), shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()));
+        return Commands.parallel(
+            Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
+            Commands.waitUntil(shooter.isShooterAtVelocity).andThen(kickup.forwardKickup(), spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()))
+        );
     }
 
     public Command turretClockWise45Degrees(){

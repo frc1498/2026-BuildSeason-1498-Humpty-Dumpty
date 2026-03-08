@@ -24,20 +24,14 @@ public class ShooterSim implements AutoCloseable {
     public TalonFXSimState turret;
     public TalonFXSimState shooterLeft;
     public TalonFXSimState shooterRight;
-    public TalonFXSimState spindexer;
-    public TalonFXSimState kickup;
 
     public DCMotor shooterGearbox = DCMotor.getKrakenX60Foc(2);
     public DCMotor hoodAdjust = DCMotor.getKrakenX44Foc(1);
     public DCMotor turretRotate = DCMotor.getKrakenX44Foc(1);
-    public DCMotor spindexerRotate = DCMotor.getKrakenX60Foc(1);
-    public DCMotor kickupRotate = DCMotor.getKrakenX60Foc(1);
 
     public FlywheelSim shooterFlywheel;
     public DCMotorSim hoodAdjustSim;
     public DCMotorSim turretRotateSim;
-    public DCMotorSim spindexerRotateSim;
-    public DCMotorSim kickupRotateSim;
 
     private double flywheelVelocity;
     private double flywheelPosition;
@@ -49,12 +43,6 @@ public class ShooterSim implements AutoCloseable {
     private double turretVelocity;
     private double turretPositionDelta;
     private double turretPosition;
-
-    private double spindexerVelocity;
-    private double spindexerPosition;
-
-    private double kickupVelocity;
-    private double kickupPosition;
 
     public double simVoltage;
     public double simPeriod = 0.02;
@@ -90,14 +78,12 @@ public class ShooterSim implements AutoCloseable {
   }
 
      /*new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, 0.001, 100.0), gearbox);*/
-    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterLeft, TalonFXSimState shooterRight, TalonFXSimState spindexer, TalonFXSimState kickup) {
+    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterLeft, TalonFXSimState shooterRight) {
         this.shooterConfig = config;
         this.hood = hood;
         this.turret = turret;
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
-        this.spindexer = spindexer;
-        this.kickup = kickup;
 
         this.hoodPosition = 0.0;
         this.turretPosition = 0.0;
@@ -108,8 +94,6 @@ public class ShooterSim implements AutoCloseable {
         );
         this.hoodAdjustSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(this.hoodAdjust, 0.001, ShooterConstants.kHoodGearing), this.hoodAdjust);
         this.turretRotateSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(this.turretRotate, 0.001, ShooterConstants.kTurretGearing), this.turretRotate);
-        this.spindexerRotateSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(this.spindexerRotate, 0.001, ShooterConstants.kSpindexerGearing), this.spindexerRotate);
-        this.kickupRotateSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(this.kickupRotate, 0.001, ShooterConstants.kKickupGearing), this.kickupRotate);
         
         this.shooter_vis = new Mechanism2d(20.0, 20.0);
         this.shooter_root = this.shooter_vis.getRoot("Origin", 10.0, 10.0);
@@ -123,8 +107,6 @@ public class ShooterSim implements AutoCloseable {
         this.turret.setSupplyVoltage(this.simVoltage);
         this.shooterLeft.setSupplyVoltage(this.simVoltage);
         this.shooterRight.setSupplyVoltage(this.simVoltage);
-        this.spindexer.setSupplyVoltage(this.simVoltage);
-        this.kickup.setSupplyVoltage(this.simVoltage);
 
         // Run the simulation and update it.
         this.shooterFlywheel.setInput(shooterRight.getMotorVoltage());
@@ -135,12 +117,6 @@ public class ShooterSim implements AutoCloseable {
 
         this.turretRotateSim.setInput(turret.getMotorVoltage());
         this.turretRotateSim.update(this.simPeriod);
-
-        this.spindexerRotateSim.setInput(spindexer.getMotorVoltage());
-        this.spindexerRotateSim.update(this.simPeriod);
-
-        this.kickupRotateSim.setInput(kickup.getMotorVoltage());
-        this.kickupRotateSim.update(this.simPeriod);
 
         // Update sensor positions.
         this.flywheelVelocity = this.outputRPMToInputRPS(this.shooterFlywheel.getAngularVelocityRPM(), ShooterConstants.kShooterFlywheelGearing);
@@ -169,16 +145,6 @@ public class ShooterSim implements AutoCloseable {
         if(!this.inRange(this.turretPosition, ShooterConstants.kTurretSafeCounterClockwise, ShooterConstants.kTurretSafeClockwise)) {
             this.turret.setRawRotorPosition(MathUtil.clamp(this.turretPosition, ShooterConstants.kTurretSafeCounterClockwise, ShooterConstants.kTurretSafeClockwise));
         }
-
-        this.spindexerVelocity = this.outputRPMToInputRPS(this.spindexerRotateSim.getAngularVelocityRPM(), ShooterConstants.kSpindexerGearing);
-        this.spindexerPosition = this.spindexerVelocity * this.simPeriod;
-        this.spindexer.setRotorVelocity(this.spindexerVelocity);
-        this.spindexer.addRotorPosition(this.spindexerPosition);
-        
-        this.kickupVelocity = this.outputRPMToInputRPS(this.kickupRotateSim.getAngularVelocityRPM(), ShooterConstants.kKickupGearing);
-        this.kickupPosition = this.kickupVelocity * this.simPeriod;
-        this.kickup.setRotorVelocity(this.kickupVelocity);
-        this.kickup.addRotorPosition(this.kickupPosition);
 
         // Divide by 60 for rotations per second.
         // Multiply by simPeriod for rotation delta for this loop.
