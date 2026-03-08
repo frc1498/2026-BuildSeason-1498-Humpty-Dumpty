@@ -142,6 +142,12 @@ public class Move {
             .andThen(shooter.forwardKickup(), Commands.parallel(shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
 
+    public Command startWhileMoveShoot() {
+        return Commands.sequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()).repeatedly()
+            .until(shooter.isShooterAtVelocity)
+            .andThen(shooter.forwardKickup(), shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()));
+    }
+
     public Command turretClockWise45Degrees(){
         return shooter.turretClockwise45();
     }

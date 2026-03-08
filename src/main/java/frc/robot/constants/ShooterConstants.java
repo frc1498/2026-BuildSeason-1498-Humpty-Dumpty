@@ -131,13 +131,13 @@ public class ShooterConstants {
     flywheelSpeedMap.put(4.6990, 45.5);
     flywheelSpeedMap.put(5.4102, 50.5);
 
-    // In ms, theses numbers are not real.
-    timeOfFlightMap.put(1.7272, 0.6);
-    timeOfFlightMap.put(2.1336, 0.63);
-    timeOfFlightMap.put(2.8194, 0.71);
-    timeOfFlightMap.put(3.3528, 0.75);
-    timeOfFlightMap.put(3.7338, 0.78);
-    timeOfFlightMap.put(4.6990, 0.84);
-    timeOfFlightMap.put(5.4102, 0.89);
+    // In seconds.
+    timeOfFlightMap.put(1.7272, 1.018);
+    timeOfFlightMap.put(2.1336, 1.035);
+    timeOfFlightMap.put(2.8194, 1.033);
+    timeOfFlightMap.put(3.3528, 1.187);
+    timeOfFlightMap.put(3.7338, 1.202);
+    timeOfFlightMap.put(4.6990, 1.234);
+    timeOfFlightMap.put(5.4102, 1.233);
   }
 }
