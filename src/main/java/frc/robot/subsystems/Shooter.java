@@ -97,6 +97,10 @@ public class Shooter extends SubsystemBase {
   private double virtualFlywheelVelocity;
   private double virtualTurretAngle;
 
+  private double whileMoveHoodAngle;
+  private double whileMoveFlywheelVelocity;
+  private double whileMoveTurretAngle;
+
   private double currentHoodAngle;
   private double currentHoodRotations;
   private double currentTurretAngle;
@@ -803,6 +807,15 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   public Command autoShoot() {
     return runOnce(() -> {this.setShooterVelocity(this.virtualFlywheelVelocity);});
   }
+
+  /**
+   * Set the shooter velocity based on the distance to the estimated hub for the shoot while move.
+   * @return
+   */
+  public Command whileMoveShoot() {
+    return runOnce(() -> {this.setShooterVelocity(this.whileMoveFlywheelVelocity);});
+  }
+
   //===================Public Turret Commands=====================
   public Command turretCounterClockwise45() {
     return runOnce(() -> {this.setTurretAngle(45);});
@@ -840,6 +853,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return runOnce(() -> {this.setTurretAngle(this.virtualTurretAngle);});
   }
 
+  /**
+   * Set the turret based on the angle to the estimated hub for shoot while moving.
+   * @return
+   */
+  public Command whileMoveTurret() {
+    return runOnce(() -> {this.setTurretAngle(this.whileMoveTurretAngle);});
+  }
+
   //=====================Public Hood Commands================
   public Command hood0() {
     return runOnce(() -> {this.setHoodAngle(0);});
@@ -855,6 +876,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    */
   public Command autoHood() {
     return runOnce(() -> {this.setHoodAngle(this.virtualHoodAngle);});
+  }
+
+  /**
+   * Set the hood based on the estimated distance to the hub for the shoot while move.
+   * @return
+   */
+  public Command whileMoveHood() {
+    return runOnce(() -> {this.setHoodAngle(this.whileMoveHoodAngle);});
   }
 
   //=====================Public State Commands===============
@@ -940,6 +969,10 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
     this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
+
+    this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
+    this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
+    this.whileMoveTurretAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     // Every loop, update the odometry with the pose of the virtual target.
     this.targetingField.getObject("Hub Target").setPose(ShotCalculation.getInstance().getVirtualTarget());
