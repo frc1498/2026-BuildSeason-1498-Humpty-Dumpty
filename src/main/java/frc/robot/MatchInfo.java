@@ -61,8 +61,8 @@ public class MatchInfo {
     }
 
     /**
-     * Determine which scoring hub can be used.
-     * @return
+     * Determine which alliance hub is active.
+     * @return Alliance
      */
     public DriverStation.Alliance getCurrentScoringHub() {
         // During the transition shift or the end game, any hub can be scored in, so return the current robot alliance.
@@ -70,7 +70,7 @@ public class MatchInfo {
             return DriverStation.getAlliance().get();
         }
         else if ((DriverStation.getMatchTime() <= 129.98) && (DriverStation.getMatchTime() >= 105.0)) { //shift 1 - 2:10 - 1:45
-            return this.getInitialScoringHub();
+            return getInitialScoringHub();
         }
         else if ((DriverStation.getMatchTime() <= 104.98) && (DriverStation.getMatchTime() >= 80.0)) { //shift 2 - 1:45 - 1:20
             if (this.getInitialScoringHub() == DriverStation.Alliance.Blue) {
@@ -81,7 +81,8 @@ public class MatchInfo {
             }
         }
         else if ((DriverStation.getMatchTime() <= 79.98) && (DriverStation.getMatchTime() >= 55.0)) { //shift 3 - 1:20 - 0:55
-            return this.getInitialScoringHub(); //the active hub in shift 3 == active hub from shift 1
+            //the active hub in shift 3 == active hub from shift 1
+            return getInitialScoringHub();
         }
         else if ((DriverStation.getMatchTime() <= 54.98) && (DriverStation.getMatchTime() >= 30.0)) { //shift 4 - 0:55 - 0:30
             if (this.getInitialScoringHub() == DriverStation.Alliance.Blue) {
@@ -97,29 +98,50 @@ public class MatchInfo {
     }
 
     /**
+     * Determine if our hub is active.
+     * @return
+     */
+    public String isCurrentHubActive() {
+        if (getCurrentScoringHub() == DriverStation.getAlliance().get()) {
+            return "Hub is Active";
+        }
+        else {
+            return "Hub is NOT Active";
+        }
+    }
+
+    /**
      * Detects when a shift change is about to happen
      * takes in how many seconds before a shift change you want to be notified
      * @return if your hub will be active in the next shift
      */
     
-     public boolean isNextScoringHubActive(double sec) {
+     public String isNextScoringHubActive(double sec) {
+        boolean isNextFlag = true;
         if ((DriverStation.getMatchTime() <= 130.0 + sec) && (DriverStation.getMatchTime() >= 130.0)) { //Next Shift = Shift 1
-            return (DriverStation.getAlliance().get() == this.getInitialScoringHub());
+            isNextFlag = (DriverStation.getAlliance().get() == this.getInitialScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 105.0 + sec) && (DriverStation.getMatchTime() >= 105.0 + sec)) { //Next Shift = Shift 2
-            return !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
+        else if ((DriverStation.getMatchTime() <= 105.0 + sec) && (DriverStation.getMatchTime() >= 105.0)) { //Next Shift = Shift 2
+            isNextFlag = !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 80.0 + sec) && (DriverStation.getMatchTime() >= 80.0 + sec)) { //Next Shift = Shift 3
-            return !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
+        else if ((DriverStation.getMatchTime() <= 80.0 + sec) && (DriverStation.getMatchTime() >= 80.0)) { //Next Shift = Shift 3
+            isNextFlag = !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 55.0 + sec) && (DriverStation.getMatchTime() >= 55.0 + sec)) { //Next Shift = Shift 4
-            return !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
+        else if ((DriverStation.getMatchTime() <= 55.0 + sec) && (DriverStation.getMatchTime() >= 55.0)) { //Next Shift = Shift 4
+            isNextFlag = !(DriverStation.getAlliance().get() == this.getCurrentScoringHub());
         }
-        else if ((DriverStation.getMatchTime() <= 30.0 + sec) && (DriverStation.getMatchTime() >= 30.0 + sec)) { //Next Shift = End Game
-            return true;
+        else if ((DriverStation.getMatchTime() <= 30.0 + sec) && (DriverStation.getMatchTime() >= 30.0)) { //Next Shift = End Game
+            isNextFlag = true;
         }
         else {                                                                                                                                 
-            return false;
+            isNextFlag = false;
+        }
+
+        if (isNextFlag == true) {
+            return "Hub will be active";
+        }
+        else {
+            return "Hub will be inactive";
         }
      }
 }

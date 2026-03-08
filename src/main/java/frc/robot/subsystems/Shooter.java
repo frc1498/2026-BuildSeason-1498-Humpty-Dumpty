@@ -541,9 +541,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     requestShoot=true;
   }
 
-  private boolean isShooterAtSpeed() {
-    return ((this.getShooterVelocity() < (this.desiredShooterVelocity + ShooterConstants.kShooterVelocityDeadband)) 
-    && (this.getShooterVelocity() > (this.desiredShooterVelocity - ShooterConstants.kShooterVelocityDeadband)));
+  private boolean isShooterAtSpeed() {  //Modified to make sure we are above speed only.
+    return ((this.getShooterVelocity() > (this.desiredShooterVelocity - ShooterConstants.kShooterVelocityDeadband)));
   }
 
   private boolean isTurretAtPosition() {

@@ -46,7 +46,7 @@ public class HopperConfig {
 
         //Motion Magic
         hopper.MotionMagic.MotionMagicAcceleration = 80;
-        hopper.MotionMagic.MotionMagicCruiseVelocity = 30;
+        hopper.MotionMagic.MotionMagicCruiseVelocity = 25;
 
         hopper.Voltage.PeakForwardVoltage = 11;
         hopper.Voltage.PeakReverseVoltage = -11;

@@ -174,6 +174,10 @@ public class Hopper extends SubsystemBase {
     //  Commands.waitSeconds(0.5));
   }
 
+  public Command setHopperZero() {
+    return run(() -> {this.hopperMotor.setPosition(0.0);});
+  }
+
 //================================Triggers================================  
   public Trigger isHopperExtended= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperExtend);});
   public Trigger isHopperRetracted= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperRetract);});
