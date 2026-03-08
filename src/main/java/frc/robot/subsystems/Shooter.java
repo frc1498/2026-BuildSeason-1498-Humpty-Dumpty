@@ -932,9 +932,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     //First attempt of the shoot while moving calculation.
     this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
-    this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
+    // this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
-    this.distanceToVirtualTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose, this.currentTarget);
+    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose, ShooterConstants.kBlueHubCenter);
 
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
@@ -942,7 +942,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     // Every loop, update the odometry with the pose of the virtual target.
-    this.targetingField.getObject("Hub Target").setPose(ShooterConstants.kBlueHubCenter);
+    this.targetingField.getObject("Hub Target").setPose(ShotCalculation.getInstance().getVirtualTarget());
     this.targetingField.getObject("Angler").setPose(0.0,0.0,Rotation2d.kZero);
     this.log(LogLevel.NONE);
   }
