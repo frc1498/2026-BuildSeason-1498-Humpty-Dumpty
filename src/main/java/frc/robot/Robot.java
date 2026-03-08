@@ -51,9 +51,6 @@ public class Robot extends TimedRobot {
       PortForwarder.add(port, "limelight.local", port);
     }
 
-    // Get the deploy directory for Elastic.
-    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
-
     // Set the RoboRIO2 custom brownout voltage.
     RobotController.setBrownoutVoltage(4.5);
 
