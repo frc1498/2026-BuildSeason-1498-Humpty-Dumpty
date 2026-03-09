@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.constants.ControllerConstants;
+import frc.robot.constants.MotorEnableConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -93,7 +94,7 @@ public class RobotContainer {
     public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement);
 
     public ShooterConfig shooterConfig = new ShooterConfig();
-    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy);
+    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
     // Because I'm lazy, I'm leaving the configurations for the kickup and spindexer motors in the shooter config.
     // We'll just pass the shooter config into the kickup and spindexer subsystems to use the already in-place configurations.
     public Kickup kickup = new Kickup(shooterConfig);
