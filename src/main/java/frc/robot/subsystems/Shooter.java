@@ -82,6 +82,7 @@ public class Shooter extends SubsystemBase {
   private boolean readyToFire;
 
   private Supplier<SwerveDriveState> swerveStateSupplier;
+  private SwerveDriveState swerveState;
   private double distanceToTarget;
   private double distanceToVirtualTarget;
 
@@ -116,6 +117,9 @@ public class Shooter extends SubsystemBase {
   private double simTime;
 
   private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
+
+  // Fall back to a default of no telemetry.
+  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
   //boolean turretZeroed;
   boolean requestShoot;
@@ -175,8 +179,9 @@ public class Shooter extends SubsystemBase {
  * @param config - The motor configurations for all motors in the subsystem.
  * @param swerveDriveState - A supplier of the current swerve drive state from the drivetrain subsystem.
  */
-public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState) {
+public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
+  this.telemetryLevel = telemetryLevel;
   this.swerveStateSupplier = swerveDriveState;
   this.shooterConfig = config;
 
@@ -670,37 +675,39 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    //builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
-    //builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
-    
-    // Issues with too many sendables overruning loop.  Removed these for now to test
-    builder.addDoubleProperty("Virtual Hood Angle", () -> {return this.virtualHoodAngle;}, null);
-    builder.addDoubleProperty("Virtual Flywheel Velocity", () -> {return this.virtualFlywheelVelocity;}, null);
-    builder.addDoubleProperty("Virtual Turret Angle", () -> {return this.virtualTurretAngle;}, null);
-    
-    builder.addDoubleProperty("Desired Hood Angle", () -> {return this.desiredHoodAngle;}, null);
-    builder.addDoubleProperty("Desired Turret Angle", () -> {return this.desiredTurretAngle;}, null);
-    builder.addDoubleProperty("Desired Hood Motor Rotations", () -> {return this.desiredHoodMotorRotations;}, null);
-    builder.addDoubleProperty("Desired Turret Motor Rotations", () -> {return this.desiredTurretMotorRotations;}, null);
-    builder.addDoubleProperty("Desired Shooter Velocity", () -> {return this.desiredShooterVelocity;}, null);
-    builder.addDoubleProperty("Current Turrent Rotations", () -> {return this.currentTurretRotations;},null);
-    builder.addDoubleProperty("Current Hood Rotations", () -> {return this.currentHoodRotations;},null);
-    builder.addDoubleProperty("Current Turret Angle", () -> {return this.currentTurretAngle;}, null);
-    builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
-    builder.addDoubleProperty("Current Shooter Velocity", () -> {return this.currentShooterVelocity;}, null);
-
-    builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
-    builder.addDoubleProperty("Debug Turret Angle", () -> {return this.virtualTurretAngle;}, null);
-
-
-    /*  Overruning sendable loop
-    builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
-    builder.addDoubleProperty("Tuning Turret Angle", () -> {return this.tuningTurretAngle;}, this::setTuningTurretPosition);
-    builder.addDoubleProperty("Tuning Flywheel Velocity", () -> {return this.tuningFlywheelVelocity;}, this::setTuningShooterVelocity);
-    builder.addBooleanProperty("Tuning Shot Successful", () -> {return this.tuningShotSuccessful;}, this::setTuningShotSuccessful);
-    */
+    // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+    // That can be used to 'gate' values to log without lines of identical code.
+    switch (this.telemetryLevel) {
+      case FULL:
+        builder.addDoubleProperty("Virtual Hood Angle", () -> {return this.virtualHoodAngle;}, null);
+        builder.addDoubleProperty("Virtual Flywheel Velocity", () -> {return this.virtualFlywheelVelocity;}, null);
+        builder.addDoubleProperty("Virtual Turret Angle", () -> {return this.virtualTurretAngle;}, null);
+        builder.addDoubleProperty("Desired Hood Angle", () -> {return this.desiredHoodAngle;}, null);
+        builder.addDoubleProperty("Desired Turret Angle", () -> {return this.desiredTurretAngle;}, null);
+        builder.addDoubleProperty("Desired Hood Motor Rotations", () -> {return this.desiredHoodMotorRotations;}, null);
+        builder.addDoubleProperty("Desired Turret Motor Rotations", () -> {return this.desiredTurretMotorRotations;}, null);
+        builder.addDoubleProperty("Desired Shooter Velocity", () -> {return this.desiredShooterVelocity;}, null);
+        builder.addDoubleProperty("Current Turrent Rotations", () -> {return this.currentTurretRotations;},null);
+        builder.addDoubleProperty("Current Hood Rotations", () -> {return this.currentHoodRotations;},null);
+        builder.addDoubleProperty("Current Turret Angle", () -> {return this.currentTurretAngle;}, null);
+        builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
+        builder.addDoubleProperty("Current Shooter Velocity", () -> {return this.currentShooterVelocity;}, null);
+        builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
+        builder.addDoubleProperty("Debug Turret Angle", () -> {return this.virtualTurretAngle;}, null);
+        builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
+        builder.addDoubleProperty("Tuning Turret Angle", () -> {return this.tuningTurretAngle;}, this::setTuningTurretPosition);
+        builder.addDoubleProperty("Tuning Flywheel Velocity", () -> {return this.tuningFlywheelVelocity;}, this::setTuningShooterVelocity);
+        builder.addBooleanProperty("Tuning Shot Successful", () -> {return this.tuningShotSuccessful;}, this::setTuningShotSuccessful);
+        builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
+        builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
+      case LIMITED:
+        builder.addStringProperty("Command", this::getCurrentCommandName, null);
+      case NONE:
+        // No values!
+      default:
+        break;
     }
+  }
   
 
   @Override
@@ -716,28 +723,38 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.currentTurretAngle = this.getTurretAngle();
     this.currentTurretRotations = this.getTurretRotations();
     this.currentShooterVelocity = this.getShooterVelocity();
+    // Wondering if caching this will reduce the CPU usage of this call.
+    this.swerveState = this.swerveStateSupplier.get();
     
     // Signal that we are ready to fire if the hood and turret are at position, and the shooter is at velocity.
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
+    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
     // this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
-    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose, ShooterConstants.kBlueHubCenter);
+    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, ShooterConstants.kBlueHubCenter);
 
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
-    this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
+    this.virtualTurretAngle = this.convertTurretOverturn(ShooterConstants.kBlueHubCenter.minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
-    this.whileMoveTurretAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
+    this.whileMoveTurretAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     // Every loop, update the odometry with the pose of the virtual target.
-    this.targetingField.getObject("Hub Target").setPose(ShotCalculation.getInstance().getVirtualTarget());
-    this.targetingField.getObject("Angler").setPose(0.0,0.0,Rotation2d.kZero);
+    switch (this.telemetryLevel) {
+      case FULL:
+        this.targetingField.getObject("Hub Target").setPose(ShotCalculation.getInstance().getVirtualTarget());
+        this.targetingField.getObject("Angler").setPose(0.0,0.0,Rotation2d.kZero);
+      case LIMITED:
+      case NONE:
+      default:
+        break;
+    }
+
     this.log(LogLevel.NONE);
   }
 
