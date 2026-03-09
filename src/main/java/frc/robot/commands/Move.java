@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,6 +29,7 @@ public class Move {
     public CommandSwerveDrivetrain drivetrain;
     public Kickup kickup;
     public Spindexer spindexer;
+
 
     public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, Kickup kickup, Spindexer spindexer) {
         this.climber = climber;
@@ -58,6 +60,9 @@ public class Move {
         }
         return 0;
     }
+
+    //=============================Misc==========================================
+
 
     //==========================================================
     //=====================Commands=============================
@@ -145,7 +150,7 @@ public class Move {
     public Command startAutoShoot() {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood(), shooter.autoTurret())
             .until(shooter.isShooterAtVelocity)
-            .andThen(shooter.forwardKickup(), Commands.parallel(shooter.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
+            .andThen(kickup.forwardKickup(), Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
 
     public Command startWhileMoveShoot() {
@@ -189,8 +194,15 @@ public class Move {
         return Commands.parallel(intake.intakeStop());
     }
 
+    //================================Misc=======================================
+    public Command setDSAttachedLatchTrue() {
+        return climber.setDSAttachedLatchTrue();
+    }
+
+
     //======================================================
     //========================Triggers======================
     //======================================================
+
 
 }

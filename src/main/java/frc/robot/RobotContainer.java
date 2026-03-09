@@ -149,8 +149,13 @@ public class RobotContainer {
         //driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         drivetrain.registerTelemetry(logger::telemeterize);
-
+        /*
         this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
+            .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
+            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
+        */
+
+         this.DSAttached.and(climber.isDSLatched).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
 
@@ -173,8 +178,11 @@ public class RobotContainer {
 
         //Driver LBumper Shoot medium
         // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
-        driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        //driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
 
+        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
+  
         //Driver Start: Zero drivetrain
         driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
@@ -194,9 +202,6 @@ public class RobotContainer {
         // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
         // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
 
-        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
-        //driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
-  
         //Driver b: Zero Hopper position
         driver.b().onTrue(move.setHopperZeroPosition());
 
