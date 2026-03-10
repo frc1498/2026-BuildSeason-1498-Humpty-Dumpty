@@ -176,7 +176,8 @@ public class RobotContainer {
         //Driver LBumper Shoot medium
         // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
         // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
-        driver.leftBumper().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
+        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
         //Driver Start: Zero drivetrain
         driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
@@ -292,6 +293,10 @@ public class RobotContainer {
     }
 
     public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
+
+    public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {this.precisionDampener=0.8;});}
+
+    public Command setNormalMoveSpeed () {return Commands.runOnce(()-> {this.precisionDampener=1.0;});}
 
     // Use these triggers to determine when to filter the list of autons.
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);
