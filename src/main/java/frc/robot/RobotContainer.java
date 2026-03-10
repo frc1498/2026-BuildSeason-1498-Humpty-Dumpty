@@ -152,7 +152,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        this.DSAttached.and(this.alliancePresent).and(this.getDSLatch.negate()).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
+        driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
 
@@ -163,9 +163,8 @@ public class RobotContainer {
         //===================Driver Commands=================
         //===================================================
         //Driver POV Up/Down - Auton Select (only in disabled)
-        driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().onTrue(move.stopClimb());
+        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         
         //Driver RTrigger: Intake Reverse - Check 2/26/26 ready for testing
         driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
