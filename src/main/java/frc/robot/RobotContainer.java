@@ -173,7 +173,8 @@ public class RobotContainer {
 
         //Driver LBumper Shoot medium
         // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
-        driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
 
         //Driver Start: Zero drivetrain
         driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
