@@ -59,10 +59,10 @@ public class RobotContainer {
     public Climber climber = new Climber(climberConfig);
 
     public HopperConfig hopperConfig = new HopperConfig();
-    public Hopper hopper = new Hopper(hopperConfig);
+    public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public IntakeConfig intakeConfig = new IntakeConfig();
-    public Intake intake = new Intake(intakeConfig);
+    public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
     public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector");
@@ -97,8 +97,8 @@ public class RobotContainer {
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
     // Because I'm lazy, I'm leaving the configurations for the kickup and spindexer motors in the shooter config.
     // We'll just pass the shooter config into the kickup and spindexer subsystems to use the already in-place configurations.
-    public Kickup kickup = new Kickup(shooterConfig);
-    public Spindexer spindexer = new Spindexer(shooterConfig);
+    public Kickup kickup = new Kickup(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    public Spindexer spindexer = new Spindexer(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public final Move move = new Move(climber,hopper,intake,shooter,drivetrain,kickup,spindexer);
 

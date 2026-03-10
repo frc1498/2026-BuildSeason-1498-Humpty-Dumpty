@@ -38,7 +38,13 @@ public class Hopper extends SubsystemBase {
   HopperConfig hopperConfig; //Create an object of type HopperConfig
   public boolean isHopperVelocityLimitLatched = false;
 
-  public Hopper(HopperConfig config) {
+  // Fall back to a default of no telemetry.
+  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+
+  public Hopper(HopperConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
+
+    this.telemetryLevel = telemetryLevel;
+
     hopperMotor = new TalonFX(HopperConfig.kHopperExtendCANID, "canivore");  //Create a motor for this subsystem
     hopperMotorMode = new PositionTorqueCurrentFOC(0);  //Set the motor's control mode
 
@@ -186,12 +192,22 @@ public class Hopper extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    //builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
-    //builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
-    builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
-    builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
-    //builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
+    // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+    // That can be used to 'gate' values to log without lines of identical code.
+    switch (this.telemetryLevel) {
+      case FULL:
+        builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
+        builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
+        builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
+        builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
+        builder.addBooleanProperty("Hopper at Midpoint", this.isHopperMidpoint,null);
+      case LIMITED:
+        builder.addStringProperty("Command", this::getCurrentCommandName, null);
+      case NONE:
+        // No values!
+      default:
+        break;
+    } 
   }
 
   @Override
