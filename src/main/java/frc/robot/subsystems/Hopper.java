@@ -135,7 +135,7 @@ public Command hopperExtend() {
 */
 
 public Command hopperExtend() {
-  return run(() -> {this.goToPosition(HopperConstants.kHopperExtend);}).until(isHopperExtended).withName("hopperExtend").andthen(
+  return run(() -> {this.goToPosition(HopperConstants.kHopperExtend);}).until(isHopperExtended).withName("hopperExtend").andThen(
   run(()-> {this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0.25));})).withTimeout(0.25).andThen(
   runOnce(()->{this.hopperMotor.setPosition(HopperConstants.kHopperExtend);})).andThen(
   run(()->{this.goToPosition(HopperConstants.kHopperExtend);})).until(isHopperExtended);
