@@ -10,6 +10,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.MotorEnableConstants;
 
 public class Selector extends SubsystemBase {
 
@@ -17,6 +18,9 @@ public class Selector extends SubsystemBase {
     private String currentSelectionName;
     private ArrayList<String> selections;
     private String filterCriteria = "";
+
+    // Fall back to a default of no telemetry.
+    private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
     /**
      * Basic constructor.
@@ -56,8 +60,9 @@ public class Selector extends SubsystemBase {
         this.sortSelections();
     }
 
-    public Selector(File folderPath, String extension, String name) {
+    public Selector(File folderPath, String extension, String name, MotorEnableConstants.TelemetryLevel telemetryLevel) {
         this();
+        this.telemetryLevel = telemetryLevel;
         this.selections = this.addSelectionList(folderPath, extension);
         this.sortSelections();
         this.setSmartDashboardName(name);
@@ -218,10 +223,20 @@ public class Selector extends SubsystemBase {
     }
 
     public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty("Current Command", this::getCurrentCommandName, null);
-        builder.addStringProperty("Current Selection", this::getCurrentSelectionName, null);
-        builder.addStringProperty("Filter String", () -> {return this.filterCriteria;}, null);
-        builder.addIntegerProperty("Number of Selections", () -> {return this.selections.size();}, null);
-        builder.addStringArrayProperty("Current List", this::getCurrentListArray, null);
+        // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+        // That can be used to 'gate' values to log without lines of identical code.
+        switch (this.telemetryLevel) {
+        case FULL:
+            builder.addStringProperty("Filter String", () -> {return this.filterCriteria;}, null);
+            builder.addIntegerProperty("Number of Selections", () -> {return this.selections.size();}, null);
+            builder.addStringArrayProperty("Current List", this::getCurrentListArray, null);
+        case LIMITED:
+            builder.addStringProperty("Current Command", this::getCurrentCommandName, null);
+            builder.addStringProperty("Current Selection", this::getCurrentSelectionName, null);
+        case NONE:
+            // No values!
+        default:
+            break;
+        } 
     }
 }

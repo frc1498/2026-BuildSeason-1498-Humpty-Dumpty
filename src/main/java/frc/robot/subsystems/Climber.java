@@ -39,8 +39,14 @@ public class Climber extends SubsystemBase {
 
   ClimberConfig climberConfig; //Create an object of type climber config to use to configure motors
 
+  // Fall back to a default of no telemetry.
+  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+
   //===============Constructor======================
-  public Climber(ClimberConfig config) {
+  public Climber(ClimberConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
+
+    this.telemetryLevel = telemetryLevel;
+
     liftClimbMotor = new TalonFX(ClimberConfig.kLiftClimbMotorCANID, "canivore");  //Create a motor for this subsystem
     liftClimbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
     this.configureMechanism(liftClimbMotor, config.liftClimbMotorConfig);
@@ -212,9 +218,19 @@ public class Climber extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    //builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
-    //builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
+    // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+    // That can be used to 'gate' values to log without lines of identical code.
+    switch (this.telemetryLevel) {
+      case FULL:
+        builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
+        builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
+      case LIMITED:
+        builder.addStringProperty("Command", this::getCurrentCommandName, null);
+      case NONE:
+        // No values!
+      default:
+        break;
+    } 
   }  
 
   @Override

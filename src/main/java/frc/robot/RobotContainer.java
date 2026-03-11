@@ -56,7 +56,7 @@ public class RobotContainer {
     //=======================Assign Subsystem Names==========================
     //======================================================================= 
     public final ClimberConfig climberConfig = new ClimberConfig();
-    public Climber climber = new Climber(climberConfig);
+    public Climber climber = new Climber(climberConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public HopperConfig hopperConfig = new HopperConfig();
     public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
@@ -65,7 +65,7 @@ public class RobotContainer {
     public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
-    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector");
+    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public Command selectedAuton;
     public ArrayList<Command> autonCommands = new ArrayList<Command>();
 
@@ -91,7 +91,7 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement);
+    public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
