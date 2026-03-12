@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 6.034892857138123,
+        "x": 6.414348998558311,
         "y": 5.718594604372652
       },
       "prevControl": {
-        "x": 5.952880131422707,
-        "y": 5.463209296552005
+        "x": 6.401410228255885,
+        "y": 5.4506760890494625
       },
       "nextControl": {
-        "x": 6.326428571431417,
-        "y": 6.626428571431119
+        "x": 6.468701532881256,
+        "y": 6.844053203566193
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 7.339071428571567
       },
       "prevControl": {
-        "x": 7.848892857142994,
-        "y": 7.589071428571568
+        "x": 7.049795382774833,
+        "y": 7.3210705430310705
       },
       "nextControl": {
-        "x": 7.848892857142994,
-        "y": 6.269889031390879
+        "x": 8.098829450758336,
+        "y": 7.344701630340893
       },
       "isLocked": false,
       "linkedName": null
@@ -52,40 +52,40 @@
         "y": 4.25095238095252
       },
       "prevControl": {
-        "x": 7.848892857142994,
-        "y": 5.114761904762044
+        "x": 8.140621016818312,
+        "y": 4.2522311542882
       },
       "nextControl": {
-        "x": 7.848892857142994,
-        "y": 4.00095238095252
+        "x": 7.286661911552546,
+        "y": 4.248487874466361
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.034892857138123,
-        "y": 5.548289274119127
+        "x": 6.570463764201362,
+        "y": 5.718594604372652
       },
       "prevControl": {
-        "x": 6.295010869477734,
-        "y": 5.553140957100727
+        "x": 6.820434073958322,
+        "y": 5.714741782029305
       },
       "nextControl": {
-        "x": 5.784936332248468,
-        "y": 5.5436271217097675
+        "x": 6.320493454444402,
+        "y": 5.722447426715998
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.6952321239041022,
-        "y": 5.955922273298204
+        "x": 1.334878744643584,
+        "y": 5.969329529243104
       },
       "prevControl": {
-        "x": 1.0515535524755306,
-        "y": 5.9667198923458225
+        "x": 3.4626896784222225,
+        "y": 5.282446123223796
       },
       "nextControl": null,
       "isLocked": false,
@@ -107,23 +107,71 @@
     },
     {
       "waypointRelativePos": 4.05,
-      "rotationDegrees": -1.46547560030495
+      "rotationDegrees": -1.4654756003049503
     }
   ],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 1.694281133083906,
+      "maxWaypointRelativePos": 4.345269909139464,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 4.537680384820919,
+      "maxWaypointRelativePos": 5.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "intake",
       "waypointRelativePos": 1.0742918225547329,
       "endWaypointRelativePos": 5.0,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "intake"
+        }
+      }
+    },
+    {
+      "name": "stopIntake",
+      "waypointRelativePos": 4.38802779262426,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "stopIntake"
+        }
+      }
     },
     {
       "name": "shoot",
-      "waypointRelativePos": 4.5590593265632275,
+      "waypointRelativePos": 4.655264564404068,
       "endWaypointRelativePos": 5.0,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "shoot"
+        }
+      }
     }
   ],
   "globalConstraints": {

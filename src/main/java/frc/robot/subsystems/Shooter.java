@@ -413,9 +413,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerRight() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedRight;
+      //targetLocation = ShooterConstants.kRedRight;
     } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueRight;
+      //targetLocation = ShooterConstants.kBlueRight;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -424,9 +424,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerLeft() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedLeft;
+      //targetLocation = ShooterConstants.kRedLeft;
     } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueLeft;
+      //targetLocation = ShooterConstants.kBlueLeft;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -435,9 +435,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceHub() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedHubCenter;
+      //targetLocation = ShooterConstants.kRedHubCenter;
     } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueHubCenter;
+      //targetLocation = ShooterConstants.kBlueHubCenter;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -735,6 +735,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     //builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
     
     // Issues with too many sendables overruning loop.  Removed these for now to test
+    /*
     builder.addDoubleProperty("Virtual Hood Angle", () -> {return this.virtualHoodAngle;}, null);
     builder.addDoubleProperty("Virtual Flywheel Velocity", () -> {return this.virtualFlywheelVelocity;}, null);
     builder.addDoubleProperty("Virtual Turret Angle", () -> {return this.virtualTurretAngle;}, null);
@@ -752,7 +753,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
     builder.addDoubleProperty("Debug Turret Angle", () -> {return this.virtualTurretAngle;}, null);
+    */
     builder.addStringProperty("Alliance:", () -> {return DriverStation.getAlliance().get().toString();},null );
+    builder.addStringProperty("Target", () -> {return targetLocation.toString();},null );
 
     /*  Overruning sendable loop
     builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);
@@ -777,8 +780,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.currentTurretRotations = this.getTurretRotations();
     this.currentShooterVelocity = this.getShooterVelocity();
     
-    //allianceColor=DriverStation.getAlliance().get().toString();
-    /*
+    allianceColor=DriverStation.getAlliance().get().toString();
+    
     //Set our target based on our alliance color
     if (allianceColor == "Red") {
       targetLocation = ShooterConstants.kRedHubCenter;
@@ -787,7 +790,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
-    */
+    
 
     // Signal that we are ready to fire if the hood and turret are at position, and the shooter is at velocity.
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;

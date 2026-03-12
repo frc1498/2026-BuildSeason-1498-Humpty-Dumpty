@@ -177,7 +177,13 @@ public class RobotContainer {
         // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        /* This is the working shoot on the move code
         driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
+        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
+        */
+
+        driver.leftBumper().whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
+        andThen(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
         //Driver Start: Zero drivetrain
@@ -222,15 +228,14 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
-        Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-        .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub()),move.stopShoot());
+        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
+            Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
-        operator.b().onTrue(move.setTargetToAllianceCornerLeft())
-        
-        
-        .onFalse(move.setTargetToAllianceHub());
+        operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
+            Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator A button
         //operator.a()
@@ -278,7 +283,9 @@ public class RobotContainer {
 
     public void registerAutoCommands(){
         NamedCommands.registerCommand("intake", move.intake());
-        NamedCommands.registerCommand("shoot", move.startAutoShoot());
+        NamedCommands.registerCommand("stopIntake", move.stopIntake());
+        NamedCommands.registerCommand("shoot", move.startWhileMoveShoot());
+        NamedCommands.registerCommand("stopShoot", move.stopShoot());
     }
 
     /**
