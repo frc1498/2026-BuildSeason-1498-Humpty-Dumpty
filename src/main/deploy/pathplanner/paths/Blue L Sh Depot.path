@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.385297619050466,
-        "y": 5.5898571428596915
+        "x": 0.6952321239041022,
+        "y": 5.955922273298204
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4135119047619056,
-        "y": 5.589857142857142
+        "x": -0.27655359038445826,
+        "y": 5.955922273295655
       },
       "isLocked": false,
       "linkedName": "Blue Left Shoot"
@@ -48,7 +48,7 @@
   "folder": "Blue",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -38.83398876583701
+    "rotation": -0.792336600865071
   },
   "useDefaultConstraints": true
 }

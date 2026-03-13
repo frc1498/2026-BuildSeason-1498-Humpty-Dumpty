@@ -72,7 +72,7 @@ public class RobotContainer {
     //Gamepad assignment
     //Instantiate 
     private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
-    //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
+    private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
     // private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -162,7 +162,8 @@ public class RobotContainer {
 
          this.DSAttached.and(this.alliancePresent).and(this.getDSLatch.negate()).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
-            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
+            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
+            .andThen(this.setLatch()).ignoringDisable(true));
 
         // Add the limelight pose estimate to the drivetrain estimate.
         //vision.addLimelightPose.whileTrue(vision.addMegaTag2(() -> {return drivetrain;}));
@@ -181,7 +182,8 @@ public class RobotContainer {
         driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
         //Driver LBumper Shoot medium
-        // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
+        // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
+        operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
         driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
@@ -228,16 +230,18 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        //operator.X()
+        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
+        Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+        .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub()),move.stopShoot());
 
-        //Operator Y button
-        //operator.y()
+        //Operator B button
+        operator.b().onTrue(move.setTargetToAllianceCornerLeft())
+        
+        
+        .onFalse(move.setTargetToAllianceHub());
 
         //Operator A button
         //operator.a()
-
-        //Operator B button
-        //operator.b()
 
         //Operator RTrigger
         //operator.rightTrigger(0.1)
@@ -251,8 +255,8 @@ public class RobotContainer {
         //Operator LBumper
         //operator.leftBumper()
 
-        //Operator Select
-        //operator.
+        //Operator y button
+        operator.y().onTrue(move.agitateHopper()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
