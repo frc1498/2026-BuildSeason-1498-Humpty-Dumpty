@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,6 +29,7 @@ public class Move {
     public CommandSwerveDrivetrain drivetrain;
     public Kickup kickup;
     public Spindexer spindexer;
+
 
     public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, Kickup kickup, Spindexer spindexer) {
         this.climber = climber;
@@ -59,6 +61,9 @@ public class Move {
         return 0;
     }
 
+    //=============================Misc==========================================
+
+
     //==========================================================
     //=====================Commands=============================
     //==========================================================
@@ -80,6 +85,10 @@ public class Move {
 
     public Command setHopperZeroPosition() {
         return hopper.setHopperZero();
+    }
+
+    public Command agitateHopper() {
+        return hopper.agitate().alongWith(intake.intakeSuck());
     }
 
     //==================================Climb====================================
@@ -123,36 +132,41 @@ public class Move {
     // Switching it to a command sequence.
     public Command stopShoot() {
         //return shooter.stopShoot();  
-        return Commands.sequence(spindexer.stopSpindexer(),kickup.stopKickup(),shooter.stopShoot(), 
-        Commands.parallel(hopper.hopperExtend(), intake.intakeStop(),shooter.hood0()));       
+        return Commands.sequence(spindexer.stopSpindexer(),kickup.stopKickup(),shooter.stopShoot(), shooter.hood0(), shooter.turret0());       
     }
 
+    /*
     public Command startShootFast() {
         //return shooter.startShootFast();  
         return Commands.sequence(shooter.hood30(),shooter.startShootFast()).andThen
                 (Commands.sequence(kickup.forwardKickup(),
                 spindexer.forwardSpindexer()));
     }
+    */
 
-    public Command startShootMedium() {
-       return Commands.sequence(shooter.hood30(),
-            shooter.startShootMedium()).andThen
-            (kickup.forwardKickup(),
-            spindexer.forwardSpindexer()).andThen(
-            hopper.agitate().alongWith(intake.intakeSuck()));
+    public Command startShootStatic() {
+       return Commands.sequence(shooter.hood30(),shooter.turret0(), shooter.startShootStatic()).andThen
+            (kickup.forwardKickup(), spindexer.forwardSpindexer());
     }
 
     public Command startAutoShoot() {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood(), shooter.autoTurret())
             .until(shooter.isShooterAtVelocity)
-            .andThen(kickup.forwardKickup(), Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
+            .andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer()));
+            //Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
-
+    
     public Command startWhileMoveShoot() {
+        
+        return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
+                Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer())));
+
+        /*
         return Commands.parallel(
             Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
             Commands.waitUntil(shooter.isShooterAtVelocity).andThen(kickup.forwardKickup(), spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()))
         );
+        */
     }
 
     public Command turretClockWise45Degrees(){
@@ -175,6 +189,17 @@ public class Move {
         return shooter.hood0();
     }
 
+    public Command setTargetToAllianceCornerRight() {
+        return shooter.setTargetToAllianceCornerRight();
+    }
+
+    public Command setTargetToAllianceCornerLeft() {
+        return shooter.setTargetToAllianceCornerLeft();
+    }
+
+    public Command setTargetToAllianceHub() {
+        return shooter.setTargetToAllianceHub();
+    }
 
     //==============================Intake=======================================
     public Command reverseIntake() { 
@@ -189,8 +214,14 @@ public class Move {
         return Commands.parallel(intake.intakeStop());
     }
 
+    //================================Misc=======================================
+    public Command setDSAttachedLatchTrue() {
+        return climber.setDSAttachedLatchTrue();
+    }
+
     //======================================================
     //========================Triggers======================
     //======================================================
+
 
 }

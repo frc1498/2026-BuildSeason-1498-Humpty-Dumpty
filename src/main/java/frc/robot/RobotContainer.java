@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -72,11 +73,12 @@ public class RobotContainer {
     //Gamepad assignment
     //Instantiate 
     private final CommandXboxController driver = new CommandXboxController(ControllerConstants.kDriverControllerPort);
-    //private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
+    private final CommandXboxController operator = new CommandXboxController(ControllerConstants.kOperatorControllerPort);
     // private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private boolean DSLatch = false;
     private double precisionDampener = 1.0; //This makes it sound just as cool as it sounded last year.  It's like a dampening field from Star Trek.  Que theremin music.
     //On another note, this is actually just a speed and rotation limiter for the robot, in percent.
     
@@ -151,9 +153,18 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
+        driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
+
+        /*
         this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
+        */
+
+         this.DSAttached.and(this.alliancePresent).and(this.getDSLatch.negate()).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
+            .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
+            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
+            .andThen(this.setLatch()).ignoringDisable(true));
 
         // Add the limelight pose estimate to the drivetrain estimate.
         //vision.addLimelightPose.whileTrue(vision.addMegaTag2(() -> {return drivetrain;}));
@@ -162,9 +173,8 @@ public class RobotContainer {
         //===================Driver Commands=================
         //===================================================
         //Driver POV Up/Down - Auton Select (only in disabled)
-        driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().onTrue(move.stopClimb());
+        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         
         //Driver RTrigger: Intake Reverse - Check 2/26/26 ready for testing
         driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
@@ -173,9 +183,15 @@ public class RobotContainer {
         driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
 
         //Driver LBumper Shoot medium
-        // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
-        driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
+        operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
+        // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
+        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
+        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
+  
         //Driver Start: Zero drivetrain
         driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
@@ -195,9 +211,6 @@ public class RobotContainer {
         // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
         // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
 
-        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
-        //driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
-  
         //Driver b: Zero Hopper position
         driver.b().onTrue(move.setHopperZeroPosition());
 
@@ -218,16 +231,18 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        //operator.X()
+        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
+        Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+        .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub()),move.stopShoot());
 
-        //Operator Y button
-        //operator.y()
+        //Operator B button
+        operator.b().onTrue(move.setTargetToAllianceCornerLeft())
+        
+        
+        .onFalse(move.setTargetToAllianceHub());
 
         //Operator A button
         //operator.a()
-
-        //Operator B button
-        //operator.b()
 
         //Operator RTrigger
         //operator.rightTrigger(0.1)
@@ -241,8 +256,8 @@ public class RobotContainer {
         //Operator LBumper
         //operator.leftBumper()
 
-        //Operator Select
-        //operator.
+        //Operator y button
+        operator.y().onTrue(move.agitateHopper()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
@@ -289,7 +304,15 @@ public class RobotContainer {
         return commandList;
     }
 
+    public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
+
+    public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {this.precisionDampener=0.8;});}
+
+    public Command setNormalMoveSpeed () {return Commands.runOnce(()-> {this.precisionDampener=1.0;});}
+
+
     // Use these triggers to determine when to filter the list of autons.
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);
+    public Trigger getDSLatch = new Trigger(() -> {return this.DSLatch;});
     public Trigger alliancePresent = new Trigger(() -> {return DriverStation.getAlliance().isPresent();});
 }

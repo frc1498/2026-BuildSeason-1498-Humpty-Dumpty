@@ -94,6 +94,12 @@ public class ShooterConstants {
   public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0));
   public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
 
+  //Passing Constants
+  public static final Pose2d kRedLeft = new Pose2d(14.3, 2.5, Rotation2d.fromDegrees(0));
+  public static final Pose2d kRedRight = new Pose2d(14.3, 5.5, Rotation2d.fromDegrees(0));
+  public static final Pose2d kBlueLeft = new Pose2d(2.2, 5.5, Rotation2d.fromDegrees(180.0));
+  public static final Pose2d kBlueRight = new Pose2d(2.2, 2.5, Rotation2d.fromDegrees(180.0));
+
   public static final Transform2d kRobotToTurret = new Transform2d(new Translation2d(0.1143, -0.1381), new Rotation2d(0.0));
   // 0.138112776225552 m X from center of robot.
   // -0.114300228600457 m Y from centrer of robot.
@@ -121,15 +127,19 @@ public class ShooterConstants {
     hoodAngleMap.put(3.7338, 30.0);
     hoodAngleMap.put(4.6990, 35.0);
     hoodAngleMap.put(5.4102, 35.0);
+    hoodAngleMap.put(7.62, 35.0); //For passing shot
+    hoodAngleMap.put(16.0, 35.0); //For passing shot
 
     // In RPS.
-    flywheelSpeedMap.put(1.7272, 31.0);
-    flywheelSpeedMap.put(2.1336, 33.0);
-    flywheelSpeedMap.put(2.8194, 36.0);
-    flywheelSpeedMap.put(3.3528, 39.5);
-    flywheelSpeedMap.put(3.7338, 42.0);
-    flywheelSpeedMap.put(4.6990, 45.5);
-    flywheelSpeedMap.put(5.4102, 50.5);
+    flywheelSpeedMap.put(1.7272, 38.0); // Was 31
+    flywheelSpeedMap.put(2.1336, 40.0); // Was 33
+    flywheelSpeedMap.put(2.8194, 43.0); // Was 36
+    flywheelSpeedMap.put(3.3528, 46.5); // Was 39.5
+    flywheelSpeedMap.put(3.7338, 49.0); // Was 42
+    flywheelSpeedMap.put(4.6990, 52.5); // Was 45.5
+    flywheelSpeedMap.put(5.4102, 57.5); // Was 50.5
+    flywheelSpeedMap.put(7.62, 75.0); //For passing shot
+    flywheelSpeedMap.put(16.0, 75.0); //For passing shot
 
     // In seconds.
     timeOfFlightMap.put(1.7272, 1.018);
@@ -139,5 +149,7 @@ public class ShooterConstants {
     timeOfFlightMap.put(3.7338, 1.202);
     timeOfFlightMap.put(4.6990, 1.234);
     timeOfFlightMap.put(5.4102, 1.233);
+    timeOfFlightMap.put(7.62, 1.735); //For passing shot
+    timeOfFlightMap.put(16.0, 1.735); //For passing shot
   }
 }
