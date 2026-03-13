@@ -53,6 +53,8 @@ public class Intake extends SubsystemBase {
 
   public Intake(IntakeConfig config) {
 
+    this.intakeConfig=config;
+
     this.intakeRightMotor = new TalonFX(IntakeConfig.kIntakeRightCANID, "canivore");  //Create the intake motor for this subsystem
     this.configureMechanism(intakeRightMotor, this.intakeConfig.intakeRightMotorConfig);
 
@@ -103,10 +105,10 @@ public class Intake extends SubsystemBase {
 
   private void stop(){
     if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
-      intakeLeftMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
+      intakeLeftMotor.setControl(intakeDutyCycle.withOutput(0));
     }
     if (MotorEnableConstants.kIntakeRightMotorEnabled) {
-      intakeLeftMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
+      intakeRightMotor.setControl(intakeDutyCycle.withOutput(0));
     }
   }
 

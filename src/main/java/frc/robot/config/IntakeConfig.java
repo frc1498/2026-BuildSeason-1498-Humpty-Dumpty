@@ -32,19 +32,19 @@ public class IntakeConfig {
         intakeRight.MotorOutput.PeakForwardDutyCycle = 1;
         intakeRight.MotorOutput.PeakReverseDutyCycle = -1;
 
-        intakeRight.CurrentLimits.StatorCurrentLimit = 150;  //Updated 2-24-26 - is correct
+        intakeRight.CurrentLimits.StatorCurrentLimit = 180;  //Updated 2-24-26 - is correct
         intakeRight.CurrentLimits.StatorCurrentLimitEnable = true;
-        intakeRight.CurrentLimits.SupplyCurrentLimit = 40;    //Updated 2-24-26 - is correct
+        intakeRight.CurrentLimits.SupplyCurrentLimit = 60;    //Updated 2-24-26 - is correct
         intakeRight.CurrentLimits.SupplyCurrentLimitEnable = true;
-        intakeRight.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
+        intakeRight.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
         intakeRight.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        intakeRight.Slot0.kP = 0;  // An error of 1 rotation per second results in 2V output
+        intakeRight.Slot0.kP = 2;  // An error of 1 rotation per second results in 2V output
         intakeRight.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         intakeRight.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         intakeRight.Slot0.kS = 0;
-        intakeRight.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        intakeRight.Slot0.kV = 0.14;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         intakeRight.Slot0.kA = 0;
         intakeRight.Slot0.kG = 0;
 
@@ -62,19 +62,19 @@ public class IntakeConfig {
         intakeLeft.MotorOutput.PeakForwardDutyCycle = 1;
         intakeLeft.MotorOutput.PeakReverseDutyCycle = -1;
 
-        intakeLeft.CurrentLimits.StatorCurrentLimit = 150;  //Updated 2-24-26 - is correct
+        intakeLeft.CurrentLimits.StatorCurrentLimit = 180;  //Updated 2-24-26 - is correct
         intakeLeft.CurrentLimits.StatorCurrentLimitEnable = true;
-        intakeLeft.CurrentLimits.SupplyCurrentLimit = 40;    //Updated 2-24-26 - is correct
+        intakeLeft.CurrentLimits.SupplyCurrentLimit = 60;    //Updated 2-24-26 - is correct
         intakeLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
-        intakeLeft.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
+        intakeLeft.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
         intakeLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        intakeLeft.Slot0.kP = 0;  // An error of 1 rotation per second results in 2V output
+        intakeLeft.Slot0.kP = 2;  // An error of 1 rotation per second results in 2V output
         intakeLeft.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         intakeLeft.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         intakeLeft.Slot0.kS = 0;
-        intakeLeft.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        intakeLeft.Slot0.kV = 0.14;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         intakeLeft.Slot0.kA = 0;
         intakeLeft.Slot0.kG = 0;
 
