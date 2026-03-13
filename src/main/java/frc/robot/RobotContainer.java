@@ -167,49 +167,54 @@ public class RobotContainer {
         driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         
-        //Driver RTrigger: Intake Reverse - Check 2/26/26 ready for testing
-        driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        //Driver RTrigger: Intake
+        //driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        driver.rightTrigger(0.1).onTrue(move.intake()).onFalse(move.stopIntake());
 
-        //Driver RBumper Intake on  -Checked 2/26/26 ready for testing
-        driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        //Driver RBumper hopperRetract
+        //driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        driver.rightBumper().onTrue(move.hopperRetract());
 
-        //Driver LBumper Shoot medium
+        //Driver LBumper climb
+        driver.leftBumper().onTrue(move.climbRetract());
         // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
-        operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
+        //operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
         /* This is the working shoot on the move code
         driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
         */
 
-        driver.leftBumper().whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
+        //Driver left trigger: Shoot
+        //driver.leftBumper().whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
+        driver.leftTrigger(0.1).whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
         andThen(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
-        //Driver Start: Zero drivetrain
-        driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+        //Driver back: Zero drivetrain
+        //driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
-        //Driver Back: Zero the Climb System
+        //Driver x: Zero the Climb System
         driver.x().onTrue(move.zeroClimb());
 
-        //Driver back: Hopper Retract (this needs a timeout, and the intake should run)
-        driver.start().onTrue(move.hopperRetract());
+        //Driver start: zero gyro
+        //driver.start().onTrue(move.hopperRetract());
+        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
         //Driver y: Climb Ready 
-        driver.y().onTrue(move.climbExtend());
-
-        //Driver a: Climb Retract
-        driver.a().onTrue(move.climbRetract());
-
-        // USE THIS BUTTON TO TEST THE FUNCTIONALITY OF TRACKING THE BLUE HUB WITH THE TURRET.
-        // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
-        // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
-
+        //driver.y().onTrue(move.climbExtend());
+  
+        //Driver a: Climb extend
+        //driver.a().onTrue(move.climbRetract());
+        driver.a().onTrue(move.climbExtend());
+  
+        //driver.b Reverse Intake
         // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
         //driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
-  
-        //Driver b: Zero Hopper position
-        driver.b().onTrue(move.setHopperZeroPosition());
+        driver.b().whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+
+        //Driver y: Zero Hopper position
+        driver.y().onTrue(move.setHopperZeroPosition());
 
         //===================================================
         //==================Operator Commands================ 
