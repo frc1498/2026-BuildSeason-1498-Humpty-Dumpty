@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.constants.ControllerConstants;
+import frc.robot.constants.MotorEnableConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -56,16 +57,16 @@ public class RobotContainer {
     //=======================Assign Subsystem Names==========================
     //======================================================================= 
     public final ClimberConfig climberConfig = new ClimberConfig();
-    public Climber climber = new Climber(climberConfig);
+    public Climber climber = new Climber(climberConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public HopperConfig hopperConfig = new HopperConfig();
-    public Hopper hopper = new Hopper(hopperConfig);
+    public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public IntakeConfig intakeConfig = new IntakeConfig();
-    public Intake intake = new Intake(intakeConfig);
+    public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
-    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector");
+    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public Command selectedAuton;
     public ArrayList<Command> autonCommands = new ArrayList<Command>();
 
@@ -92,14 +93,14 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement);
+    public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public ShooterConfig shooterConfig = new ShooterConfig();
-    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy);
+    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
     // Because I'm lazy, I'm leaving the configurations for the kickup and spindexer motors in the shooter config.
     // We'll just pass the shooter config into the kickup and spindexer subsystems to use the already in-place configurations.
-    public Kickup kickup = new Kickup(shooterConfig);
-    public Spindexer spindexer = new Spindexer(shooterConfig);
+    public Kickup kickup = new Kickup(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    public Spindexer spindexer = new Spindexer(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public final Move move = new Move(climber,hopper,intake,shooter,drivetrain,kickup,spindexer);
 

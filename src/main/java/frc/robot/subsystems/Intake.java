@@ -34,8 +34,13 @@ public class Intake extends SubsystemBase {
 
   public DutyCycleOut intakeDutyCycle;
 
+  // Fall back to a default of no telemetry.
+  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+
   //Constructor
-  public Intake(IntakeConfig config) {
+  public Intake(IntakeConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
+
+    this.telemetryLevel = telemetryLevel;
 
     intakeMotor = new TalonFX(IntakeConfig.kIntakeCANID, "canivore");  //Create the intake motor for this subsystem
     intakeMotorMode = new VelocityVoltage(0);  //Set the motor's control mode
@@ -137,8 +142,18 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    //builder.addStringProperty("Intake State", () -> {return this.intakeState;}, null);
+    // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+    // That can be used to 'gate' values to log without lines of identical code.
+    switch (this.telemetryLevel) {
+      case FULL:
+        builder.addStringProperty("Intake State", () -> {return this.intakeState;}, null);
+      case LIMITED:
+        builder.addStringProperty("Command", this::getCurrentCommandName, null);
+      case NONE:
+        // No values!
+      default:
+        break;
+    }   
   }
 
   @Override

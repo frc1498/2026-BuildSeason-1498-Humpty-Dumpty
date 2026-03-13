@@ -32,7 +32,8 @@ public final class MotorEnableConstants {
 
   public static enum TelemetryLevel {
     NONE,
-    FULL
+    LIMITED,
+    FULL,
   }
   
 }
