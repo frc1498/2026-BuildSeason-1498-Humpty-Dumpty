@@ -126,11 +126,20 @@ public class Hopper extends SubsystemBase {
   }
 
 //=================Public Methods=========================
-  public Command hopperExtend() {
+/*  
+public Command hopperExtend() {
     return run(
       () -> {this.goToPosition(HopperConstants.kHopperExtend);}
     ).until(isHopperExtended).withName("hopperExtend");
   }
+*/
+
+public Command hopperExtend() {
+  return run(() -> {this.goToPosition(HopperConstants.kHopperExtend);}).until(isHopperExtended).withName("hopperExtend").andThen(
+  run(()-> {this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0.25));})).withTimeout(0.25).andThen(
+  runOnce(()->{this.hopperMotor.setPosition(HopperConstants.kHopperExtend);})).andThen(
+  run(()->{this.goToPosition(HopperConstants.kHopperExtend);})).until(isHopperExtended);
+}
 
   public Command hopperRetract() {
     return run(

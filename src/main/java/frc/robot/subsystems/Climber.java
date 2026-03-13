@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -23,6 +24,7 @@ import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.ClimberConstants;
+import edu.wpi.first.wpilibj.DriverStation;
 
 //For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
 
@@ -36,6 +38,8 @@ public class Climber extends SubsystemBase {
 
   private double desiredLiftMotorPosition;
   private boolean isLiftClimberCurrentLimitLatched=false;
+
+  public boolean hasDSAttachLatched = false;
 
   ClimberConfig climberConfig; //Create an object of type climber config to use to configure motors
 
@@ -142,6 +146,15 @@ public class Climber extends SubsystemBase {
 
   }
 
+  private boolean isDSAttachLatched() {
+        if (DriverStation.getAlliance().isPresent()) {
+          hasDSAttachLatched=true;
+        } else {
+          hasDSAttachLatched=false;
+        }
+        return hasDSAttachLatched;
+  }
+
 //=======================================================
 //=====================Public Methods====================
 //=======================================================
@@ -201,6 +214,11 @@ public class Climber extends SubsystemBase {
     ).withName("liftClimbStop");
   }
 
+  public Command setDSAttachedLatchTrue() {
+    return run(() -> {isDSAttachLatched();});
+  }
+
+
   //=======================Triggers======================
   public Trigger isLiftClimbExtended = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbExtend);});
   public Trigger isLiftClimbHandedOff = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbHandOff);});
@@ -209,7 +227,8 @@ public class Climber extends SubsystemBase {
   public Trigger isLiftClimberCurrentLimitTripped = new Trigger(this::liftClimberCurrentLimitTripped);
   public Trigger isClimberReadyToClimb = new Trigger(() -> {return this.isClimberReadyToClimb();});
   public Trigger isClimberHome = new Trigger (() -> {return this.isClimberHome();});
-
+  public Trigger isDSLatched = new Trigger(this::isDSAttachLatched);
+  private Trigger hasDSAttached = new Trigger(DriverStation::isDSAttached);
   @Override
   public void initSendable(SendableBuilder builder) {
     //builder.addStringProperty("Command", this::getCurrentCommandName, null);
