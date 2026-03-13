@@ -150,7 +150,8 @@ public class Move {
     public Command startAutoShoot() {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood(), shooter.autoTurret())
             .until(shooter.isShooterAtVelocity)
-            .andThen(kickup.forwardKickup(), Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
+            .andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer()));
+            //Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
 
     public Command startWhileMoveShoot() {

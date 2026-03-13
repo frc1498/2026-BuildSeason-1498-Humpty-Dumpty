@@ -151,6 +151,9 @@ public class RobotContainer {
         //driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
+
         /*
         this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
@@ -168,9 +171,8 @@ public class RobotContainer {
         //===================Driver Commands=================
         //===================================================
         //Driver POV Up/Down - Auton Select (only in disabled)
-        driver.povUp().and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().onTrue(move.stopClimb());
+        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
         
         //Driver RTrigger: Intake Reverse - Check 2/26/26 ready for testing
         driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
@@ -180,7 +182,9 @@ public class RobotContainer {
 
         //Driver LBumper Shoot medium
         // driver.leftBumper().whileTrue(move.startShootMedium()).onFalse(move.stopShoot());
-        //driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
+        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
         // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
         driver.leftBumper().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
@@ -295,7 +299,12 @@ public class RobotContainer {
         return commandList;
     }
 
-    public Command setLatch() { return Commands.runOnce(() -> {this.DSLatch = true;});}
+    public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
+
+    public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {this.precisionDampener=0.8;});}
+
+    public Command setNormalMoveSpeed () {return Commands.runOnce(()-> {this.precisionDampener=1.0;});}
+
 
     // Use these triggers to determine when to filter the list of autons.
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);

@@ -123,13 +123,13 @@ public class ShooterConstants {
     hoodAngleMap.put(5.4102, 35.0);
 
     // In RPS.
-    flywheelSpeedMap.put(1.7272, 31.0);
-    flywheelSpeedMap.put(2.1336, 33.0);
-    flywheelSpeedMap.put(2.8194, 36.0);
-    flywheelSpeedMap.put(3.3528, 39.5);
-    flywheelSpeedMap.put(3.7338, 42.0);
-    flywheelSpeedMap.put(4.6990, 45.5);
-    flywheelSpeedMap.put(5.4102, 50.5);
+    flywheelSpeedMap.put(1.7272, 37.0); // Was 31
+    flywheelSpeedMap.put(2.1336, 39.0); // Was 33
+    flywheelSpeedMap.put(2.8194, 42.0); // Was 36
+    flywheelSpeedMap.put(3.3528, 45.5); // Was 39.5
+    flywheelSpeedMap.put(3.7338, 48.0); // Was 42
+    flywheelSpeedMap.put(4.6990, 51.5); // Was 45.5
+    flywheelSpeedMap.put(5.4102, 56.5); // Was 50.5
 
     // In seconds.
     timeOfFlightMap.put(1.7272, 1.018);
