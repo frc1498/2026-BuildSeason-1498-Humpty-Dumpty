@@ -13,12 +13,6 @@
                 "data": {
                   "pathName": "Red R to C to R Sh"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "intake"
-                }
               }
             ]
           }
@@ -30,7 +24,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 5.0
                 }
               },
               {
@@ -43,15 +37,9 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "Red R Sh to Outpost"
-          }
-        },
-        {
           "type": "named",
           "data": {
-            "name": "shoot"
+            "name": "retractHopper"
           }
         }
       ]

@@ -15,7 +15,8 @@ package frc.robot.constants;
 public final class MotorEnableConstants {
 //Motor Enable/Disable
 
-  public static final boolean kIntakeMotorEnabled = true;
+  public static final boolean kIntakeLeftMotorEnabled = true;
+  public static final boolean kIntakeRightMotorEnabled = true;
   public static final boolean kHopperMotorEnabled = true;
   public static final boolean kLiftClimbMotorEnabled = true;
   public static final boolean kTurretMotorEnabled = true;

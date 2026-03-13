@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.4992563429263863,
-        "y": 2.6182168330900253
+        "x": 1.8006704707560623,
+        "y": 2.445052338897707
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.7760018384183995,
-        "y": 2.597788905166701
+        "x": 3.077415966248078,
+        "y": 2.4246244109743826
       },
       "isLocked": false,
       "linkedName": null
@@ -80,16 +80,16 @@
     },
     {
       "anchor": {
-        "x": 3.9510612676826637,
-        "y": 2.5616433602732447
+        "x": 3.957680150287799,
+        "y": 2.445052338897707
       },
       "prevControl": {
-        "x": 4.346120534804736,
-        "y": 2.6083640073132894
+        "x": 4.345025305432116,
+        "y": 2.535707587974037
       },
       "nextControl": {
-        "x": 1.6425858123747354,
-        "y": 2.28863757120838
+        "x": 3.714258105588693,
+        "y": 2.3880812220532346
       },
       "isLocked": false,
       "linkedName": null
@@ -105,29 +105,29 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue Outpost"
+      "linkedName": "Blue Right Shoot"
     }
   ],
   "rotationTargets": [
     {
       "waypointRelativePos": 1.04,
-      "rotationDegrees": -135.580402447707
+      "rotationDegrees": 58.76552531852361
     },
     {
       "waypointRelativePos": 1.9867549668874134,
       "rotationDegrees": -89.829433587238
     },
     {
-      "waypointRelativePos": 2.981975736568454,
+      "waypointRelativePos": 2.9642384105960193,
       "rotationDegrees": -89.4541100237827
     },
     {
       "waypointRelativePos": 4.199470432480018,
-      "rotationDegrees": -0.7222065082807421
+      "rotationDegrees": 41.090532616327366
     },
     {
       "waypointRelativePos": 5.007947019867584,
-      "rotationDegrees": 1.8203777847092577
+      "rotationDegrees": 43.639046074219074
     }
   ],
   "constraintZones": [
@@ -162,8 +162,8 @@
   "eventMarkers": [
     {
       "name": "intake",
-      "waypointRelativePos": 1.7509353287011982,
-      "endWaypointRelativePos": 3.9828968466061236,
+      "waypointRelativePos": 1.0454302512025726,
+      "endWaypointRelativePos": 4.624265098877606,
       "command": {
         "type": "sequential",
         "data": {
@@ -180,8 +180,8 @@
     },
     {
       "name": "stopIntake",
-      "waypointRelativePos": 4.521646178514054,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 2.097274184927963,
+      "endWaypointRelativePos": 4.239444147514744,
       "command": {
         "type": "named",
         "data": {
@@ -200,13 +200,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.06219635371103084
+    "rotation": 43.408859728805446
   },
   "reversed": false,
   "folder": "Blue",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -137.59968688751235
+    "rotation": 46.26560520284732
   },
   "useDefaultConstraints": true
 }

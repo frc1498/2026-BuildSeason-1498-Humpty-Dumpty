@@ -24,9 +24,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   //Variables
-  public TalonFX intakeMotor;  //Motor type definition
-  
-  public VelocityVoltage intakeMotorMode; //Motor control type definition
+  public TalonFX intakeRightMotor;  //Motor type definition
+  public TalonFX intakeLeftMotor;  //Motor type definition
+
+  public VelocityVoltage intakeVelocityVoltage; //Motor control type definition
 
   IntakeConfig intakeConfig; //Create an object of type IntakeConfig
 
@@ -39,18 +40,19 @@ public class Intake extends SubsystemBase {
 
   //Constructor
   public Intake(IntakeConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
-
     this.telemetryLevel = telemetryLevel;
+    this.intakeConfig=config;
 
-    intakeMotor = new TalonFX(IntakeConfig.kIntakeCANID, "canivore");  //Create the intake motor for this subsystem
-    intakeMotorMode = new VelocityVoltage(0);  //Set the motor's control mode
+    this.intakeRightMotor = new TalonFX(IntakeConfig.kIntakeRightCANID, "canivore");  //Create the intake motor for this subsystem
+    this.configureMechanism(intakeRightMotor, this.intakeConfig.intakeRightMotorConfig);
 
-    this.configureMechanism(intakeMotor, config.intakeConfig);
-
+    intakeLeftMotor = new TalonFX(IntakeConfig.kIntakeLeftCANID, "canivore");  //Create the intake motor for this subsystem
+    this.configureMechanism(intakeLeftMotor, this.intakeConfig.intakeLeftMotorConfig);
+  
     intakeDutyCycle = new DutyCycleOut(0);
+    intakeVelocityVoltage = new VelocityVoltage(0);
 
     SmartDashboard.putData("Intake", this);
-
   }
 
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
@@ -71,20 +73,30 @@ public class Intake extends SubsystemBase {
   //====================================================
 
   private void intake(){
-    if (MotorEnableConstants.kIntakeMotorEnabled) {
-        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kIntakeSpeed));
+    if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
+        intakeLeftMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kIntakeSpeed));
+    }
+    if (MotorEnableConstants.kIntakeRightMotorEnabled) {
+        intakeRightMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kIntakeSpeed));
     }
   }
   
   private void outtake(){
-    if (MotorEnableConstants.kIntakeMotorEnabled) {
-        intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kOuttakeSpeed));
+    if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
+        intakeLeftMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kOuttakeSpeed));
     }
+    if (MotorEnableConstants.kIntakeRightMotorEnabled) {
+        intakeLeftMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kOuttakeSpeed));
+    }
+    
   }
 
   private void stop(){
-    if (MotorEnableConstants.kIntakeMotorEnabled) {
-      intakeMotor.setControl(intakeDutyCycle.withOutput(IntakeConstants.kStopSpeed));
+    if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
+      intakeLeftMotor.setControl(intakeDutyCycle.withOutput(0));
+    }
+    if (MotorEnableConstants.kIntakeRightMotorEnabled) {
+      intakeRightMotor.setControl(intakeDutyCycle.withOutput(0));
     }
   }
 
@@ -109,9 +121,9 @@ public class Intake extends SubsystemBase {
         break;
       case FULL:
         DogLog.log("Current Intake Command", getCurrentCommandName());
-        DogLog.log("Intake Current", intakeMotor.getSupplyCurrent().getValueAsDouble());
+        DogLog.log("Intake Current", intakeLeftMotor.getSupplyCurrent().getValueAsDouble());
         DogLog.log("Actual Intake State", intakeState);
-        DogLog.log("Actual Intake Velocity", intakeMotor.getVelocity().getValueAsDouble());
+        DogLog.log("Actual Intake Velocity", intakeLeftMotor.getVelocity().getValueAsDouble());
         break;
       default:
         break;

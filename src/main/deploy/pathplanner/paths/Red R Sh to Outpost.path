@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 14.316666666664842,
-        "y": 5.509942658194005
+        "x": 14.241083333331755,
+        "y": 5.570278553482392
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.575809523809525,
-        "y": 6.345690476190477
+        "x": 14.500226190476438,
+        "y": 6.406026371478864
       },
       "isLocked": false,
       "linkedName": "Red Right Shoot"
@@ -48,7 +48,7 @@
   "folder": "Red",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -143.49959640845154
+    "rotation": -147.62907682211136
   },
   "useDefaultConstraints": true
 }

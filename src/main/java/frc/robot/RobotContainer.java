@@ -186,12 +186,15 @@ public class RobotContainer {
         // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
+        /* This is the working shoot on the move code
         driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
+        */
 
-        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
-        driver.leftBumper().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
-  
+        driver.leftBumper().whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
+        andThen(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
+
         //Driver Start: Zero drivetrain
         driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
@@ -231,15 +234,14 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
-        Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-        .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
+            Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
-        operator.b().onTrue(move.setTargetToAllianceCornerLeft())
-        
-        
-        .onFalse(move.setTargetToAllianceHub());
+        operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
+            Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator A button
         //operator.a()
@@ -287,7 +289,11 @@ public class RobotContainer {
 
     public void registerAutoCommands(){
         NamedCommands.registerCommand("intake", move.intake());
-        NamedCommands.registerCommand("shoot", move.startAutoShoot());
+        NamedCommands.registerCommand("stopIntake", move.stopIntake());
+        NamedCommands.registerCommand("shoot", move.startWhileMoveShoot());
+        NamedCommands.registerCommand("stopShoot", move.stopShoot());
+        NamedCommands.registerCommand("agitate", move.agitateHopper());
+        NamedCommands.registerCommand("retractHopper", move.hopperRetract());
     }
 
     /**

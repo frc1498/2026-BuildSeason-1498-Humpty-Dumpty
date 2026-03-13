@@ -418,9 +418,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerRight() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedRight;
+      //targetLocation = ShooterConstants.kRedRight;
     } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueRight;
+      //targetLocation = ShooterConstants.kBlueRight;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -429,9 +429,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerLeft() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedLeft;
+      //targetLocation = ShooterConstants.kRedLeft;
     } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueLeft;
+      //targetLocation = ShooterConstants.kBlueLeft;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -440,9 +440,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceHub() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedHubCenter;
+      //targetLocation = ShooterConstants.kRedHubCenter;
     } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueHubCenter;
+      //targetLocation = ShooterConstants.kBlueHubCenter;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -761,6 +761,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
         builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
         builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
         builder.addStringProperty("Alliance:", () -> {return DriverStation.getAlliance().get().toString();},null );
+        builder.addStringProperty("Target", () -> {return targetLocation.toString();}, null);
       case LIMITED:
         builder.addStringProperty("Command", this::getCurrentCommandName, null);
       case NONE:
@@ -787,8 +788,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     // Wondering if caching this will reduce the CPU usage of this call.
     this.swerveState = this.swerveStateSupplier.get();
     
-    //allianceColor=DriverStation.getAlliance().get().toString();
-    /*
+    allianceColor = DriverStation.getAlliance().get().toString();
+    
     //Set our target based on our alliance color
     if (allianceColor == "Red") {
       targetLocation = ShooterConstants.kRedHubCenter;
@@ -797,22 +798,22 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
-    */
+    
 
     // Signal that we are ready to fire if the hood and turret are at position, and the shooter is at velocity.
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.get().Pose.transformBy(ShooterConstants.kRobotToTurret), targetLocation);
+    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret), targetLocation);
     //this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
     // this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
-    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.get().Speeds, this.swerveStateSupplier.get().Pose, targetLocation);
+    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveStateSupplier.get().Pose, targetLocation);
 
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
     // this.virtualTurretAngle = swerveStateSupplier.get().Pose.getRotation().minus(this.currentTarget.getRotation()).getDegrees();
-    this.virtualTurretAngle = this.convertTurretOverturn(targetLocation.minus(this.swerveState.get().Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
+    this.virtualTurretAngle = this.convertTurretOverturn(targetLocation.minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
 
     this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
