@@ -153,7 +153,7 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
+        driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();}));
 
         /*
         this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
@@ -233,7 +233,7 @@ public class RobotContainer {
         //Operator X button
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
         Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-        .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub()),move.stopShoot());
+        .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
         operator.b().onTrue(move.setTargetToAllianceCornerLeft())

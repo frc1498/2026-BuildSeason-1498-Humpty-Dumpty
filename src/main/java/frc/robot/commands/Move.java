@@ -214,11 +214,6 @@ public class Move {
         return Commands.parallel(intake.intakeStop());
     }
 
-    //================================Misc=======================================
-    public Command setDSAttachedLatchTrue() {
-        return climber.setDSAttachedLatchTrue();
-    }
-
     //======================================================
     //========================Triggers======================
     //======================================================
