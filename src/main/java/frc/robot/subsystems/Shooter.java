@@ -424,9 +424,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerLeft() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      //targetLocation = ShooterConstants.kRedLeft;
+      targetLocation = ShooterConstants.kRedLeft;
     } else if (allianceColor == "Blue") {
-      //targetLocation = ShooterConstants.kBlueLeft;
+      targetLocation = ShooterConstants.kBlueLeft;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -435,9 +435,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceHub() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      //targetLocation = ShooterConstants.kRedHubCenter;
+      targetLocation = ShooterConstants.kRedHubCenter;
     } else if (allianceColor == "Blue") {
-      //targetLocation = ShooterConstants.kBlueHubCenter;
+      targetLocation = ShooterConstants.kBlueHubCenter;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }

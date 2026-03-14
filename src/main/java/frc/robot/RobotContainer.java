@@ -66,8 +66,8 @@ public class RobotContainer {
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
     public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector");
-    public Command selectedAuton;
-    public ArrayList<Command> autonCommands = new ArrayList<Command>();
+    public PathPlannerAuto selectedAuton;
+    public ArrayList<PathPlannerAuto> autonCommands = new ArrayList<PathPlannerAuto>();
 
     //Gamepad assignment
     //Instantiate 
@@ -155,6 +155,7 @@ public class RobotContainer {
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
+            .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
             .andThen(this.setLatch()).ignoringDisable(true));
 
         // Add the limelight pose estimate to the drivetrain estimate.
@@ -164,8 +165,8 @@ public class RobotContainer {
         //===================Driver Commands=================
         //===================================================
         //Driver POV Up/Down - Auton Select (only in disabled)
-        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
+        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
         //Driver RTrigger: Intake
         //driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
@@ -300,8 +301,8 @@ public class RobotContainer {
      * @param autonList
      * @return
      */
-    public ArrayList<Command> loadAllAutonomous(Supplier<ArrayList<String>> autonList) {
-        ArrayList<Command> commandList = new ArrayList<Command>();
+    public ArrayList<PathPlannerAuto> loadAllAutonomous(Supplier<ArrayList<String>> autonList) {
+        ArrayList<PathPlannerAuto> commandList = new ArrayList<PathPlannerAuto>();
         for (var i : autonList.get()) {
             commandList.add(new PathPlannerAuto(i));
         }

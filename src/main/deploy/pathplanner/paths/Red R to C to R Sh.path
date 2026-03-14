@@ -133,8 +133,19 @@
   "eventMarkers": [
     {
       "name": "intake",
-      "waypointRelativePos": 1.8634538152610445,
-      "endWaypointRelativePos": 4.385542168674698,
+      "waypointRelativePos": 0.7482629609834284,
+      "endWaypointRelativePos": 4.2223409941207874,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "intake"
+        }
+      }
+    },
+    {
+      "name": "stopIntake",
+      "waypointRelativePos": 4.307856761090328,
+      "endWaypointRelativePos": null,
       "command": null
     }
   ],
