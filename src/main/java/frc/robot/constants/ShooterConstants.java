@@ -21,7 +21,10 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public class ShooterConstants {
+public class 
+
+
+ShooterConstants {
 
   /*===============Speeds===================*/
   public static final double kKickupIntake = 90.0;  //Verified 2/25/26
@@ -131,13 +134,13 @@ public class ShooterConstants {
     hoodAngleMap.put(16.0, 35.0); //For passing shot
 
     // In RPS.
-    flywheelSpeedMap.put(1.7272, 38.0); // Was 31
-    flywheelSpeedMap.put(2.1336, 40.0); // Was 33
-    flywheelSpeedMap.put(2.8194, 43.0); // Was 36
-    flywheelSpeedMap.put(3.3528, 46.5); // Was 39.5
-    flywheelSpeedMap.put(3.7338, 49.0); // Was 42
-    flywheelSpeedMap.put(4.6990, 52.5); // Was 45.5
-    flywheelSpeedMap.put(5.4102, 57.5); // Was 50.5
+    flywheelSpeedMap.put(1.7272, 39.0); // Was 31
+    flywheelSpeedMap.put(2.1336, 41.0); // Was 33
+    flywheelSpeedMap.put(2.8194, 44.0); // Was 36
+    flywheelSpeedMap.put(3.3528, 47.5); // Was 39.5
+    flywheelSpeedMap.put(3.7338, 50.0); // Was 42
+    flywheelSpeedMap.put(4.6990, 53.5); // Was 45.5
+    flywheelSpeedMap.put(5.4102, 58.5); // Was 50.5
     flywheelSpeedMap.put(7.62, 75.0); //For passing shot
     flywheelSpeedMap.put(16.0, 75.0); //For passing shot
 
