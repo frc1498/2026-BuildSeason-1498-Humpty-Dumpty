@@ -178,7 +178,7 @@ public class RobotContainer {
 
         //Driver LBumper climb
         driver.leftBumper().onTrue(move.climbRetract());
-        // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
+        
         //operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
         // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
         /* This is the working shoot on the move code
@@ -234,20 +234,22 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
+        /*
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+            .onFalse(Commands.sequence(setNormalMoveSpee(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
         operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+        */
 
         //Operator A button
         //operator.a()
 
         //Operator RTrigger
-        //operator.rightTrigger(0.1)
+        operator.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
 
         //Operator RBumper 
         //operator.rightBumper()
