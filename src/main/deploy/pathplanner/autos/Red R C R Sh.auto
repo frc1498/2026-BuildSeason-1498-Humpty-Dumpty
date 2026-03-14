@@ -5,13 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "sequential",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Blue R C R SH"
+                  "pathName": "Red R to C to R Sh"
                 }
               }
             ]
@@ -34,12 +34,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "retractHopper"
           }
         }
       ]
