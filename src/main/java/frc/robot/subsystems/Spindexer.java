@@ -120,7 +120,7 @@ public Spindexer(ShooterConfig config) {
 
 
   // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Spindexer", this);
+  //SmartDashboard.putData("Spindexer", this);
 
   spindexerDutyCycle = new DutyCycleOut(0.0);
 }

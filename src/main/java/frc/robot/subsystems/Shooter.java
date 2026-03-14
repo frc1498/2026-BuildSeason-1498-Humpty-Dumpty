@@ -216,8 +216,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
     );
 
   // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Shooter", this);
-  SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  //SmartDashboard.putData("Shooter", this);
+  //SmartDashboard.putData("Shooter/Pose", this.targetingField);
   //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
@@ -755,8 +755,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
     builder.addDoubleProperty("Debug Turret Angle", () -> {return this.virtualTurretAngle;}, null);
     */
-    builder.addStringProperty("Alliance:", () -> {return DriverStation.getAlliance().get().toString();},null );
-    builder.addStringProperty("Target", () -> {return targetLocation.toString();},null );
+    //builder.addStringProperty("Alliance:", () -> {return DriverStation.getAlliance().get().toString();},null );
+    //builder.addStringProperty("Target", () -> {return targetLocation.toString();},null );
 
     /*  Overruning sendable loop
     builder.addDoubleProperty("Tuning Hood Angle", () -> {return this.tuningHoodAngle;}, this::setTuningHoodPosition);

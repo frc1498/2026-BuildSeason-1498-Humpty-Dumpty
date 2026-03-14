@@ -110,7 +110,7 @@ public Kickup(ShooterConfig config) {
   this.configureMechanism(this.kickupMotor, this.shooterConfig.kickupMotorConfig);
 
   // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Kickup", this);
+  //SmartDashboard.putData("Kickup", this);
 
   //turretZeroed = true;
   kickupDutyCycle = new DutyCycleOut(0.0);

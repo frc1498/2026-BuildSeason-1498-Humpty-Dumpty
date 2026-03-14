@@ -259,7 +259,7 @@ public class RobotContainer {
         //operator.leftBumper()
 
         //Operator y button
-        operator.y().onTrue(move.agitateHopper()).onFalse(move.hopperExtend());
+        operator.y().onTrue(move.hopperRetract()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().

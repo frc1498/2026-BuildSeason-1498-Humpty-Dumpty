@@ -46,7 +46,7 @@ public class Hopper extends SubsystemBase {
 
     this.hopperMotor.setPosition(0);
 
-    SmartDashboard.putData("Hopper", this);
+    //SmartDashboard.putData("Hopper", this);
   }
 
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
@@ -189,8 +189,8 @@ public class Hopper extends SubsystemBase {
     //builder.addStringProperty("Command", this::getCurrentCommandName, null);
     //builder.addDoubleProperty("Desired Hopper Position", () -> {return this.desiredPosition;}, null);
     //builder.addDoubleProperty("Actual Hopper Position", this::getHopperPosition, null);
-    builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
-    builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
+    //builder.addBooleanProperty("Hopper at Extend", this.isHopperExtended, null);
+    //builder.addBooleanProperty("Hopper at Retract", this.isHopperRetracted, null);
     //builder.addBooleanProperty("Hoppet at Midpoint", this.isHopperMidpoint,null);
   }
 
