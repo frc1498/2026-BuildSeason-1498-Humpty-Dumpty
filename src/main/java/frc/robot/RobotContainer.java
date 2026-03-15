@@ -294,8 +294,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopIntake", move.stopIntake());
         NamedCommands.registerCommand("shoot", move.startWhileMoveShoot());
         NamedCommands.registerCommand("stopShoot", move.stopShoot());
-        NamedCommands.registerCommand("agitate", move.agitateHopper());
-        NamedCommands.registerCommand("retractHopper", move.hopperRetract());
+        NamedCommands.registerCommand("extendHopper", move.hopperExtend());
+        NamedCommands.registerCommand("retractHopperMid", move.hopperMid());
     }
 
     /**
