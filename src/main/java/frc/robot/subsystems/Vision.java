@@ -460,7 +460,7 @@ public class Vision extends SubsystemBase {
         }
 
         this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
-        //this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
+        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         //visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
