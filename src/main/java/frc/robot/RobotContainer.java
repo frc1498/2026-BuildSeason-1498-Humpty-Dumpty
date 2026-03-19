@@ -66,7 +66,7 @@ public class RobotContainer {
     public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
-    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector");
+    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public PathPlannerAuto selectedAuton;
     public ArrayList<PathPlannerAuto> autonCommands = new ArrayList<PathPlannerAuto>();
 
@@ -263,7 +263,7 @@ public class RobotContainer {
         //===================================================
         
         //Auto agitate when shooting and not intaking
-        driver.leftBumper().and(driver.rightBumper().negate()).whileTrue(move.agitateHopper);
+        driver.leftBumper().and(driver.rightBumper().negate()).whileTrue(move.agitateHopper());
         
         //===================================================
         //==================Developer Commands===============
@@ -313,9 +313,17 @@ public class RobotContainer {
 
     public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
 
-    public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {this.precisionDampener=0.8;});}
+    public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {
+        this.precisionDampenerTranslation = 0.8;
+        this.precisionDampenerRotation = 0.5;}
+        );
+    }
 
-    public Command setNormalMoveSpeed () {return Commands.runOnce(()-> {this.precisionDampener=1.0;});}
+    public Command setNormalMoveSpeed () {return Commands.runOnce(()-> {
+        this.precisionDampenerTranslation = 1.0;
+        this.precisionDampenerRotation = 1.0;}
+        );
+    }
 
 
     // Use these triggers to determine when to filter the list of autons.
