@@ -105,7 +105,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Blue Right Shoot"
+      "linkedName": "Blue Outpost"
     }
   ],
   "rotationTargets": [
@@ -118,7 +118,7 @@
       "rotationDegrees": -89.829433587238
     },
     {
-      "waypointRelativePos": 2.9642384105960193,
+      "waypointRelativePos": 2.981975736568454,
       "rotationDegrees": -89.4541100237827
     },
     {
@@ -200,13 +200,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 43.408859728805446
+    "rotation": -0.06219635371103084
   },
   "reversed": false,
   "folder": "Blue",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -136.94776977070617
+    "rotation": -137.59968688751235
   },
   "useDefaultConstraints": true
 }

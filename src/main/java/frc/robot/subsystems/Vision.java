@@ -70,15 +70,19 @@ public class Vision extends SubsystemBase {
     private double limelightTimestamp;
     private double testTimestamp;
 
+    private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+
     /**
      * Constructor.
      */
-    public Vision(CommandSwerveDrivetrain drivetrain, Supplier<SwerveDriveState> swerveDriveState, poseEstimateConsumer poseConsumer) {
+    public Vision(CommandSwerveDrivetrain drivetrain, Supplier<SwerveDriveState> swerveDriveState, poseEstimateConsumer poseConsumer, MotorEnableConstants.TelemetryLevel telemetryLevel) {
         this.drivetrain = drivetrain;
         this.swerveStateSupplier = swerveDriveState;
         
         this.poseConsumer = poseConsumer;
         //this.poseConsumer = this.drivetrain::addVisionMeasurement;
+
+        this.telemetryLevel = telemetryLevel;
 
         this.setLimelightRobotPosition();
         //In the constructor, set the IMU mode to 1, so the limelight IMU is seeded with the robot gyro heading.
@@ -419,11 +423,21 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        //builder.addStringProperty("Command", this::getCurrentCommandName, null);
-        //builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
-        //builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
-        //builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
-        //builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
+        // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+        // That can be used to 'gate' values to log without lines of identical code.
+        switch (this.telemetryLevel) {
+        case FULL:
+            builder.addDoubleProperty("Robot Heading", () -> {return this.cachedRobotHeading;}, null);
+            builder.addDoubleProperty("Robot Rotation Rate", () -> {return this.cachedRobotRotationRate;}, null);
+            builder.addBooleanProperty("Is Robot Slow Enough", () -> {return this.cachedIsRobotSlowEnough;}, null);
+            builder.addDoubleProperty("Test Timestamp", () -> {return this.testTimestamp;}, null);
+        case LIMITED:
+            builder.addStringProperty("Command", this::getCurrentCommandName, null);
+        case NONE:
+            // No values!
+        default:
+            break;
+        }
     }
 
     @Override
@@ -459,13 +473,21 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
-        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
-        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
+        //this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
+        //this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
-        //visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
-        //visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
-        //visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
+        switch (this.telemetryLevel) {
+        case FULL:
+            visionField.getObject("limelightPose").setPose(this.getCurrentLimelightPose());
+            visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
+            visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
+        case LIMITED:
+        case NONE:
+            // No values!
+        default:
+            break;
+        }
 
         // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
         /* Optional<EstimatedRobotPose> visionEst = Optional.empty();

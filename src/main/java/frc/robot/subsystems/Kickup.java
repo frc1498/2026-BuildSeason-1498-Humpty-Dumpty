@@ -51,6 +51,9 @@ public class Kickup extends SubsystemBase {
 
   public Field2d targetingField = new Field2d();
 
+  // Fall back to a default of no telemetry.
+  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+
   private enum ShooterState {
     IDLE(0.0, 0.0, true),
     FORWARD(ShooterConstants.kSpindexerIntake, ShooterConstants.kKickupIntake, true),
@@ -101,8 +104,9 @@ public class Kickup extends SubsystemBase {
  * Creates a new instance of the Kickup subsystem.
  * @param config - The motor configurations for all motors in the subsystem.
  */
-public Kickup(ShooterConfig config) {
+public Kickup(ShooterConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
+  this.telemetryLevel = telemetryLevel;
   this.shooterConfig = config;
 
   this.kickupMotor = new TalonFX(ShooterConfig.kKickupMotorCANID, "canivore");        // Create the kickup motor.
@@ -235,12 +239,18 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    //builder.addStringProperty("Command", this::getCurrentCommandName, null);
-    //builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
-    //builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
-    
-    // Issues with too many sendables overruning loop.  Removed these for now to test
+    // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
+    // That can be used to 'gate' values to log without lines of identical code.
+    switch (this.telemetryLevel) {
+      case FULL:
+      case LIMITED:
+        builder.addStringProperty("Command", this::getCurrentCommandName, null);
+      case NONE:
+        // No values!
+      default:
+        break;
     }
+  }
   
 
   @Override

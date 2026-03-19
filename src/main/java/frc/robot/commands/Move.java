@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,6 +29,7 @@ public class Move {
     public CommandSwerveDrivetrain drivetrain;
     public Kickup kickup;
     public Spindexer spindexer;
+
 
     public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, Kickup kickup, Spindexer spindexer) {
         this.climber = climber;
@@ -57,6 +59,9 @@ public class Move {
         }
         return 0;
     }
+
+    //=============================Misc==========================================
+
 
     //==========================================================
     //=====================Commands=============================
@@ -196,7 +201,6 @@ public class Move {
     public Command stopIntake() {
         return Commands.parallel(intake.intakeStop());
     }
-
 
     //======================================================
     //========================Triggers======================
