@@ -66,9 +66,9 @@ public class RobotContainer {
     public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
-    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
-    public Command selectedAuton;
-    public ArrayList<Command> autonCommands = new ArrayList<Command>();
+    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector");
+    public PathPlannerAuto selectedAuton;
+    public ArrayList<PathPlannerAuto> autonCommands = new ArrayList<PathPlannerAuto>();
 
     //Gamepad assignment
     //Instantiate 
@@ -79,8 +79,8 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private boolean DSLatch = false;
-    private double precisionDampener = 1.0; //This makes it sound just as cool as it sounded last year.  It's like a dampening field from Star Trek.  Que theremin music.
-    //On another note, this is actually just a speed and rotation limiter for the robot, in percent.
+    private double precisionDampenerTranslation = 1.0; //Translation Speed Limiter
+    private double precisionDampenerRotation = 1.0; //Rotation Speed Limiter
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -129,9 +129,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampener,3)) * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampener,3)) * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * precisionDampener) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * precisionDampenerRotation) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -164,6 +164,7 @@ public class RobotContainer {
          this.DSAttached.and(this.alliancePresent).and(this.getDSLatch.negate()).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
+            .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
             .andThen(this.setLatch()).ignoringDisable(true));
 
         // Add the limelight pose estimate to the drivetrain estimate.
@@ -173,49 +174,40 @@ public class RobotContainer {
         //===================Driver Commands=================
         //===================================================
         //Driver POV Up/Down - Auton Select (only in disabled)
-        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
-        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).ignoringDisable(true));
+        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
+        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
-        //Driver RTrigger: Intake Reverse - Check 2/26/26 ready for testing
-        driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+        //Driver RTrigger: Intake
+        driver.rightTrigger(0.1).onTrue(move.intake()).onFalse(move.stopIntake());
 
-        //Driver RBumper Intake on  -Checked 2/26/26 ready for testing
-        driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
+        //Driver RBumper hopperRetract
+        driver.rightBumper().onTrue(move.hopperRetract());
 
-        //Driver LBumper Shoot medium
-        // driver.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
-        operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
-        // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
-        /* This is the working shoot on the move code
-        driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
-        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
-        */
-
-        driver.leftBumper().whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
+        //Driver LBumper climb
+        driver.leftBumper().onTrue(move.climbRetract());
+        
+        //Driver left trigger: Shoot
+        driver.leftTrigger(0.1).whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
         andThen(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
-        //Driver Start: Zero drivetrain
-        driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+        //Driver back: Zero drivetrain
+        //driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
-        //Driver Back: Zero the Climb System
+        //Driver x: Zero the Climb System
         driver.x().onTrue(move.zeroClimb());
 
-        //Driver back: Hopper Retract (this needs a timeout, and the intake should run)
-        driver.start().onTrue(move.hopperRetract());
+        //Driver start: zero gyro
+        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
-        //Driver y: Climb Ready 
-        driver.y().onTrue(move.climbExtend());
+        //Driver a: Climb extend
+        driver.a().onTrue(move.climbExtend());
+  
+        //driver.b Reverse Intake
+        driver.b().whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
-        //Driver a: Climb Retract
-        driver.a().onTrue(move.climbRetract());
-
-        // USE THIS BUTTON TO TEST THE FUNCTIONALITY OF TRACKING THE BLUE HUB WITH THE TURRET.
-        // CONSIDER REPLACING .onTrue WITH .whileTrue TO SEE IF THE TURRET WILL CONTINUOUSLY TRACK WHILE MOVING.
-        // MIGHT NEED TO DECORATE shooter.turretTrackToBlueHub() WITH .repeatedly().
-
-        //Driver b: Zero Hopper position
-        driver.b().onTrue(move.setHopperZeroPosition());
+        //Driver y: Zero Hopper position
+        driver.y().onTrue(move.setHopperZeroPosition());
 
         //===================================================
         //==================Operator Commands================ 
@@ -234,20 +226,22 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
+        /*
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+            .onFalse(Commands.sequence(setNormalMoveSpee(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
         operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+        */
 
         //Operator A button
         //operator.a()
 
-        //Operator RTrigger
-        //operator.rightTrigger(0.1)
+        //Operator RTrigger: Static pass button
+        operator.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
 
         //Operator RBumper 
         //operator.rightBumper()
@@ -258,12 +252,19 @@ public class RobotContainer {
         //Operator LBumper
         //operator.leftBumper()
 
-        //Operator y button
-        operator.y().onTrue(move.agitateHopper()).onFalse(move.hopperExtend());
+        //Operator y button: Agitate manually
+        operator.y().onTrue(move.hopperRetract()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
 
+        //===================================================
+        //=================Misc Commands=====================
+        //===================================================
+        
+        //Auto agitate when shooting and not intaking
+        driver.leftBumper().and(driver.rightBumper().negate()).whileTrue(move.agitateHopper);
+        
         //===================================================
         //==================Developer Commands===============
         //===================================================        
@@ -292,8 +293,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopIntake", move.stopIntake());
         NamedCommands.registerCommand("shoot", move.startWhileMoveShoot());
         NamedCommands.registerCommand("stopShoot", move.stopShoot());
-        NamedCommands.registerCommand("agitate", move.agitateHopper());
-        NamedCommands.registerCommand("retractHopper", move.hopperRetract());
+        NamedCommands.registerCommand("extendHopper", move.hopperExtend());
+        NamedCommands.registerCommand("retractHopperMid", move.hopperMid());
     }
 
     /**
@@ -301,8 +302,8 @@ public class RobotContainer {
      * @param autonList
      * @return
      */
-    public ArrayList<Command> loadAllAutonomous(Supplier<ArrayList<String>> autonList) {
-        ArrayList<Command> commandList = new ArrayList<Command>();
+    public ArrayList<PathPlannerAuto> loadAllAutonomous(Supplier<ArrayList<String>> autonList) {
+        ArrayList<PathPlannerAuto> commandList = new ArrayList<PathPlannerAuto>();
         for (var i : autonList.get()) {
             commandList.add(new PathPlannerAuto(i));
         }

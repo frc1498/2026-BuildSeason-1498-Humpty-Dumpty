@@ -52,7 +52,7 @@ public class Intake extends SubsystemBase {
     intakeDutyCycle = new DutyCycleOut(0);
     intakeVelocityVoltage = new VelocityVoltage(0);
 
-    SmartDashboard.putData("Intake", this);
+    //SmartDashboard.putData("Intake", this);
   }
 
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     

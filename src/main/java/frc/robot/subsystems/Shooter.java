@@ -220,8 +220,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
     );
 
   // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Shooter", this);
-  SmartDashboard.putData("Shooter/Pose", this.targetingField);
+  //SmartDashboard.putData("Shooter", this);
+  //SmartDashboard.putData("Shooter/Pose", this.targetingField);
   //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
   //turretZeroed = true;
@@ -418,9 +418,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerRight() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      //targetLocation = ShooterConstants.kRedRight;
+      targetLocation = ShooterConstants.kRedRight;
     } else if (allianceColor == "Blue") {
-      //targetLocation = ShooterConstants.kBlueRight;
+      targetLocation = ShooterConstants.kBlueRight;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -429,9 +429,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceCornerLeft() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      //targetLocation = ShooterConstants.kRedLeft;
+      targetLocation = ShooterConstants.kRedLeft;
     } else if (allianceColor == "Blue") {
-      //targetLocation = ShooterConstants.kBlueLeft;
+      targetLocation = ShooterConstants.kBlueLeft;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -440,9 +440,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   private void setTargetAllianceHub() {
     allianceColor = DriverStation.getAlliance().get().toString();
     if (allianceColor == "Red") {
-      //targetLocation = ShooterConstants.kRedHubCenter;
+      targetLocation = ShooterConstants.kRedHubCenter;
     } else if (allianceColor == "Blue") {
-      //targetLocation = ShooterConstants.kBlueHubCenter;
+      targetLocation = ShooterConstants.kBlueHubCenter;
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
@@ -612,7 +612,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command startShootStatic(){
-    return run(() -> {this.setShooterVelocity(75);}).until(isShooterAtVelocity);
+    return run(() -> {this.setShooterVelocity(70);}).until(isShooterAtVelocity);
   }
 
   public Command startShootFast(){
@@ -708,7 +708,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(30);});
+    return runOnce(() -> {this.setHoodAngle(38);});
   }
 
   /**
@@ -780,6 +780,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     //this.turretAtPosition = this.atSetpoint(this.desiredTurretAngle, this.getTurretAngle(), ShooterConstants.kTurretPositionDeadband);
     //this.shooterAtVelocity = this.atSetpoint(this.desiredShooterVelocity, this.getShooterVelocity(), ShooterConstants.kShooterVelocityDeadband);
 
+    this.swerveState = this.swerveStateSupplier.get();
+
     this.currentHoodAngle = this.getHoodAngle();
     this.currentHoodRotations = this.getHoodRotations();
     this.currentTurretAngle = this.getTurretAngle();
@@ -808,7 +810,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     //this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.kBlueHubCenter);
     // this.currentTarget = ShotCalculation.getInstance().getVirtualTarget(this.swerveStateSupplier.get().Speeds, this.swerveStateSupplier.get().Pose.transformBy(ShooterConstants.kRobotToTurret), ShooterConstants.timeOfFlightMap.get(this.distanceToTarget), ShooterConstants.kRedHubCenter);
     
-    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveStateSupplier.get().Pose, targetLocation);
+    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, targetLocation);
 
     this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);

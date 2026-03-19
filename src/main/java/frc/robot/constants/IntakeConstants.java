@@ -17,7 +17,7 @@ public class IntakeConstants {
   //=====================Speeds=====================
   public static final double kIntakeSpeed = 90;
   public static final double kStopSpeed = 0;
-  public static final double kOuttakeSpeed = 30;
+  public static final double kOuttakeSpeed = -30;
   public static final double kIntakeDutyCycleStop = 0;
 
 }

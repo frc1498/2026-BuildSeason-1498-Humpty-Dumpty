@@ -5,13 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Red L to C to L Sh"
+                  "pathName": "Blue Fast R C R SH"
                 }
               }
             ]
@@ -24,7 +24,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 4.0
+                  "waitTime": 5.0
                 }
               },
               {
@@ -41,31 +41,24 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "Red L Sh L Depot"
+                  "waitTime": 0.5
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "intake"
+                  "name": "retractHopperMid"
                 }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              }
-            ]
+            "name": "extendHopper"
           }
         }
       ]

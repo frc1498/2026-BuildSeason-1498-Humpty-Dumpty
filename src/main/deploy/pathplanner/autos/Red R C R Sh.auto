@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Red L to C to L Sh"
+                  "pathName": "Red R to C to R Sh"
                 }
               }
             ]
@@ -41,28 +41,28 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "wait",
                 "data": {
-                  "pathName": "Red L Sh L Depot"
+                  "waitTime": 0.5
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "intake"
+                  "name": "retractHopperMid"
                 }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "shoot"
+                  "name": "extendHopper"
                 }
               }
             ]

@@ -52,7 +52,7 @@ public class Hopper extends SubsystemBase {
 
     this.hopperMotor.setPosition(0);
 
-    SmartDashboard.putData("Hopper", this);
+    //SmartDashboard.putData("Hopper", this);
   }
 
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     

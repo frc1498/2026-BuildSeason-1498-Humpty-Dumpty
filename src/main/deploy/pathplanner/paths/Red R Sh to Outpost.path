@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 14.241083333331755,
-        "y": 5.570278553482392
+        "x": 15.011041369472181,
+        "y": 5.982268188302426
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.500226190476438,
-        "y": 6.406026371478864
+        "x": 15.270184226616864,
+        "y": 6.8180160062988975
       },
       "isLocked": false,
       "linkedName": "Red Right Shoot"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.75,
+    "maxAcceleration": 3.75,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
