@@ -78,8 +78,8 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private boolean DSLatch = false;
-    private double precisionDampener = 1.0; //This makes it sound just as cool as it sounded last year.  It's like a dampening field from Star Trek.  Que theremin music.
-    //On another note, this is actually just a speed and rotation limiter for the robot, in percent.
+    private double precisionDampenerTranslation = 1.0; //Translation Speed Limiter
+    private double precisionDampenerRotation = 1.0; //Rotation Speed Limiter
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -128,9 +128,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() -> 
-                drive.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampener,3)) * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampener,3)) * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * precisionDampener) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * precisionDampenerRotation) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -169,25 +169,15 @@ public class RobotContainer {
         driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
         //Driver RTrigger: Intake
-        //driver.rightTrigger(0.1).whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
         driver.rightTrigger(0.1).onTrue(move.intake()).onFalse(move.stopIntake());
 
         //Driver RBumper hopperRetract
-        //driver.rightBumper().onTrue(move.intake()).onFalse(move.stopIntake());
         driver.rightBumper().onTrue(move.hopperRetract());
 
         //Driver LBumper climb
         driver.leftBumper().onTrue(move.climbRetract());
         
-        //operator.leftBumper().whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
-        // driver.leftBumper().whileTrue(move.startAutoShoot()).onFalse(move.stopShoot());
-        /* This is the working shoot on the move code
-        driver.leftBumper().whileTrue(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot()))
-        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
-        */
-
         //Driver left trigger: Shoot
-        //driver.leftBumper().whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
         driver.leftTrigger(0.1).whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
         andThen(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
@@ -199,19 +189,12 @@ public class RobotContainer {
         driver.x().onTrue(move.zeroClimb());
 
         //Driver start: zero gyro
-        //driver.start().onTrue(move.hopperRetract());
         driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
 
-        //Driver y: Climb Ready 
-        //driver.y().onTrue(move.climbExtend());
-  
         //Driver a: Climb extend
-        //driver.a().onTrue(move.climbRetract());
         driver.a().onTrue(move.climbExtend());
   
         //driver.b Reverse Intake
-        // driver.b().whileTrue(move.startWhileMoveShoot()).onFalse(move.stopShoot());
-        //driver.b().whileTrue(shooter.turretTrackToBlueHub().repeatedly()).onFalse(shooter.turret0());
         driver.b().whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
 
         //Driver y: Zero Hopper position
@@ -248,7 +231,7 @@ public class RobotContainer {
         //Operator A button
         //operator.a()
 
-        //Operator RTrigger
+        //Operator RTrigger: Static pass button
         operator.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
 
         //Operator RBumper 
@@ -260,12 +243,19 @@ public class RobotContainer {
         //Operator LBumper
         //operator.leftBumper()
 
-        //Operator y button
+        //Operator y button: Agitate manually
         operator.y().onTrue(move.hopperRetract()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
 
+        //===================================================
+        //=================Misc Commands=====================
+        //===================================================
+        
+        //Auto agitate when shooting and not intaking
+        Driver.leftbumper().and(!Driver.rightbumper()).whileTrue(move.agitateHopper);
+        
         //===================================================
         //==================Developer Commands===============
         //===================================================        
