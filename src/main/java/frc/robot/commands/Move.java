@@ -48,7 +48,6 @@ public class Move {
     //==========================================================
     private int getAlliance() {
         if (DriverStation.getAlliance().isPresent()) {
-
             if (DriverStation.getAlliance().get() == Alliance.Blue) {
                 return 0;
             }
@@ -122,9 +121,6 @@ public class Move {
     }
 
     //==============================Shoot========================================
-
-    // Commands of the same subsystem cannot be run in parallel (resource conflict).
-    // Switching it to a command sequence.
     public Command stopShoot() {
         //return shooter.stopShoot();  
         return Commands.sequence(spindexer.stopSpindexer(),kickup.stopKickup(),shooter.stopShoot(), shooter.hood0(), shooter.turret0());       
@@ -151,17 +147,9 @@ public class Move {
             //Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
     
-    public Command startWhileMoveShoot() {
-        
+    public Command startWhileMoveShoot() {   
         return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
                 Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer())));
-
-        /*
-        return Commands.parallel(
-            Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
-            Commands.waitUntil(shooter.isShooterAtVelocity).andThen(kickup.forwardKickup(), spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck()))
-        );
-        */
     }
 
     public Command turretClockWise45Degrees(){
