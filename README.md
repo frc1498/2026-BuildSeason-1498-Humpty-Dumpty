@@ -1,5 +1,7 @@
 # 2026-BuildSeason-1498
 
+[![CI](https://github.com/frc1498/2026-BuildSeason-1498/actions/workflows/main.yml/badge.svg)](https://github.com/frc1498/2026-BuildSeason-1498/actions/workflows/main.yml)
+
 Code for Team 1498's 2026 robot, Aurora Zwei. <br>
 [ADD ROBOT PICTURE HERE]
 
