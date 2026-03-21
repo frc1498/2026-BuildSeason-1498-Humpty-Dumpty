@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
@@ -15,7 +14,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -32,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
@@ -116,7 +115,14 @@ public class Vision extends SubsystemBase {
      * Command the limelight to start using its internal IMU for the pose estimate it produces.
      */
     private void setLimelightToInternalIMU() {
-        LimelightHelpers.SetIMUMode(limelight.kName, 2);
+        /*
+         * Mode 0 - External_Only - MegaTag2 uses the yaw sent from the robot to the Limelight.
+         * Mode 1 - External_Seed - The Limelight gyro is seeded with the yaw sent from the robot.
+         * Mode 2 - Internal_Only - Uses the Limelight gyro only.
+         * Mode 3 - Internal_MT1_Assist - Corrects the Limelight gyro with MegaTag1 estimated yaw.
+         * Mode 4 - Internal_External_Assist - Corrects the Limelight gyro with the robot yaw over time.  Recommended in the Limelight documentation.
+         */
+        LimelightHelpers.SetIMUMode(limelight.kName, 4);
     }
 
     /**
@@ -181,6 +187,29 @@ public class Vision extends SubsystemBase {
     }
 
     /**
+     * Returns true if the average distance between visible targets and the robot is less than the distance passed into this method.
+     * @param megaTag2Estimate - The latest megaTag2 pose estimate.
+     * @param distance - The maximum distance allowable between the robot and the apriltags.
+     * @return True if the average tag distance is less than or equal to the distance.
+     */
+    private boolean isLimelightDistanceClose(LimelightHelpers.PoseEstimate megaTag2Estimate, double distance) {
+        return megaTag2Estimate.avgTagDist <= distance;
+    }
+
+    /**
+     * Returns true if the average distance between visible targets and the robot is less than the distance passed into this method.
+     * This is the photonvision version, which is a little more complicated than the limelight version.
+     * @param photonResult - The latest result from the camera.  The best target is used from this result to find the pose of that target.
+     * @param camera - The pose estimator for the camera.  This method uses the field layout for the camera to find the pose of the best target.
+     * @param swerveState - The current swerveDriveState, used to get the current robot pose.
+     * @param distance - The maximum distance allowable between the robot and the apriltags.
+     * @return True if the best tag distance is less than or equal to the distance.
+     */
+    private boolean isPhotonDistanceClose(PhotonPipelineResult photonResult, PhotonPoseEstimator camera, SwerveDriveState swerveState, double distance) {
+        return camera.getFieldTags().getTagPose(photonResult.getBestTarget().fiducialId).get().toPose2d().getTranslation().getDistance(swerveState.Pose.getTranslation()) <= distance;
+    }
+
+    /**
      * Returns true if the rotational velocity of the robot is less than the value passed into this method.
      * @param maximumRotationRate
      * @return
@@ -213,7 +242,7 @@ public class Vision extends SubsystemBase {
      */
     private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
         //3.3 radian per second is currently 75% of our maximum rotational speed.
-        return this.arePhotonTagsSeen(result, 2) && this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10) && this.isRobotSlowEnough(3.3);
+        return this.arePhotonTagsSeen(result, 1) && this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10) && this.isRobotSlowEnough(3.3);
     }
 
     /**
@@ -473,8 +502,8 @@ public class Vision extends SubsystemBase {
             poseConsumer.accept(this.getCurrentLimelightPose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
-        //this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
-        //this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
+        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
+        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         switch (this.telemetryLevel) {
