@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.text.BreakIterator;
-
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MatchInfo {

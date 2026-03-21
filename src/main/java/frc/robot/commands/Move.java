@@ -1,14 +1,9 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-import java.util.Optional;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -17,7 +12,6 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Spindexer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.constants.ClimberConstants;
-import frc.robot.constants.ShooterConstants;
 
 
 public class Move {

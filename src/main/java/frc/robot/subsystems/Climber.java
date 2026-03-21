@@ -22,9 +22,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.ClimberConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
-import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.ClimberConstants;
-import edu.wpi.first.wpilibj.DriverStation;
 
 //For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
 
