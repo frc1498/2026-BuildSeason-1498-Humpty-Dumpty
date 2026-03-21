@@ -781,8 +781,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     // Wondering if caching this will reduce the CPU usage of this call.
     this.swerveState = this.swerveStateSupplier.get();
     
-    allianceColor = DriverStation.getAlliance().get().toString();
+    //allianceColor = DriverStation.getAlliance().get().toString();
     
+    /*
     //Set our target based on our alliance color
     if (allianceColor == "Red") {
       targetLocation = ShooterConstants.kRedHubCenter;
@@ -791,7 +792,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
-    
+    */
 
     // Signal that we are ready to fire if the hood and turret are at position, and the shooter is at velocity.
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
