@@ -114,7 +114,14 @@ public class Vision extends SubsystemBase {
      * Command the limelight to start using its internal IMU for the pose estimate it produces.
      */
     private void setLimelightToInternalIMU() {
-        LimelightHelpers.SetIMUMode(limelight.kName, 2);
+        /*
+         * Mode 0 - External_Only - MegaTag2 uses the yaw sent from the robot to the Limelight.
+         * Mode 1 - External_Seed - The Limelight gyro is seeded with the yaw sent from the robot.
+         * Mode 2 - Internal_Only - Uses the Limelight gyro only.
+         * Mode 3 - Internal_MT1_Assist - Corrects the Limelight gyro with MegaTag1 estimated yaw.
+         * Mode 4 - Internal_External_Assist - Corrects the Limelight gyro with the robot yaw over time.  Recommended in the Limelight documentation.
+         */
+        LimelightHelpers.SetIMUMode(limelight.kName, 4);
     }
 
     /**
