@@ -231,16 +231,16 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        /*
+        
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-            .onFalse(Commands.sequence(setNormalMoveSpee(),move.setTargetToAllianceHub(),move.stopShoot()));
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
         operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
-        */
+        
 
         //Operator A button
         //operator.a()
