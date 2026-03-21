@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
@@ -183,6 +184,29 @@ public class Vision extends SubsystemBase {
      */
     private boolean arePhotonTagsSeen(PhotonPipelineResult photonResult, int tagCount) {
         return photonResult.hasTargets() && (photonResult.getTargets().size() >= tagCount);
+    }
+
+    /**
+     * Returns true if the average distance between visible targets and the robot is less than the distance passed into this method.
+     * @param megaTag2Estimate - The latest megaTag2 pose estimate.
+     * @param distance - The maximum distance allowable between the robot and the apriltags.
+     * @return True if the average tag distance is less than or equal to the distance.
+     */
+    private boolean isLimelightDistanceClose(LimelightHelpers.PoseEstimate megaTag2Estimate, double distance) {
+        return megaTag2Estimate.avgTagDist <= distance;
+    }
+
+    /**
+     * Returns true if the average distance between visible targets and the robot is less than the distance passed into this method.
+     * This is the photonvision version, which is a little more complicated than the limelight version.
+     * @param photonResult - The latest result from the camera.  The best target is used from this result to find the pose of that target.
+     * @param camera - The pose estimator for the camera.  This method uses the field layout for the camera to find the pose of the best target.
+     * @param swerveState - The current swerveDriveState, used to get the current robot pose.
+     * @param distance - The maximum distance allowable between the robot and the apriltags.
+     * @return True if the best tag distance is less than or equal to the distance.
+     */
+    private boolean isPhotonDistanceClose(PhotonPipelineResult photonResult, PhotonPoseEstimator camera, SwerveDriveState swerveState, double distance) {
+        return camera.getFieldTags().getTagPose(photonResult.getBestTarget().fiducialId).get().toPose2d().getTranslation().getDistance(swerveState.Pose.getTranslation()) <= distance;
     }
 
     /**
