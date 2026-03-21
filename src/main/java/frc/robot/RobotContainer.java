@@ -263,7 +263,7 @@ public class RobotContainer {
         //===================================================
         
         //Auto agitate when shooting and not intaking
-        driver.leftBumper().and(driver.rightBumper().negate()).whileTrue(move.agitateHopper());
+        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(move.agitateHopper());
         
         //===================================================
         //==================Developer Commands===============
