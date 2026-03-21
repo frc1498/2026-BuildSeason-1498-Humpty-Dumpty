@@ -77,8 +77,9 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private boolean DSLatch = false;
-    private double precisionDampenerTranslation = 1.0; //Translation Speed Limiter
-    private double precisionDampenerRotation = 1.0; //Rotation Speed Limiter
+    private double precisionDampenerTranslation = 1
+    ; //Translation Speed Limiter
+    private double precisionDampenerRotation = 1; //Rotation Speed Limiter
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -231,7 +232,6 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
             Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
@@ -268,7 +268,8 @@ public class RobotContainer {
         //===================================================
         
         //Auto agitate when shooting and not intaking
-        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(move.agitateHopper()).onFalse(move.stopIntake().andThen(move.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
+        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(move.agitateHopper()).
+        onFalse(move.stopIntake().andThen(move.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         
         //===================================================
         //==================Developer Commands===============
@@ -319,8 +320,8 @@ public class RobotContainer {
     public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
 
     public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {
-        this.precisionDampenerTranslation = 0.8;
-        this.precisionDampenerRotation = 0.5;}
+        this.precisionDampenerTranslation = 0.7;
+        this.precisionDampenerRotation = 0.4;}
         );
     }
 

@@ -38,7 +38,7 @@ public class ShooterConstants {
 
   
   /*===============Safeties==================*/
-  public static final double kHoodSafeExtend = 38.0;  //In degrees.  May be able to go slightly higher
+  public static final double kHoodSafeExtend = 40.5;  //In degrees.  May be able to go slightly higher
   public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home
   
   public static final double kTurretSafeClockwise = -90.0;  //May be able to go further.  - is clockwise
@@ -125,7 +125,7 @@ public class ShooterConstants {
     hoodAngleMap.put(4.6990, 35.0);
     hoodAngleMap.put(5.4102, 35.0);
     hoodAngleMap.put(7.62, 35.0); //For passing shot
-    hoodAngleMap.put(16.0, 35.0); //For passing shot
+    hoodAngleMap.put(16.0, 40.0); //For passing shot
 
     // In RPS.
     flywheelSpeedMap.put(1.7272, 40.0); // Was 31
@@ -134,7 +134,7 @@ public class ShooterConstants {
     flywheelSpeedMap.put(3.3528, 48.5); // Was 39.5
     flywheelSpeedMap.put(3.7338, 49.0); // Was 42
     flywheelSpeedMap.put(4.6990, 54.0); // Was 45.5
-    flywheelSpeedMap.put(5.4102, 58.0); // Was 50.5
+    flywheelSpeedMap.put(5.4102, 59.0); // Was 50.5
     flywheelSpeedMap.put(7.62, 75.0); //For passing shot
     flywheelSpeedMap.put(16.0, 75.0); //For passing shot
 
