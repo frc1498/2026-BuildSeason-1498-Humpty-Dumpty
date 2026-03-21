@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
@@ -15,7 +14,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import dev.doglog.DogLog;
-import dev.doglog.DogLogOptions;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
