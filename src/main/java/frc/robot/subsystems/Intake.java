@@ -147,7 +147,7 @@ public class Intake extends SubsystemBase {
   }
 
     public Command intakeStop() {
-    return run(
+    return runOnce(
       () -> {this.stop();}
     ).withName("intakeStop");
   }

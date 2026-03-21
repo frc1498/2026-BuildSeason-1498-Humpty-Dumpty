@@ -85,7 +85,7 @@ public class RobotContainer {
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001) // Add a 5% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -178,7 +178,7 @@ public class RobotContainer {
         driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
         //Driver RTrigger: Intake
-        driver.rightTrigger(0.1).onTrue(move.intake()).onFalse(move.stopIntake());
+        driver.rightTrigger(0.1).whileTrue(move.intake()).onFalse(move.stopIntake());  //Changed to while
 
         //Driver RBumper hopperRetract
         driver.rightBumper().onTrue(move.hopperRetract());
@@ -253,7 +253,7 @@ public class RobotContainer {
         //operator.leftBumper()
 
         //Operator y button: Agitate manually
-        operator.y().onTrue(move.hopperRetract()).onFalse(move.hopperExtend());
+        //operator.y().onTrue(move.hopperRetract()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
@@ -263,7 +263,7 @@ public class RobotContainer {
         //===================================================
         
         //Auto agitate when shooting and not intaking
-        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(move.agitateHopper());
+        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(move.agitateHopper()).onFalse(move.stopIntake().andThen(move.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         
         //===================================================
         //==================Developer Commands===============
