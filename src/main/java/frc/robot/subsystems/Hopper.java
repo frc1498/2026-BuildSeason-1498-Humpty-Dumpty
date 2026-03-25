@@ -178,10 +178,11 @@ public Command hopperExtend() {
 
   public Command agitate() {
     return (this.hopperExtend()
-      .andThen(Commands.waitSeconds(0.5))
+      .andThen(Commands.waitSeconds(.75))
       .andThen(this.hopperMidPosition())
-      .andThen(Commands.waitSeconds(0.5))
+      .andThen(Commands.waitSeconds(.75))
       ).repeatedly().withName("agitate");
+      
     //return runOnce(() -> {this.agitateHopper();}).andThen(
     //  Commands.waitSeconds(0.5));
   }

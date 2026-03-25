@@ -41,8 +41,8 @@ public class ShooterConstants {
   public static final double kHoodSafeExtend = 40.5;  //In degrees.  May be able to go slightly higher
   public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home
   
-  public static final double kTurretSafeClockwise = -90.0;  //May be able to go further.  - is clockwise
-  public static final double kTurretSafeCounterClockwise = 90.0;  //May be able to go further. + is counterclockwise
+  public static final double kTurretSafeClockwise = -135;  //May be able to go further.  - is clockwise
+  public static final double kTurretSafeCounterClockwise = 135;  //May be able to go further. + is counterclockwise
   public static final double kTurretOverturn = kTurretSafeCounterClockwise - 180.0; // If the counter clockwise limit is greater than 180.0, this is the degrees past 180.0 the turret can continue to move.
   // Set to 0 if the turret cannot move past 180.0 in the counterclockwise direction.
 

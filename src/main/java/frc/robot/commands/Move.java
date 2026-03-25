@@ -112,11 +112,13 @@ public class Move {
     }
 
     public Command climbExtend() {
-        return Commands.sequence(shooter.stopShoot(),kickup.stopKickup(),spindexer.stopSpindexer(),shooter.turretCounterClockwise45(),climber.liftClimbExtend());
+        return shooter.stopShoot().andThen(Commands.deadline(climber.liftClimbExtend(),shooter.turretCounterClockwise45(),kickup.stopKickup(),spindexer.stopSpindexer()));
+        
     }
 
     public Command climbRetract() {
-        return (climber.liftClimbRetract().withTimeout(3)).andThen(climber.liftClimbStop());
+        //return (climber.liftClimbRetract().withTimeout(3)).andThen(climber.liftClimbStop());
+        return (climber.liftClimbRetract());
     }
 
     //==============================Shoot========================================

@@ -246,7 +246,7 @@ public class Climber extends SubsystemBase {
       case NONE:
         // No values!
       default:
-        break;
+        //break;
     } 
   }  
 

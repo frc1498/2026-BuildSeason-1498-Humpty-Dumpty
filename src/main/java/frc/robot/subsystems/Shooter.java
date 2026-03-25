@@ -603,7 +603,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command startShootStatic(){
-    return run(() -> {this.setShooterVelocity(70);}).until(isShooterAtVelocity); //Was 70
+    return run(() -> {this.setShooterVelocity(40);}).until(isShooterAtVelocity); //Was 70
   }
 
   public Command startShootFast(){
@@ -699,7 +699,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   }
 
   public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(38);});
+    return runOnce(() -> {this.setHoodAngle(20);});
   }
 
   /**
@@ -758,8 +758,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
       case NONE:
         // No values!
       default:
-        break;
-    }
+       // break;
+   }
   }
   
 

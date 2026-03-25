@@ -10,8 +10,9 @@ import frc.robot.constants.ShooterConstants;
 public class ShotCalculation {
     private static ShotCalculation instance;
 
-    private int convergeLimit = 20;
-    private double phaseDelay = 0.03;
+    private int convergeLimit = 4;  //Was 20
+    private double phaseDelay = 0.03;  //Was .03
+    private double omegaPhaseDelay = 1; //Trying something
     private Pose2d poseEstimate;
     private double targetDistance;
     private Pose2d turretPoseEstimate;

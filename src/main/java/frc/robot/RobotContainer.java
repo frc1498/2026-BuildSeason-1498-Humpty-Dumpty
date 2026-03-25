@@ -194,7 +194,7 @@ public class RobotContainer {
         
         //Driver left trigger: Shoot
         driver.leftTrigger(0.1).whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
-        andThen(Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+        andThen(Commands.sequence(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
         .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
 
         //Driver back: Zero drivetrain
@@ -258,7 +258,7 @@ public class RobotContainer {
         //operator.leftBumper()
 
         //Operator y button: Agitate manually
-        //operator.y().onTrue(move.hopperRetract()).onFalse(move.hopperExtend());
+        operator.y().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
@@ -268,9 +268,12 @@ public class RobotContainer {
         //===================================================
         
         //Auto agitate when shooting and not intaking
-        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(move.agitateHopper()).
+        
+        driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(
+            Commands.sequence(Commands.waitSeconds(2),move.agitateHopper())).
         onFalse(move.stopIntake().andThen(move.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         
+
         //===================================================
         //==================Developer Commands===============
         //===================================================        
@@ -320,8 +323,8 @@ public class RobotContainer {
     public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
 
     public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {
-        this.precisionDampenerTranslation = 0.7;
-        this.precisionDampenerRotation = 0.4;}
+        this.precisionDampenerTranslation = 0.5;
+        this.precisionDampenerRotation = 0.3;}
         );
     }
 
