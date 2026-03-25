@@ -345,7 +345,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
       if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeClockwise, ShooterConstants.kTurretSafeCounterClockwise)) {
         this.turretMotor.setControl(this.turretMotorMode
           .withPosition(this.desiredTurretMotorRotations)
-          .withVelocity(velocityFeedForwardRotPerSec)
+          .withVelocity(velocityFeedforwardRotPerSec)
         );
       } else {
         // Log a fault with DogLog if the desired turret position was out of range.
