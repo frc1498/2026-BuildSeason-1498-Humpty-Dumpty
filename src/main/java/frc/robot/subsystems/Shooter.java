@@ -336,16 +336,17 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * Set the position of the turret angle.
    * @param position - The desired position of the turret, in rotations.
    */
-  private void setTurretAngle(double position) {
+  private void setTurretAngle(double position, double velocityFeedforwardRotPerSec) {
     // Always store the setpoint, to track the desired position.
     this.desiredTurretAngle = position;
-
     this.desiredTurretMotorRotations = this.desiredTurretAngle / 360 * ShooterConstants.kTurretGearRatio;
 
     if (MotorEnableConstants.kTurretMotorEnabled) {     // Use this constant to enable or disable motor output for debugging.
       if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeClockwise, ShooterConstants.kTurretSafeCounterClockwise)) {
-        this.turretMotor.setControl(this.turretMotorMode.withPosition(this.desiredTurretMotorRotations)
-          .withVelocity(velocityFeedForwardRotPerSec));
+        this.turretMotor.setControl(this.turretMotorMode
+          .withPosition(this.desiredTurretMotorRotations)
+          .withVelocity(velocityFeedForwardRotPerSec)
+        );
       } else {
         // Log a fault with DogLog if the desired turret position was out of range.
         // Temporary loop overruns - DogLog.logFault(ShooterFault.TURRET_SETPOINT_OUT_OF_RANGE);        
