@@ -81,11 +81,11 @@ public class ShooterConfig {
         shooterLeft.MotorOutput.PeakForwardDutyCycle = 1;
         shooterLeft.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterLeft.CurrentLimits.StatorCurrentLimit = 120.0;
+        shooterLeft.CurrentLimits.StatorCurrentLimit = 180.0; //3-26 was 120
         shooterLeft.CurrentLimits.StatorCurrentLimitEnable = true;
         shooterLeft.CurrentLimits.SupplyCurrentLimit = 60;    //Set 2-17-26
         shooterLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
-        shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 80.0;  //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 60.0;  //Set 2-17-26
         shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -112,11 +112,11 @@ public class ShooterConfig {
         shooterRight.MotorOutput.PeakForwardDutyCycle = 1;
         shooterRight.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterRight.CurrentLimits.StatorCurrentLimit = 120.0;
+        shooterRight.CurrentLimits.StatorCurrentLimit = 180.0; // 3-26 was 120.
         shooterRight.CurrentLimits.StatorCurrentLimitEnable = true;
         shooterRight.CurrentLimits.SupplyCurrentLimit = 60;    //Set 2-17-26
         shooterRight.CurrentLimits.SupplyCurrentLimitEnable = true;
-        shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 80.0;  //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 60.0;  //Set 2-17-26
         shooterRight.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -143,11 +143,11 @@ public class ShooterConfig {
         turret.MotorOutput.PeakForwardDutyCycle = 1;
         turret.MotorOutput.PeakReverseDutyCycle = -1;
 
-        turret.CurrentLimits.StatorCurrentLimit = 120; //Set 2-17-26 at 120 amps
+        turret.CurrentLimits.StatorCurrentLimit = 180; //Updated 3/26 for faster tracking was 120
         turret.CurrentLimits.StatorCurrentLimitEnable = true;
-        turret.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26 at 20 amps
+        turret.CurrentLimits.SupplyCurrentLimit = 40;    //Updated 3/26 for faster tracking was 20
         turret.CurrentLimits.SupplyCurrentLimitEnable = true;
-        turret.CurrentLimits.SupplyCurrentLowerLimit = 20;  //Set 2-17-26 at 20 amps
+        turret.CurrentLimits.SupplyCurrentLowerLimit = 40;  //Updated 3/26 for faster tracking was 20
         turret.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -208,7 +208,7 @@ public class ShooterConfig {
         kickup.CurrentLimits.StatorCurrentLimitEnable = true;
         kickup.CurrentLimits.SupplyCurrentLimit = 40;    //Set 2-17-26
         kickup.CurrentLimits.SupplyCurrentLimitEnable = true;
-        kickup.CurrentLimits.SupplyCurrentLowerLimit = 80.0;  //Set 2-17-26
+        kickup.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Was 80.  Turned down for current consumption issues.
         kickup.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
