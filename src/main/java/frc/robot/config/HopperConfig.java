@@ -30,9 +30,9 @@ public class HopperConfig {
 
         hopper.CurrentLimits.StatorCurrentLimit = 150.0;  //70
         hopper.CurrentLimits.StatorCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLimit = 40.0;    //Set 2/25/26
+        hopper.CurrentLimits.SupplyCurrentLimit = 30.0;    //Set 2/25/26
         hopper.CurrentLimits.SupplyCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Set 2/25/26
+        hopper.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2/25/26
         hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
