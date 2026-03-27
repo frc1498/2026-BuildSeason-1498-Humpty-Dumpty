@@ -235,12 +235,12 @@ public class RobotContainer {
 
         //Operator X button
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
-            Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+            Commands.sequence(move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Operator B button
         operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
-            Commands.parallel(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+            Commands.sequence(move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
         
 
@@ -326,8 +326,8 @@ public class RobotContainer {
     public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
 
     public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {
-        this.precisionDampenerTranslation = 0.5;
-        this.precisionDampenerRotation = 0.3;}
+        this.precisionDampenerTranslation = 0.8;
+        this.precisionDampenerRotation = 0.6;}
         );
     }
 
