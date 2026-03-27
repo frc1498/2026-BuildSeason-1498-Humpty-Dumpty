@@ -35,7 +35,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.ShotCalculation;
 import frc.robot.config.ShooterConfig;
 import frc.robot.sim.ShooterSim;
-
+import com.ctre.phoenix6.controls.PositionVoltage;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
@@ -53,8 +53,8 @@ public class Shooter extends SubsystemBase {
   private TalonFX hoodMotor;       // Motor type definition
 
   private VelocityTorqueCurrentFOC shooterMotorMode;   // Motor control type definition
-
-  private PositionTorqueCurrentFOC turretMotorMode; // Motor control type definition
+  private PositionVoltage turretMotorMode; //Motor Control Type Definition - added because I can decorate with .velocity
+  //private PositionTorqueCurrentFOC turretMotorMode; // Motor control type definition
   private PositionTorqueCurrentFOC hoodMotorMode;   // Motor control type definition
 
   private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
@@ -85,6 +85,7 @@ public class Shooter extends SubsystemBase {
   private double whileMoveHoodAngle;
   private double whileMoveFlywheelVelocity;
   private double whileMoveTurretAngle;
+  private double turretVelocityFeedforward;
 
   private double currentHoodAngle;
   private double currentHoodRotations;
@@ -190,7 +191,8 @@ public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState
   this.shooterLeftMotor.setControl(new Follower(shooterRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
    
   this.turretMotor = new TalonFX(ShooterConfig.kTurretMotorCANID, "canivore");        // Create the turret rotate motor.
-  this.turretMotorMode = new PositionTorqueCurrentFOC(0);                                         // Set the control mode for the turret motor.
+  //this.turretMotorMode = new PositionTorqueCurrentFOC(0);                                         // Set the control mode for the turret motor.
+  this.turretMotorMode = new PositionVoltage(0); //Setting position instead of torque to decorate with velocity as a feed forward
   this.configureMechanism(this.turretMotor, this.shooterConfig.turretMotorConfig);
     
   this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, "canivore");            // Create hood adjustment motor.
@@ -334,15 +336,17 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * Set the position of the turret angle.
    * @param position - The desired position of the turret, in rotations.
    */
-  private void setTurretAngle(double position) {
+  private void setTurretAngle(double position, double velocityFeedforwardRotPerSec) {
     // Always store the setpoint, to track the desired position.
     this.desiredTurretAngle = position;
-
     this.desiredTurretMotorRotations = this.desiredTurretAngle / 360 * ShooterConstants.kTurretGearRatio;
 
     if (MotorEnableConstants.kTurretMotorEnabled) {     // Use this constant to enable or disable motor output for debugging.
       if (this.isSetpointWithinSafetyRange(this.desiredTurretAngle, ShooterConstants.kTurretSafeClockwise, ShooterConstants.kTurretSafeCounterClockwise)) {
-        this.turretMotor.setControl(this.turretMotorMode.withPosition(this.desiredTurretMotorRotations));
+        this.turretMotor.setControl(this.turretMotorMode
+          .withPosition(this.desiredTurretMotorRotations)
+          .withVelocity(velocityFeedforwardRotPerSec)
+        );
       } else {
         // Log a fault with DogLog if the desired turret position was out of range.
         // Temporary loop overruns - DogLog.logFault(ShooterFault.TURRET_SETPOINT_OUT_OF_RANGE);        
@@ -350,6 +354,11 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     }
   }
 
+  //Zero-rotational overload
+  private void setTurretAngle(double position) {
+      setTurretAngle(position, 0.0);
+  }
+  
   /**
    * Return the current position of the turret angle.
    * @return - The current position of the turret, in rotations.
@@ -690,7 +699,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * @return
    */
   public Command whileMoveTurret() {
-    return runOnce(() -> {this.setTurretAngle(this.whileMoveTurretAngle);});
+    return runOnce(() -> {this.setTurretAngle(this.whileMoveTurretAngle, this.turretVelocityFeedforward);});
+    //return runOnce(() -> {this.setTurretAngle(this.whileMoveTurretAngle);});
   }
 
   //=====================Public Hood Commands================
@@ -811,7 +821,8 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
     this.whileMoveTurretAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
-
+    this.turretVelocityFeedforward=(-this.swerveState.Speeds.omegaRadiansPerSecond / (2.0 * Math.PI)) * ShooterConstants.kTurretGearRatio;  //Added to account for rotation
+    
     // Every loop, update the odometry with the pose of the virtual target.
     switch (this.telemetryLevel) {
       case FULL:
