@@ -783,17 +783,14 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     
     //allianceColor = DriverStation.getAlliance().get().toString();
     
-    /*
-    //Set our target based on our alliance color
-    if (allianceColor == "Red") {
-      targetLocation = ShooterConstants.kRedHubCenter;
-    } else if (allianceColor == "Blue") {
-      targetLocation = ShooterConstants.kBlueHubCenter;
-    } else {
-      // Code to handle the case where the alliance color is not yet available
-    }
-    */
-
+      if (allianceColor == "Red") {
+        targetLocation = ShooterConstants.kRedHubCenter;
+      } else if (allianceColor == "Blue") {
+        targetLocation = ShooterConstants.kBlueHubCenter;
+      } else {
+        // Code to handle the case where the alliance color is not yet available
+      }
+ 
     // Signal that we are ready to fire if the hood and turret are at position, and the shooter is at velocity.
     this.readyToFire = this.hoodAtPosition && this.turretAtPosition && this.shooterAtVelocity;
 

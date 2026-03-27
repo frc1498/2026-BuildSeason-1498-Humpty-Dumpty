@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.007689015695959,
-        "y": 5.723495007133583
+        "x": 1.5119922535455692,
+        "y": 5.718594604372652
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4264173197600822,
-        "y": 5.803592986912115
+        "x": 0.9233348765776856,
+        "y": 5.967469622950632
       },
       "isLocked": false,
       "linkedName": "Blue Left Shoot"
@@ -20,8 +20,8 @@
         "y": 5.982021314659784
       },
       "prevControl": {
-        "x": 2.1452471226456433,
-        "y": 5.874045124183594
+        "x": 0.8827686525492827,
+        "y": 6.002151955236735
       },
       "nextControl": null,
       "isLocked": false,
@@ -35,7 +35,7 @@
       "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 3.75,
+        "maxVelocity": 1.0,
         "maxAcceleration": 1.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -47,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.75,
-    "maxAcceleration": 3.75,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

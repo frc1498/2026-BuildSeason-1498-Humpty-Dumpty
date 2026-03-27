@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.136284775318456,
+        "x": 13.07401732605209,
         "y": 2.480142857142515
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.211380516537417,
+        "x": 11.14911306727105,
         "y": 2.4780795949296075
       },
       "isLocked": false,
@@ -16,32 +16,32 @@
     },
     {
       "anchor": {
-        "x": 10.523783769315264,
-        "y": 2.36951168747348
+        "x": 10.343102921888713,
+        "y": 2.369583360362195
       },
       "prevControl": {
-        "x": 10.550736041232419,
-        "y": 2.618054591291923
+        "x": 10.370055193805868,
+        "y": 2.618126264180638
       },
       "nextControl": {
-        "x": 10.363912961488479,
-        "y": 0.8952480359637003
+        "x": 10.183232114061928,
+        "y": 0.8953197088524154
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 9.072622290095396,
-        "y": 1.2050781377285034
+        "x": 8.955748930098405,
+        "y": 1.00789859133713
       },
       "prevControl": {
-        "x": 9.141260657432838,
-        "y": 0.9412410216460977
+        "x": 9.241785714289469,
+        "y": 0.5041785714245792
       },
       "nextControl": {
-        "x": 8.93797741655636,
-        "y": 1.7226358318848007
+        "x": 8.810709346783165,
+        "y": 1.2633179843437992
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 3.338646601516862
       },
       "prevControl": {
-        "x": 8.847123184166541,
-        "y": 3.0871283679808346
+        "x": 8.692673150912666,
+        "y": 3.2621475238352358
       },
       "nextControl": {
-        "x": 9.070785175956296,
-        "y": 3.6050080713744905
+        "x": 9.770884450781818,
+        "y": 3.5756776034236815
       },
       "isLocked": false,
       "linkedName": null
@@ -68,12 +68,12 @@
         "y": 2.480142857142515
       },
       "prevControl": {
-        "x": 9.111012838794398,
-        "y": 2.488830242515227
+        "x": 9.770884450781818,
+        "y": 2.5405848787446517
       },
       "nextControl": {
-        "x": 11.134681132288977,
-        "y": 2.4789183798102163
+        "x": 11.134316835257042,
+        "y": 2.4665961614740333
       },
       "isLocked": false,
       "linkedName": null
@@ -84,8 +84,8 @@
         "y": 2.1394864479315263
       },
       "prevControl": {
-        "x": 13.641718446056213,
-        "y": 2.494960559389219
+        "x": 13.563086880794845,
+        "y": 2.6391147497550844
       },
       "nextControl": null,
       "isLocked": false,
@@ -95,7 +95,7 @@
   "rotationTargets": [
     {
       "waypointRelativePos": 1.006932409012131,
-      "rotationDegrees": -36.123939015175736
+      "rotationDegrees": -90.63429865336062
     },
     {
       "waypointRelativePos": 1.956672443674175,
@@ -106,11 +106,7 @@
       "rotationDegrees": -92.57903951333473
     },
     {
-      "waypointRelativePos": 3.318672530987607,
-      "rotationDegrees": 157.28240216241576
-    },
-    {
-      "waypointRelativePos": 3.7521663778163292,
+      "waypointRelativePos": 3.9792027729636006,
       "rotationDegrees": 179.41279059749206
     }
   ],
@@ -120,8 +116,8 @@
       "minWaypointRelativePos": 1.9919678714859435,
       "maxWaypointRelativePos": 3.1967871485943773,
       "constraints": {
-        "maxVelocity": 0.75,
-        "maxAcceleration": 0.75,
+        "maxVelocity": 0.5,
+        "maxAcceleration": 0.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -150,8 +146,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 3.75,
-    "maxAcceleration": 3.75,
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -159,13 +155,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -179.3034867481982
+    "rotation": 165.52623301952525
   },
   "reversed": false,
   "folder": "Red",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -43.83581167872992
+    "rotation": -92.00351133718237
   },
   "useDefaultConstraints": true
 }
