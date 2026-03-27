@@ -271,8 +271,9 @@ public class RobotContainer {
         
         driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(
             Commands.sequence(Commands.waitSeconds(2),move.agitateHopper())).
-        onFalse(move.stopIntake().andThen(move.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
+            onFalse(hopper.hopperExtend());  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         
+        //move.stopIntake().andThen(move.hopperExtend())
 
         //===================================================
         //==================Developer Commands===============

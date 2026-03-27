@@ -178,9 +178,9 @@ public Command hopperExtend() {
   }
 
   public Command agitate() {
-    return (this.hopperExtend()
+    return (this.hopperMidPosition()
       .andThen(Commands.waitSeconds(.5))
-      .andThen(this.hopperMidPosition())
+      .andThen(this.hopperExtend())
       .andThen(Commands.waitSeconds(.75))
       ).repeatedly().withName("agitate");
       

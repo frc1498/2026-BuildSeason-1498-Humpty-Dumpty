@@ -134,7 +134,7 @@ public class Intake extends SubsystemBase {
   //=====================================================
   
   public Command intakeSuck() {
-    return run(
+    return runOnce(  //changed to runonce
       () -> {this.intake();}
     ).withName("intakeSuck");
   }
