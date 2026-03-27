@@ -195,7 +195,9 @@ public class RobotContainer {
         //Driver left trigger: Shoot
         driver.leftTrigger(0.1).whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
         andThen(Commands.sequence(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()));
+        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend()));
+
+        //added move.hopperextend
 
         //Driver back: Zero drivetrain
         //driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
@@ -270,9 +272,9 @@ public class RobotContainer {
         //Auto agitate when shooting and not intaking
         
         driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(
-            Commands.sequence(Commands.waitSeconds(2),move.agitateHopper())).
-            onFalse(hopper.hopperExtend());  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
-        
+            Commands.sequence(Commands.waitSeconds(2),move.agitateHopper()));
+            
+        //.onFalse(move.stopIntake().andThen(hopper.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         //move.stopIntake().andThen(move.hopperExtend())
 
         //===================================================
