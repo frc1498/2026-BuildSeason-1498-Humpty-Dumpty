@@ -243,6 +243,7 @@ public class RobotContainer {
             Commands.sequence(move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
         
+            
 
         //Operator A button
         //operator.a()
@@ -327,7 +328,7 @@ public class RobotContainer {
 
     public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {
         this.precisionDampenerTranslation = 0.8;
-        this.precisionDampenerRotation = 0.6;}
+        this.precisionDampenerRotation = 0.5;}
         );
     }
 

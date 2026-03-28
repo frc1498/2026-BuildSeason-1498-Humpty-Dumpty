@@ -153,9 +153,9 @@ public class ShooterConfig {
         //Slot 0 Configs
         turret.Slot0.kP = 19;  // 
         turret.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        turret.Slot0.kD = 0.3;  // A change of 1 rotation per second squared results in 0.01 volts output
+        turret.Slot0.kD = 0.15;  // A change of 1 rotation per second squared results in 0.01 volts output
         turret.Slot0.kS = 0;
-        turret.Slot0.kV = 2;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        turret.Slot0.kV = 3;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         turret.Slot0.kA = 0;
         turret.Slot0.kG = 0.0;
 

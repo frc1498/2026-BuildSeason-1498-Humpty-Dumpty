@@ -40,7 +40,7 @@ public class IntakeConfig {
         intakeRight.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        intakeRight.Slot0.kP = 2;  // An error of 1 rotation per second results in 2V output
+        intakeRight.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
         intakeRight.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         intakeRight.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         intakeRight.Slot0.kS = 0;
@@ -48,8 +48,8 @@ public class IntakeConfig {
         intakeRight.Slot0.kA = 0;
         intakeRight.Slot0.kG = 0;
 
-        intakeRight.Voltage.PeakForwardVoltage = 11;
-        intakeRight.Voltage.PeakReverseVoltage = -11;
+        intakeRight.Voltage.PeakForwardVoltage = 12;
+        intakeRight.Voltage.PeakReverseVoltage = -12;
 
         intakeRight.Audio.AllowMusicDurDisable = true;
     }
@@ -70,7 +70,7 @@ public class IntakeConfig {
         intakeLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        intakeLeft.Slot0.kP = 2;  // An error of 1 rotation per second results in 2V output
+        intakeLeft.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
         intakeLeft.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         intakeLeft.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         intakeLeft.Slot0.kS = 0;
@@ -78,8 +78,8 @@ public class IntakeConfig {
         intakeLeft.Slot0.kA = 0;
         intakeLeft.Slot0.kG = 0;
 
-        intakeLeft.Voltage.PeakForwardVoltage = 11;
-        intakeLeft.Voltage.PeakReverseVoltage = -11;
+        intakeLeft.Voltage.PeakForwardVoltage = 12;
+        intakeLeft.Voltage.PeakReverseVoltage = -12;
 
         intakeLeft.Audio.AllowMusicDurDisable = true;
     }

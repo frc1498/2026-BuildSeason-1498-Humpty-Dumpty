@@ -106,6 +106,10 @@
       "rotationDegrees": 91.08979919179444
     },
     {
+      "waypointRelativePos": 3.2771653543307124,
+      "rotationDegrees": 0.0
+    },
+    {
       "waypointRelativePos": 4.05,
       "rotationDegrees": -1.4654756003049503
     }
@@ -129,8 +133,8 @@
   "eventMarkers": [
     {
       "name": "intake",
-      "waypointRelativePos": 0.5718866916087693,
-      "endWaypointRelativePos": 4.783538214858347,
+      "waypointRelativePos": 1.656474820143894,
+      "endWaypointRelativePos": 4.437050359712231,
       "command": {
         "type": "named",
         "data": {
@@ -140,7 +144,7 @@
     },
     {
       "name": "stopIntake",
-      "waypointRelativePos": 4.762159273115964,
+      "waypointRelativePos": 4.685251798561156,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

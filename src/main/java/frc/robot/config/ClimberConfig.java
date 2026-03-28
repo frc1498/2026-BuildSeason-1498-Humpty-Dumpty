@@ -35,11 +35,11 @@ public class ClimberConfig {
         liftClimber.MotorOutput.PeakForwardDutyCycle = 1;
         liftClimber.MotorOutput.PeakReverseDutyCycle = -1;
 
-        liftClimber.CurrentLimits.StatorCurrentLimit = 120; //30 for testing - 120 for actual climb
+        liftClimber.CurrentLimits.StatorCurrentLimit = 150; //30 for testing - 120 for actual climb
         liftClimber.CurrentLimits.StatorCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLimit = 30;    //5 for testing - 60 for actual climb
+        liftClimber.CurrentLimits.SupplyCurrentLimit = 40;    //5 for testing - 60 for actual climb
         liftClimber.CurrentLimits.SupplyCurrentLimitEnable = true;
-        liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 30; //60 for testing
+        liftClimber.CurrentLimits.SupplyCurrentLowerLimit = 40; //60 for testing
         liftClimber.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
