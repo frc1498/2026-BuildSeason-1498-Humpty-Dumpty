@@ -73,10 +73,10 @@ public class Intake extends SubsystemBase {
 
   private void intake(){
     if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
-        intakeLeftMotor.setControl(intakeDutyCycle.withOutput(1));
+        intakeLeftMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kIntakeSpeed));
     }
     if (MotorEnableConstants.kIntakeRightMotorEnabled) {
-        intakeRightMotor.setControl(intakeDutyCycle.withOutput(1));
+        intakeRightMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kIntakeSpeed));
     }
   }
   
