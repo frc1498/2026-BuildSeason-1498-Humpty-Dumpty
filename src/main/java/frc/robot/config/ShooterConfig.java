@@ -10,17 +10,11 @@ public class ShooterConfig {
     public static final int kShooterLeftMotorCANID = 14;
     public static final int kShooterRightMotorCANID = 15;
     public static final int kHoodMotorCANID = 16;
-    public static final int kTurretMotorCANID = 13;
-    public static final int kSpindexerMotorCANID = 11;
-    public static final int kKickupMotorCANID = 12;
-   
+
     //Variables
     public TalonFXConfiguration hoodMotorConfig; //x44 motor
     public TalonFXConfiguration shooterLeftMotorConfig; //kraken motor (x60)
     public TalonFXConfiguration shooterRightMotorConfig; //kraken motor (x60)
-    public TalonFXConfiguration turretMotorConfig; //x44 motor
-    public TalonFXConfiguration spindexerMotorConfig; //kraken motor (x60)
-    public TalonFXConfiguration kickupMotorConfig; //kraken motor (x60)
 
     //Constructor - only runs one
     public ShooterConfig(){
@@ -32,16 +26,6 @@ public class ShooterConfig {
 
         shooterRightMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
         this.configureShooterMotorRight(shooterRightMotorConfig); //Fill in framework, requires a method below
-
-        turretMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureTurretMotor(turretMotorConfig); //Fill in framework, requires a method below
-
-        spindexerMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureSpindexerMotor(spindexerMotorConfig); //Fill in framework, requires a method below
-
-        kickupMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureKickupMotor(kickupMotorConfig); //Fill in framework, requires a method below
-
     }
 
     public void configureHoodMotor(TalonFXConfiguration hood){
@@ -134,96 +118,4 @@ public class ShooterConfig {
 
         shooterRight.Audio.AllowMusicDurDisable = true;
     }
-
-
-    public void configureTurretMotor(TalonFXConfiguration turret){
-        //configure motor
-        turret.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive; //Set 2-17-26
-        turret.MotorOutput.NeutralMode = NeutralModeValue.Coast; //Set 2-17-26
-        turret.MotorOutput.PeakForwardDutyCycle = 1;
-        turret.MotorOutput.PeakReverseDutyCycle = -1;
-
-        turret.CurrentLimits.StatorCurrentLimit = 180; //Updated 3/26 for faster tracking was 120
-        turret.CurrentLimits.StatorCurrentLimitEnable = true;
-        turret.CurrentLimits.SupplyCurrentLimit = 15;    //Updated 3/26 for faster tracking was 20
-        turret.CurrentLimits.SupplyCurrentLimitEnable = true;
-        turret.CurrentLimits.SupplyCurrentLowerLimit = 20;  //Updated 3/26 for faster tracking was 20
-        turret.CurrentLimits.SupplyCurrentLowerTime = 1;
-
-        //Slot 0 Configs
-        turret.Slot0.kP = 19;  // 
-        turret.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        turret.Slot0.kD = 0.15;  // A change of 1 rotation per second squared results in 0.01 volts output
-        turret.Slot0.kS = 0;
-        turret.Slot0.kV = 3;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
-        turret.Slot0.kA = 0;
-        turret.Slot0.kG = 0.0;
-
-        turret.Voltage.PeakForwardVoltage = 11;
-        turret.Voltage.PeakReverseVoltage = -11;
-
-        turret.Audio.AllowMusicDurDisable = true;
-    }
-
-        public void configureSpindexerMotor(TalonFXConfiguration spindexer){
-        //configure motor
-        spindexer.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
-        spindexer.MotorOutput.NeutralMode = NeutralModeValue.Brake;  //Set 2-17-26
-        spindexer.MotorOutput.PeakForwardDutyCycle = 1;
-        spindexer.MotorOutput.PeakReverseDutyCycle = -1;
-
-        spindexer.CurrentLimits.StatorCurrentLimit = 120.0;
-        spindexer.CurrentLimits.StatorCurrentLimitEnable = true;
-        spindexer.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
-        spindexer.CurrentLimits.SupplyCurrentLimitEnable = true;
-        spindexer.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Set 2-17-26
-        spindexer.CurrentLimits.SupplyCurrentLowerTime = 1;
-
-        //Slot 0 Configs
-        spindexer.Slot0.kP = 0.53;  // An error of 1 rotation per second results in 2V output
-        spindexer.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        spindexer.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        spindexer.Slot0.kS = 0;
-        spindexer.Slot0.kV = 0.107;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
-        spindexer.Slot0.kA = 0.0;
-        spindexer.Slot0.kG = 0.0;
-
-        spindexer.Voltage.PeakForwardVoltage = 11;
-        spindexer.Voltage.PeakReverseVoltage = -11;
-
-        spindexer.Audio.AllowMusicDurDisable = true;
-
-        spindexer.MotionMagic.MotionMagicAcceleration=150;
-        spindexer.MotionMagic.MotionMagicCruiseVelocity=80;
-    }
-
-        public void configureKickupMotor(TalonFXConfiguration kickup){
-        //configure motor
-        kickup.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
-        kickup.MotorOutput.NeutralMode = NeutralModeValue.Brake;  //Set 2-17-26
-        kickup.MotorOutput.PeakForwardDutyCycle = 1;
-        kickup.MotorOutput.PeakReverseDutyCycle = -1;
-
-        kickup.CurrentLimits.StatorCurrentLimit = 120.0;
-        kickup.CurrentLimits.StatorCurrentLimitEnable = true;
-        kickup.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
-        kickup.CurrentLimits.SupplyCurrentLimitEnable = true;
-        kickup.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Was 80.  Turned down for current consumption issues.
-        kickup.CurrentLimits.SupplyCurrentLowerTime = 1;
-
-        //Slot 0 Configs
-        kickup.Slot0.kP = 10;  // An error of 1 rotation per second results in 2V output
-        kickup.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        kickup.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        kickup.Slot0.kS = 8;
-        kickup.Slot0.kV = 0.15;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
-        kickup.Slot0.kA = 0;
-        kickup.Slot0.kG = 0.0;
-
-        kickup.Voltage.PeakForwardVoltage = 11;
-        kickup.Voltage.PeakReverseVoltage = -11;
-
-        kickup.Audio.AllowMusicDurDisable = true;
-    }
-
 }
