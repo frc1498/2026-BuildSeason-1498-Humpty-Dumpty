@@ -28,14 +28,14 @@ import frc.robot.constants.ClimberConstants;
 
 public class Climber extends SubsystemBase {
 //==================Variables=======================
-  public TalonFX liftClimbMotor;  //Motor type definition
+  public TalonFX climbMotor;  //Motor type definition
 
-  public PositionVoltage liftClimbMotorMode; //Motor control type definition
+  public PositionVoltage climbMotorMode; //Motor control type definition
 
   public DutyCycleOut dutyCycleOut; //Motor Control type definition
 
-  private double desiredLiftMotorPosition;
-  private boolean isLiftClimberCurrentLimitLatched=false;
+  private double desiredClimbMotorPosition;
+  private boolean isClimberCurrentLimitLatched=false;
 
   public boolean hasDSAttachLatched = false;
 
@@ -49,13 +49,13 @@ public class Climber extends SubsystemBase {
 
     this.telemetryLevel = telemetryLevel;
 
-    liftClimbMotor = new TalonFX(ClimberConfig.kLiftClimbMotorCANID, "canivore");  //Create a motor for this subsystem
-    liftClimbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
-    this.configureMechanism(liftClimbMotor, config.liftClimbMotorConfig);
+    climbMotor = new TalonFX(ClimberConfig.kClimbMotorCANID, "canivore");  //Create a motor for this subsystem
+    climbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
+    this.configureMechanism(climbMotor, config.climbMotorConfig);
     this.climberConfig=config;
     this.dutyCycleOut = new DutyCycleOut(0.0);
 
-    this.liftClimbMotor.setPosition(0);
+    this.climbMotor.setPosition(0);
 
     SmartDashboard.putData("Climber", this);
   }
@@ -78,18 +78,18 @@ public class Climber extends SubsystemBase {
 //====================Private Methods====================
 //=======================================================
 //===============Private Set/Goto Methods================
-  private void goToPositionLiftClimb(double position) {
-    desiredLiftMotorPosition = position;
-    if (MotorEnableConstants.kLiftClimbMotorEnabled) {
-      if (position <= ClimberConstants.kLiftClimbSafeExtend //Check that Value is below extended distance 
-      && position >= ClimberConstants.kLiftClimbSafeRetract) { //Check that Value is above retracted distance
-        liftClimbMotor.setControl(liftClimbMotorMode.withPosition(position));
+  private void goToPositionClimb(double position) {
+    desiredClimbMotorPosition = position;
+    if (MotorEnableConstants.kClimbMotorEnabled) {
+      if (position <= ClimberConstants.kClimbSafeExtend //Check that Value is below extended distance 
+      && position >= ClimberConstants.kClimbSafeRetract) { //Check that Value is above retracted distance
+        climbMotor.setControl(climbMotorMode.withPosition(position));
       }
     }
   }
 
-  private void liftClimberStop(){
-    liftClimbMotor.setControl(dutyCycleOut.withOutput(0.0));
+  private void climberStop(){
+    climbMotor.setControl(dutyCycleOut.withOutput(0.0));
   }
 
   private String getCurrentCommandName() {
@@ -103,31 +103,31 @@ public class Climber extends SubsystemBase {
 
   //=====================Private Get Methods==================================
 
-  private double getLiftClimbPosition() {
-    return liftClimbMotor.getPosition().getValueAsDouble();
+  private double getClimbPosition() {
+    return climbMotor.getPosition().getValueAsDouble();
   }
 
   //=====================Private Trigger Methods
-  private boolean isLiftClimbAtPosition(double position) {
-    return ((position - ClimberConstants.kLiftClimbDeadband) <= this.getLiftClimbPosition()) 
-    && ((position + ClimberConstants.kLiftClimbDeadband) >= this.getLiftClimbPosition());
+  private boolean isClimbAtPosition(double position) {
+    return ((position - ClimberConstants.kClimbDeadband) <= this.getClimbPosition()) 
+    && ((position + ClimberConstants.kClimbDeadband) >= this.getClimbPosition());
   }
 
   private boolean isClimberReadyToClimb() {
-    return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbExtend); /*&&
+    return this.isClimbAtPosition(ClimberConstants.kClimbExtend); /*&&
     this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbExtend))*/
   }
 
   private boolean isClimberHome() {
-    return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbHome);
+    return this.isClimbAtPosition(ClimberConstants.kClimbHome);
   }
 
   /**
    * Should return true if the supply limit has been exceeded.
    * @return
    */
-  private boolean liftClimberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
-    return (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 20);
+  private boolean climberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
+    return (this.climbMotor.getStatorCurrent().getValueAsDouble() > 20);
   }
 
   /**
@@ -140,9 +140,9 @@ public class Climber extends SubsystemBase {
         break;
       case FULL:
         DogLog.log("Current Climber Command", this.getCurrentCommandName());
-        DogLog.log("Desired Lift Motor Position", this.desiredLiftMotorPosition);
-        DogLog.log("Actual Lift Motor Position", this.getLiftClimbPosition());
-        DogLog.log("Actual Lift Motor Current", this.liftClimbMotor.getSupplyCurrent().getValueAsDouble());
+        DogLog.log("Desired Climb Motor Position", this.desiredClimbMotorPosition);
+        DogLog.log("Actual Climb Motor Position", this.getClimbPosition());
+        DogLog.log("Actual Climb Motor Current", this.climbMotor.getSupplyCurrent().getValueAsDouble());
         break;
       default:
         break;
@@ -162,7 +162,7 @@ public class Climber extends SubsystemBase {
 //=======================================================
 //=====================Public Methods====================
 //=======================================================
-//=================Public Lift Climb Methods=============
+//=================Public Climb Climb Methods=============
 
   /**
    * A zeroing routine for the climber.  This should drive the motor down until the supply current limit is tripped (or stalled).
@@ -171,76 +171,61 @@ public class Climber extends SubsystemBase {
   public Command zeroRoutine() {
     return run(
       () -> {
-        this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorZeroConfig);
-        this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(-0.25));
+        this.configureMechanism(this.climbMotor, this.climberConfig.climbMotorZeroConfig);
+        this.climbMotor.setControl(this.dutyCycleOut.withOutput(-0.25));
       }
-    ).until(this.isLiftClimberCurrentLimitTripped)
+    ).until(this.isClimberCurrentLimitTripped)
     .andThen(
       runOnce(
         () -> {
-          this.liftClimbMotor.setControl(this.dutyCycleOut.withOutput(0));
-          this.liftClimbMotor.setPosition(0);
-          if (this.liftClimbMotor.getStatorCurrent().getValueAsDouble() > 20) {
-            this.configureMechanism(this.liftClimbMotor, this.climberConfig.liftClimbMotorConfig);
+          this.climbMotor.setControl(this.dutyCycleOut.withOutput(0));
+          this.climbMotor.setPosition(0);
+          if (this.climbMotor.getStatorCurrent().getValueAsDouble() > 20) {
+            this.configureMechanism(this.climbMotor, this.climberConfig.climbMotorConfig);
           }
         }
       )
     ).withName("zeroRoutine");
   }
 
-  public Command liftClimbExtend() {
+  public Command climbExtend() {
     return run(
-      () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbExtend);}
-    ).until(isLiftClimbExtended).withName("liftClimbExtend");
+      () -> {this.goToPositionClimb(ClimberConstants.kClimbExtend);}
+    ).until(isClimbExtended).withName("climbExtend");
   }
 
-  public Command liftClimbHandoff() {
+  public Command climbRetract() {
     return run(
-      () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbHandOff);}
-    ).until(isLiftClimbHandedOff).withName("liftClimbHandoff");
+      () -> {this.goToPositionClimb(ClimberConstants.kClimbRetract);}
+    ).until(isClimbRetracted).withName("climbRetract");
   }
 
-  public Command liftClimbRetract() {
+  public Command climbHome() {
     return run(
-      () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbRetract);}
-    ).until(isLiftClimbRetracted).withName("liftClimbRetract");
+      () -> {this.goToPositionClimb(ClimberConstants.kClimbHome);}
+    ).until(isClimbHome).withName("climbHome");
   }
 
-  public Command liftClimbHome() {
+  public Command climbStop() {
     return run(
-      () -> {this.goToPositionLiftClimb(ClimberConstants.kLiftClimbHome);}
-    ).until(isLiftClimbHome).withName("liftClimbHome");
+      () -> {this.climberStop();}
+    ).withName("climbStop");
   }
-
-  public Command liftClimbStop() {
-    return run(
-      () -> {this.liftClimberStop();}
-    ).withName("liftClimbStop");
-  }
-
-  public Command setDSAttachedLatchTrue() {
-    return run(() -> {isDSAttachLatched();});
-  }
-
 
   //=======================Triggers======================
-  public Trigger isLiftClimbExtended = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbExtend);});
-  public Trigger isLiftClimbHandedOff = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbHandOff);});
-  public Trigger isLiftClimbRetracted = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbRetract);});
-  public Trigger isLiftClimbHome = new Trigger(() -> {return this.isLiftClimbAtPosition(ClimberConstants.kLiftClimbHome);});
-  public Trigger isLiftClimberCurrentLimitTripped = new Trigger(this::liftClimberCurrentLimitTripped);
-  public Trigger isClimberReadyToClimb = new Trigger(() -> {return this.isClimberReadyToClimb();});
-  public Trigger isClimberHome = new Trigger (() -> {return this.isClimberHome();});
-  public Trigger isDSLatched = new Trigger(this::isDSAttachLatched);
-  private Trigger hasDSAttached = new Trigger(DriverStation::isDSAttached);
+  public Trigger isClimbExtended = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbExtend);});
+  public Trigger isClimbRetracted = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbRetract);});
+  public Trigger isClimbHome = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbHome);});
+  public Trigger isClimberCurrentLimitTripped = new Trigger(this::climberCurrentLimitTripped);
+
   @Override
   public void initSendable(SendableBuilder builder) {
     // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
     // That can be used to 'gate' values to log without lines of identical code.
     switch (this.telemetryLevel) {
       case FULL:
-        builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredLiftMotorPosition;}, null);
-        builder.addDoubleProperty("Current Climb Position", this::getLiftClimbPosition, null);
+        builder.addDoubleProperty("Desired Climb Position", () -> {return this.desiredClimbMotorPosition;}, null);
+        builder.addDoubleProperty("Current Climb Position", this::getClimbPosition, null);
       case LIMITED:
         builder.addStringProperty("Command", this::getCurrentCommandName, null);
       case NONE:
