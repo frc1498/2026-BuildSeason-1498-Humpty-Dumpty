@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -381,6 +383,29 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
 
+    public void setDriveCurrentLimits() {
+        CurrentLimitsConfigs talonConfig= new CurrentLimitsConfigs();
+        talonConfig.StatorCurrentLimit=180;
+        talonConfig.StatorCurrentLimitEnable=true;
+        talonConfig.SupplyCurrentLimit=20;
+        talonConfig.SupplyCurrentLimitEnable=true;
+        this.getModule(0).getDriveMotor().getConfigurator().apply(talonConfig,0);
+        this.getModule(1).getDriveMotor().getConfigurator().apply(talonConfig,0);
+        this.getModule(2).getDriveMotor().getConfigurator().apply(talonConfig,0);
+        this.getModule(3).getDriveMotor().getConfigurator().apply(talonConfig,0);
+    }
+
+    public void clearDriveCurrentLimits() {
+        CurrentLimitsConfigs talonConfig= new CurrentLimitsConfigs();
+        talonConfig.StatorCurrentLimit=180;
+        talonConfig.StatorCurrentLimitEnable=true;
+        talonConfig.SupplyCurrentLimit=40;
+        talonConfig.SupplyCurrentLimitEnable=true;
+        this.getModule(0).getDriveMotor().getConfigurator().apply(talonConfig,0);
+        this.getModule(1).getDriveMotor().getConfigurator().apply(talonConfig,0);
+        this.getModule(2).getDriveMotor().getConfigurator().apply(talonConfig,0);
+        this.getModule(3).getDriveMotor().getConfigurator().apply(talonConfig,0);
+    }
     /**
      * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
      * while still accounting for measurement noise.

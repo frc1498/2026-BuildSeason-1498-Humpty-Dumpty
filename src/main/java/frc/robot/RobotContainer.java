@@ -191,11 +191,13 @@ public class RobotContainer {
 
         //Driver LBumper climb
         driver.leftBumper().onTrue(move.climbRetract());
-        
+
         //Driver left trigger: Shoot
-        driver.leftTrigger(0.1).whileTrue(Commands.sequence(move.setTargetToAllianceHub()).
-        andThen(Commands.sequence(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-        .onFalse(Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend()));
+        driver.leftTrigger(0.1)
+        .onTrue(Commands.runOnce(() -> { drivetrain.setDriveCurrentLimits();}))
+        .whileTrue(move.setTargetToAllianceHub()
+        .andThen(Commands.sequence(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}, drivetrain), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
 
         //added move.hopperextend
 

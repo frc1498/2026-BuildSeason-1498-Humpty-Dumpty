@@ -53,9 +53,9 @@ public class ShooterConfig {
 
         hood.CurrentLimits.StatorCurrentLimit = 120;  //Set 2-17-26 to 120
         hood.CurrentLimits.StatorCurrentLimitEnable = true;
-        hood.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26 to 20
+        hood.CurrentLimits.SupplyCurrentLimit = 15;    //Set 2-17-26 to 20
         hood.CurrentLimits.SupplyCurrentLimitEnable = true;
-        hood.CurrentLimits.SupplyCurrentLowerLimit = 20; //Set 2-17-26 to 20
+        hood.CurrentLimits.SupplyCurrentLowerLimit = 15; //Set 2-17-26 to 20
         hood.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Config
@@ -81,11 +81,11 @@ public class ShooterConfig {
         shooterLeft.MotorOutput.PeakForwardDutyCycle = 1;
         shooterLeft.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterLeft.CurrentLimits.StatorCurrentLimit = 180.0; //3-26 was 120
+        shooterLeft.CurrentLimits.StatorCurrentLimit = 150.0; //3-26 was 120
         shooterLeft.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterLeft.CurrentLimits.SupplyCurrentLimit = 50;    //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
         shooterLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
-        shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
         shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -112,11 +112,11 @@ public class ShooterConfig {
         shooterRight.MotorOutput.PeakForwardDutyCycle = 1;
         shooterRight.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterRight.CurrentLimits.StatorCurrentLimit = 180.0; // 3-26 was 120.
+        shooterRight.CurrentLimits.StatorCurrentLimit = 150.0; // 3-26 was 120.
         shooterRight.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterRight.CurrentLimits.SupplyCurrentLimit = 50;    //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
         shooterRight.CurrentLimits.SupplyCurrentLimitEnable = true;
-        shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
         shooterRight.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -145,7 +145,7 @@ public class ShooterConfig {
 
         turret.CurrentLimits.StatorCurrentLimit = 180; //Updated 3/26 for faster tracking was 120
         turret.CurrentLimits.StatorCurrentLimitEnable = true;
-        turret.CurrentLimits.SupplyCurrentLimit = 20;    //Updated 3/26 for faster tracking was 20
+        turret.CurrentLimits.SupplyCurrentLimit = 15;    //Updated 3/26 for faster tracking was 20
         turret.CurrentLimits.SupplyCurrentLimitEnable = true;
         turret.CurrentLimits.SupplyCurrentLowerLimit = 20;  //Updated 3/26 for faster tracking was 20
         turret.CurrentLimits.SupplyCurrentLowerTime = 1;
@@ -174,9 +174,9 @@ public class ShooterConfig {
 
         spindexer.CurrentLimits.StatorCurrentLimit = 120.0;
         spindexer.CurrentLimits.StatorCurrentLimitEnable = true;
-        spindexer.CurrentLimits.SupplyCurrentLimit = 30;    //Set 2-17-26
+        spindexer.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
         spindexer.CurrentLimits.SupplyCurrentLimitEnable = true;
-        spindexer.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
+        spindexer.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Set 2-17-26
         spindexer.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
@@ -206,7 +206,7 @@ public class ShooterConfig {
 
         kickup.CurrentLimits.StatorCurrentLimit = 120.0;
         kickup.CurrentLimits.StatorCurrentLimitEnable = true;
-        kickup.CurrentLimits.SupplyCurrentLimit = 30;    //Set 2-17-26
+        kickup.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
         kickup.CurrentLimits.SupplyCurrentLimitEnable = true;
         kickup.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Was 80.  Turned down for current consumption issues.
         kickup.CurrentLimits.SupplyCurrentLowerTime = 1;
