@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-//This subsystem manages the spindexer, kickup, turret, hood, shooter motors 
+//This subsystem manages the floor
 
 package frc.robot.subsystems;
 
@@ -11,92 +11,42 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.filter.LinearFilter;
-
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
-import frc.robot.config.ShooterConfig;
-
-
 import frc.robot.constants.MotorEnableConstants;
-import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.FloorConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 
 
 /**
- * The shooter subsystem.  Contains the flywheel, turret, hood adjustment, spindexer, and ball kickup.
+ * The floor subsystem.  Contains the flywheel, turret, hood adjustment, floor, and ball kickup.
  */
-public class Spindexer extends SubsystemBase {
+public class Floor extends SubsystemBase {
 
 /*==================Variables=======================*/
 
-  private TalonFX spindexerMotor;  // Motor type definition
-
-  private VelocityVoltage spindexerMotorMode; // Motor control type definition
-
-  private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
-
-  private double desiredSpindexerVelocity;
-
-  private boolean spindexerAtVelocity;
-
-  private double currentSpindexerVelocity;
-
-
-  public DutyCycleOut spindexerDutyCycle;
-
+  private TalonFX floorMotor;  // Motor type definition
+  private VelocityVoltage floorMotorMode; // Motor control type definition
+  private double desiredFloorVelocity;
+  private boolean floorAtVelocity;
+  private double currentFloorVelocity;
+  public DutyCycleOut floorDutyCycle;
   private double simTime;
-
   private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
-
-  //boolean turretZeroed;
-  boolean requestShoot;
-
-  public Field2d targetingField = new Field2d();
 
   // Fall back to a default of no telemetry.
   MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-  private enum ShooterState {
-    IDLE(0.0, 0.0, true),
-    FORWARD(ShooterConstants.kSpindexerIntake, ShooterConstants.kKickupIntake, true),
-    REVERSE(ShooterConstants.kSpindexerOuttake, ShooterConstants.kKickupOuttake, false);
-
-    private double spindexerVelocity;
-    private double KickupVoltage;
-    private boolean direction;
-
     /**
-     * Constructor for the ShooterState enumeration.
-     * @param spindexerVelocity - The velocity of the spindexer.
-     * @param KickupVoltage - The direction of the kickup motor.
-     * @param direction - Represents direction of the motors.  True is forward (intake), false is reverse (outtake).
+     * Returns the floor velocity for the state.
+     * @return - Desired velocity for the floor, in rotations per second.
      */
-    ShooterState(double spindexerVelocity, double KickupVoltage, boolean direction) {
-      this.spindexerVelocity = spindexerVelocity;
-      this.KickupVoltage = KickupVoltage;
-      this.direction = direction;
-    }
-
-    /**
-     * Returns the spindexer velocity for the state.
-     * @return - Desired velocity for the spindexer, in rotations per second.
-     */
-    public double spindexer() {
-      return this.spindexerVelocity;
-    }
-
-    /**
-     * Returns the kickup velocity for the state.
-     * @return - Desired velocity for the kickup motor, in rotations per second.
-     */
-    public double kickup() {
-      return this.KickupVoltage;
+    public double floor() {
+      return this.floorVelocity;
     }
 
     /**
@@ -109,23 +59,23 @@ public class Spindexer extends SubsystemBase {
   }
 
 /**
- * Creates a new instance of the spindexer subsystem.
+ * Creates a new instance of the floor subsystem.
  * @param config - The motor configurations for all motors in the subsystem.
  */
-public Spindexer(ShooterConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
+public Floor(FloorConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
   this.telemetryLevel = telemetryLevel;
-  this.shooterConfig = config;
+  this.floorConfig = config;
 
-  this.spindexerMotor = new TalonFX(ShooterConfig.kSpindexerMotorCANID, "canivore");  // Create the spindexer motor.
-  this.spindexerMotorMode = new VelocityVoltage(0);                                      // Set the control mode for the spindexer motor.
-  this.configureMechanism(this.spindexerMotor, this.shooterConfig.spindexerMotorConfig);
+  this.floorMotor = new TalonFX(FloorConfig.kFloorMotorCANID, "canivore");  // Create the floor motor.
+  this.floorMotorMode = new VelocityVoltage(0);                                      // Set the control mode for the floor motor.
+  this.configureMechanism(this.floorMotor, this.FloorConfig.floorMotorConfig);
 
 
   // Publish subsystem data to SmartDashboard.
-  //SmartDashboard.putData("Spindexer", this);
+  //SmartDashboard.putData("Floor", this);
 
-  spindexerDutyCycle = new DutyCycleOut(0.0);
+  floorDutyCycle = new DutyCycleOut(0.0);
 }
 
 /**
@@ -163,39 +113,39 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return ((currentSetpoint >= minimum) && (currentSetpoint <= maximum));
   }
 
-  //===========================Spindexer Private Methods=====================================
+  //===========================Floor Private Methods=====================================
 
   /**
-   * Set the velocity of the spindexer motor.
-   * @param velocity - The desired velocity of the spindexer motor, in rotations per second.
+   * Set the velocity of the floor motor.
+   * @param velocity - The desired velocity of the floor motor, in rotations per second.
    */
-  private void setSpindexerVelocity(double velocity) {
+  private void setFloorVelocity(double velocity) {
     // Always store the setpoint, to track the desired velocity.
-    this.desiredSpindexerVelocity = velocity;
+    this.desiredFloorVelocity = velocity;
 
     // Use this constant to enable or disable motor output for debugging.
-    if (MotorEnableConstants.kSpindexerMotorEnabled) {
-      this.spindexerMotor.setControl(this.spindexerMotorMode.withVelocity(this.desiredSpindexerVelocity));
+    if (MotorEnableConstants.kFloorMotorEnabled) {
+      this.floorMotor.setControl(this.floorMotorMode.withVelocity(this.desiredFloorVelocity));
     }
   }
 
-  private boolean isSpindexerAtSpeed () {
-      return ((spindexerMotor.getVelocity().getValueAsDouble() < (this.desiredSpindexerVelocity + ShooterConstants.kSpindexerVelocityDeadband)) 
-    && (spindexerMotor.getVelocity().getValueAsDouble() > (this.desiredSpindexerVelocity - ShooterConstants.kSpindexerVelocityDeadband)));
+  private boolean isFloorAtSpeed () {
+      return ((floorMotor.getVelocity().getValueAsDouble() < (this.desiredFloorVelocity + FloorConstants.kFloorVelocityDeadband)) 
+    && (floorMotor.getVelocity().getValueAsDouble() > (this.desiredFloorVelocity - FloorConstants.kFloorVelocityDeadband)));
   }
 
   private void stopSpindex(){
-    this.desiredSpindexerVelocity=0;
-    spindexerMotor.setControl(spindexerDutyCycle.withOutput(ShooterConstants.kSpindexerZeroDutyCycle));
+    this.desiredFloorVelocity=0;
+    floorMotor.setControl(floorDutyCycle.withOutput(FloorConstants.kFloorZeroDutyCycle));
   }
 
   /**
-   * Return the current velocity of the spindexer motor.
-   * @return - The current velocity of the spindexer motor, in rotations per second.
+   * Return the current velocity of the floor motor.
+   * @return - The current velocity of the floor motor, in rotations per second.
    */
-  private double getSpindexerVelocity() {
-    this.currentSpindexerVelocity = spindexerMotor.getVelocity().getValueAsDouble();
-    return spindexerMotor.getVelocity().getValueAsDouble();
+  private double getFloorVelocity() {
+    this.currentFloorVelocity = floorMotor.getVelocity().getValueAsDouble();
+    return floorMotor.getVelocity().getValueAsDouble();
   }
 
   //===============================Misc. Private Methods===================
@@ -247,21 +197,21 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   //=========================================================
 
   //====================Public Methods=====================
-  //=======================Public Spindexer Commands==================
-  public Command stopSpindexer() {
-    return run(() -> {this.stopSpindex();}).until(isSpindexerAtVelocity);
+  //=======================Public Floor Commands==================
+  public Command stopFloor() {
+    return run(() -> {this.stopSpindex();}).until(isFloorAtVelocity);
   }
 
-  public Command reverseSpindexer() {
-    return runOnce(() -> {this.setSpindexerVelocity(ShooterConstants.kSpindexerOuttake);});
+  public Command reverseFloor() {
+    return runOnce(() -> {this.setFloorVelocity(FloorConstants.kFloorOuttake);});
   }
 
-  public Command forwardSpindexer() {
-    return runOnce(() -> {this.setSpindexerVelocity(ShooterConstants.kSpindexerIntake);});
+  public Command forwardFloor() {
+    return runOnce(() -> {this.setFloorVelocity(FloorConstants.kFloorIntake);});
   }
 
-  public Trigger isSpindexerAtVelocity = new Trigger(() -> {return isSpindexerAtSpeed();});
-  //public Trigger isSpindexerStopped = new Trigger(() -> {return this.isSpindexerStopped();});
+  public Trigger isFloorAtVelocity = new Trigger(() -> {return isFloorAtSpeed();});
+  //public Trigger isFloorStopped = new Trigger(() -> {return this.isFloorStopped();});
 
   @Override
   public void initSendable(SendableBuilder builder) {
@@ -269,7 +219,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     // That can be used to 'gate' values to log without lines of identical code.
     switch (this.telemetryLevel) {
       case FULL:
-        builder.addBooleanProperty("Is Spindexer at Velocity", this.isSpindexerAtVelocity, null);
+        builder.addBooleanProperty("Is Floor at Velocity", this.isFloorAtVelocity, null);
       case LIMITED:
         builder.addStringProperty("Command", this::getCurrentCommandName, null);
       case NONE:
