@@ -7,12 +7,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Kickup;
+import frc.robot.subsystems.FrontKickup;
+import frc.robot.subsystems.RearKickup;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Spindexer;
+import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.constants.ClimberConstants;
-
 
 public class Move {
 
@@ -21,18 +20,20 @@ public class Move {
     public Intake intake;
     public Shooter shooter;
     public CommandSwerveDrivetrain drivetrain;
-    public Kickup kickup;
-    public Spindexer spindexer;
+    public RearKickup rearKickup;
+    public FrontKickup frontKickup;
+    public Floor floor;
 
 
-    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, Kickup kickup, Spindexer spindexer) {
+    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor) {
         this.climber = climber;
         this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
         this.drivetrain = drivetrain;
-        this.kickup = kickup;
-        this.spindexer = spindexer;
+        this.rearKickup = rearKickup;
+        this.frontKickup = frontKickup;
+        this.floor = floor;
     }
 
     //==========================================================
@@ -93,78 +94,45 @@ public class Move {
     public Command stopClimb() {
         return Commands.sequence(
             // climber.rotateClimbStop(),
-            climber.liftClimbStop()
+            climber.climbStop()
         );
-    }
-        
-    public Command quickClimbRight() {//Drives to the right climb location
-        return drivetrain.pathPlannerToPose(() -> {
-            int allianceIndex = getAlliance();
-            return ClimberConstants.quickClimbPoses[allianceIndex][1];
-        });
-    }
-    
-    public Command quickClimbLeft() {//Drives to the left climb location
-        return drivetrain.pathPlannerToPose(() -> {
-            int allianceIndex = getAlliance();
-            return ClimberConstants.quickClimbPoses[allianceIndex][0];
-        });
     }
 
     public Command climbExtend() {
-        return shooter.stopShoot().andThen(Commands.deadline(climber.liftClimbExtend(),shooter.turretCounterClockwise45(),kickup.stopKickup(),spindexer.stopSpindexer()));
-        
+        return climber.climbExtend();  
     }
 
     public Command climbRetract() {
         //return (climber.liftClimbRetract().withTimeout(3)).andThen(climber.liftClimbStop());
-        return (climber.liftClimbRetract());
+        return climber.climbRetract();
     }
 
     //==============================Shoot========================================
     public Command stopShoot() {
         //return shooter.stopShoot();  
-        return Commands.sequence(spindexer.stopSpindexer(),kickup.stopKickup(),shooter.stopShoot(), shooter.hood0(), shooter.turret0());       
+        return Commands.sequence(floor.stopFloor(),Commands.parallel(rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
     }
-
-    /*
-    public Command startShootFast() {
-        //return shooter.startShootFast();  
-        return Commands.sequence(shooter.hood30(),shooter.startShootFast()).andThen
-                (Commands.sequence(kickup.forwardKickup(),
-                spindexer.forwardSpindexer()));
-    }
-    */
 
     public Command startShootStatic() {
-       return Commands.sequence(shooter.hood30(),shooter.turret0(), shooter.startShootStatic()).andThen
-            (kickup.forwardKickup(), spindexer.forwardSpindexer());
+       return Commands.sequence(shooter.hood30(), shooter.startShootStatic()).andThen
+            (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());
     }
-
+/* Yeah... naw... needs fixing now that the subsystems are broken apart
     public Command startAutoShoot() {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood(), shooter.autoTurret())
             .until(shooter.isShooterAtVelocity)
             .andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer()));
             //Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
-    
+
+*/
+
+/* Needs mods because subsystems are seperated
     public Command startWhileMoveShoot() {   
         return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
                 Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer())));
     }
-
-    public Command turretClockWise45Degrees(){
-        return shooter.turretClockwise45();
-    }
-
-    public Command turret0Degrees(){
-        return shooter.turret0();
-    }
-
-    public Command turretCounterClockwise45Degrees() {
-        return shooter.turretCounterClockwise45();
-    }
-
+*/
     public Command hood30(){
         return shooter.hood30();
     }
