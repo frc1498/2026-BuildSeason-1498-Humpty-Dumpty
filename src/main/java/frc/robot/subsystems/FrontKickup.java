@@ -9,19 +9,12 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-
 import com.ctre.phoenix6.hardware.TalonFX;
-
-
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import frc.robot.config.ShooterConfig;
-
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
@@ -33,60 +26,20 @@ public class FrontKickup extends SubsystemBase {
 
 /*==================Variables=======================*/
 
-  private TalonFX kickupMotor;     // Motor type definition
-
-  private VelocityTorqueCurrentFOC kickupMotorMode;    // Motor control type definition
-
-  private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
-
-  private double desiredKickupVoltage;
-
-  private double currentKickupVoltage;
+  private TalonFX frontKickupMotor;     // Motor type definition
+  private VelocityTorqueCurrentFOC frontKickupMotorMode;    // Motor control type definition
+  private double desiredFrontKickupVoltage;
+  private double currentFrontKickupVoltage;
+  public DutyCycleOut frontKickupDutyCycle;
   
-  public DutyCycleOut kickupDutyCycle;
-
-  //boolean turretZeroed;
-  boolean requestShoot;
-
-  public Field2d targetingField = new Field2d();
-
   // Fall back to a default of no telemetry.
   MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
-
-  private enum ShooterState {
-    IDLE(0.0, 0.0, true),
-    FORWARD(ShooterConstants.kSpindexerIntake, ShooterConstants.kKickupIntake, true),
-    REVERSE(ShooterConstants.kSpindexerOuttake, ShooterConstants.kKickupOuttake, false);
-
-    private double spindexerVelocity;
-    private double KickupVoltage;
-    private boolean direction;
-
-    /**
-     * Constructor for the ShooterState enumeration.
-     * @param spindexerVelocity - The velocity of the spindexer.
-     * @param KickupVoltage - The direction of the kickup motor.
-     * @param direction - Represents direction of the motors.  True is forward (intake), false is reverse (outtake).
-     */
-    ShooterState(double spindexerVelocity, double KickupVoltage, boolean direction) {
-      this.spindexerVelocity = spindexerVelocity;
-      this.KickupVoltage = KickupVoltage;
-      this.direction = direction;
-    }
-
-    /**
-     * Returns the spindexer velocity for the state.
-     * @return - Desired velocity for the spindexer, in rotations per second.
-     */
-    public double spindexer() {
-      return this.spindexerVelocity;
-    }
 
     /**
      * Returns the kickup velocity for the state.
      * @return - Desired velocity for the kickup motor, in rotations per second.
      */
-    public double kickup() {
+    public double frontKickup() {
       return this.KickupVoltage;
     }
 
@@ -106,17 +59,15 @@ public class FrontKickup extends SubsystemBase {
 public FrontKickup(ShooterConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
   this.telemetryLevel = telemetryLevel;
-  this.shooterConfig = config;
-
-  this.kickupMotor = new TalonFX(ShooterConfig.kKickupMotorCANID, "canivore");        // Create the kickup motor.
-  this.kickupMotorMode = new VelocityTorqueCurrentFOC(0);                                         // Set the control mode for the kickup motor.
-  this.configureMechanism(this.kickupMotor, this.shooterConfig.kickupMotorConfig);
+  this.frontKickupMotor = new TalonFX(FrontKickupConfig.kFrontKickupMotorCANID, "canivore");        // Create the kickup motor.
+  this.frontKickupMotorMode = new VelocityTorqueCurrentFOC(0);                                         // Set the control mode for the kickup motor.
+  this.configureMechanism(this.frontKickupMotor, this.FrontKickupConfig.frontKickupMotorConfig);
 
   // Publish subsystem data to SmartDashboard.
   //SmartDashboard.putData("Kickup", this);
 
   //turretZeroed = true;
-  kickupDutyCycle = new DutyCycleOut(0.0);
+  frontKickupDutyCycle = new DutyCycleOut(0.0);
 }
 
 /**
@@ -153,13 +104,13 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * Set the velocity of the kickup motor.
    * @param velocity - The desired velocity of the kickup motor, in rotations per second.
    */
-  private void setKickupVoltage(double velocity) {
+  private void setFrontKickupVelocity(double velocity) {
     // Always store the setpoint, to track the desired velocity.
-    this.desiredKickupVoltage = velocity;
+    this.desiredFrontKickupVoltage = velocity;
 
     // Use this constant to enable or disable motor output for debugging.
-    if (MotorEnableConstants.kKickupMotorEnabled) {
-      this.kickupMotor.setControl(this.kickupMotorMode.withVelocity(this.desiredKickupVoltage));
+    if (MotorEnableConstants.kFrontKickupMotorEnabled) {
+      this.frontKickupMotor.setControl(this.frontKickupMotorMode.withVelocity(this.desiredFrontKickupVelocity));
     }
   }
 
@@ -167,13 +118,13 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * Return the current velocity of the kickup motor.
    * @return - The current velocity of the kickup motor, in rotations per second.
    */
-  private double getKickupVoltage() {
-    this.currentKickupVoltage = this.kickupMotor.getVelocity().getValueAsDouble();
-    return this.kickupMotor.getVelocity().getValueAsDouble();
+  private double getFrontKickupVelocity() {
+    this.currentFrontKickupVoltage = this.frontKickupMotor.getVelocity().getValueAsDouble();
+    return this.frontKickupMotor.getVelocity().getValueAsDouble();
   }
 
-  private void stopKick(){
-    kickupMotor.setControl(kickupDutyCycle.withOutput(ShooterConstants.kKickupZeroDutyCycle));
+  private void stopFrontKick(){
+    frontKickupMotor.setControl(frontKickupDutyCycle.withOutput(FrontKickupConstants.kFrontKickupZeroDutyCycle));
   }
 
   //===============================Misc. Private Methods===================
@@ -222,16 +173,16 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
   //====================Public Methods=====================
   //======================Public Kickup Commands=====================
-  public Command stopKickup() {
-    return runOnce(() -> {this.stopKick();});
+  public Command stopFrontKickup() {
+    return runOnce(() -> {this.stopFrontKick();});
   }
 
-  public Command reverseKickup() {
-    return runOnce(() -> {this.setKickupVoltage(ShooterConstants.kKickupOuttake);});
+  public Command reverseFrontKickup() {
+    return runOnce(() -> {this.setFrontKickupVelocity(FrontKickupConstants.kFrontKickupOuttake);});
   }
 
-  public Command forwardKickup() {
-    return runOnce(() -> {this.setKickupVoltage(ShooterConstants.kKickupIntake);});
+  public Command forwardFrontKickup() {
+    return runOnce(() -> {this.setFrontKickupVoltage(FrontKickupConstants.kFrontKickupIntake);});
   }
 
   //======================Triggers=========================
