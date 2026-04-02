@@ -728,6 +728,10 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     return runOnce(() -> {this.setHoodAngle(this.whileMoveHoodAngle);});
   }
 
+  public Supplier<Rotation2d> robotTarget() {
+    return () -> {return Rotation2d.fromDegrees(this.whileMoveTurretAngle);};
+  }
+
   //======================Triggers=========================
   public Trigger isHoodAtPosition = new Trigger(() -> {return isHoodAtPosition();});
   public Trigger isTurretAtPosition = new Trigger(() -> {return isTurretAtPosition();});
@@ -820,7 +824,7 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
-    this.whileMoveTurretAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
+    this.whileMoveTurretAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().getTranslation().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret).getTranslation()).getAngle().getDegrees());
     this.turretVelocityFeedforward=(-this.swerveState.Speeds.omegaRadiansPerSecond / (2.0 * Math.PI)) * ShooterConstants.kTurretGearRatio;  //Added to account for rotation
     
     // Every loop, update the odometry with the pose of the virtual target.
