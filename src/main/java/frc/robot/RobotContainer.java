@@ -81,14 +81,17 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private boolean DSLatch = false;
-    private double precisionDampenerTranslation = 1
-    ; //Translation Speed Limiter
+    private double precisionDampenerTranslation = 1; //Translation Speed Limiter
     private double precisionDampenerRotation = 1; //Rotation Speed Limiter
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001) // Add a 5% deadband
             .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors
+    private final SwerveRequest.FieldCentricFacingAngle driveFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
+        .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001)
+        .withDriveRequestType(DriveRequestType.Velocity)
+        .withHeadingPID(20.0, 0.0, 0.05);
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -112,6 +115,9 @@ public class RobotContainer {
         // Create DogLog - Temporarily disabled to stop loop overruns
         //DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
         //DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
+
+        driveFacingAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
         // Configure the trigger bindings
         configureBindings();
         registerAutoCommands();
@@ -199,8 +205,13 @@ public class RobotContainer {
         //Driver left trigger: Shoot
         driver.leftTrigger(0.1)
         .onTrue(Commands.runOnce(() -> { drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(move.setTargetToAllianceHub()
-        .andThen(Commands.sequence(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
+        .whileTrue(Commands.sequence(drivetrain.applyRequest(() ->
+            driveFacingAngle.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+                .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
+                .withTargetDirection(shooter.robotTarget().get())
+            ),
+            move.setTargetToAllianceHub())
+        .andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}, drivetrain), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
 
         //added move.hopperextend
