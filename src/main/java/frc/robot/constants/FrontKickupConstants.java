@@ -9,7 +9,7 @@ package frc.robot.constants;
  */
 public class FrontKickupConstants {
 
-  /*===============Speeds===================*/
+  /* Speeds */
   public static final double kFrontKickupIntake = 90.0;  
   public static final double kFrontKickupOuttake = -12.0;  
 
@@ -19,6 +19,9 @@ public class FrontKickupConstants {
   /* Safeties */
   public static final double kFrontKickupMaxSpeed = 100.0;
   public static final double kFrontKickupMinSpeed = -50.0;
+
+  /* Duty Cycles */
+  public static final double kFrontKickupZeroDutyCycle = 0.0;
    
   /* Simulation Constants */
   public static final double kKickupGearing = 5.0;  //This is incorrect for Humpty Dumpty
