@@ -40,6 +40,7 @@ public class FrontKickup extends SubsystemBase {
   /**
    * Creates a new instance of the Kickup subsystem.
    * @param config - The motor configurations for all motors in the subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
    */
   public FrontKickup(FrontKickupConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
