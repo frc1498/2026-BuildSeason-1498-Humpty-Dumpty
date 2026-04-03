@@ -14,7 +14,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +34,6 @@ public class Climber extends SubsystemBase {
   public DutyCycleOut dutyCycleOut; //Motor Control type definition
 
   private double desiredClimbMotorPosition;
-  private boolean isClimberCurrentLimitLatched=false;
 
   public boolean hasDSAttachLatched = false;
 
@@ -101,32 +99,31 @@ public class Climber extends SubsystemBase {
       }
   }
 
-  //=====================Private Get Methods==================================
+  /* Private Get Methods */
 
+  /**
+   * Get the current position of the climber.  This is the motor position, technically different from the mechanism position.
+   * But not in a significant way.
+   * @return The current position of the climber motor, in rotations.
+   */
   private double getClimbPosition() {
     return climbMotor.getPosition().getValueAsDouble();
   }
 
-  //=====================Private Trigger Methods
+  /**
+   * Check if the climber is at or near the position.
+   * @param position - The position to check if the climber is at or near.
+   * @return True if the current climber position is at the position parameter, plus or minus a deadband.
+   */
   private boolean isClimbAtPosition(double position) {
-    return ((position - ClimberConstants.kClimbDeadband) <= this.getClimbPosition()) 
-    && ((position + ClimberConstants.kClimbDeadband) >= this.getClimbPosition());
-  }
-
-  private boolean isClimberReadyToClimb() {
-    return this.isClimbAtPosition(ClimberConstants.kClimbExtend); /*&&
-    this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbExtend))*/
-  }
-
-  private boolean isClimberHome() {
-    return this.isClimbAtPosition(ClimberConstants.kClimbHome);
+    return ((position - ClimberConstants.kClimbDeadband) <= this.getClimbPosition()) && ((position + ClimberConstants.kClimbDeadband) >= this.getClimbPosition());
   }
 
   /**
    * Should return true if the supply limit has been exceeded.
-   * @return
+   * @return True if the climb motor stator current is higher than 20 A.
    */
-  private boolean climberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
+  private boolean climberCurrentLimitTripped() {
     return (this.climbMotor.getStatorCurrent().getValueAsDouble() > 20);
   }
 
@@ -147,22 +144,9 @@ public class Climber extends SubsystemBase {
       default:
         break;
     }
-
   }
 
-  private boolean isDSAttachLatched() {
-        if (DriverStation.getAlliance().isPresent()) {
-          hasDSAttachLatched=true;
-        } else {
-          hasDSAttachLatched=false;
-        }
-        return hasDSAttachLatched;
-  }
-
-//=======================================================
-//=====================Public Methods====================
-//=======================================================
-//=================Public Climb Climb Methods=============
+  /* Commands */
 
   /**
    * A zeroing routine for the climber.  This should drive the motor down until the supply current limit is tripped (or stalled).
@@ -188,6 +172,19 @@ public class Climber extends SubsystemBase {
     ).withName("zeroRoutine");
   }
 
+  /**
+   * A command that drives the climber to a constant position.  Used as a factory for more specific climber position commands.
+   * @param climberPosition - The climber position to move to.
+   * @return - A factory command that moves the climb motor to the position defined by the constant.
+   */
+  private Command climbMove(double climberPosition) {
+    return run (() -> {this.goToPositionClimb(climberPosition);});
+  }
+
+  //public Command climbExtend() {return this.climbMove(ClimberConstants.kClimbExtend).until(isClimbExtended).withName("climbExtend");}
+  //public Command climbRetract() {return this.climbMove(ClimberConstants.kClimbRetract).until(isClimbRetracted).withName("climbRetract");}
+  //public Command climbHome() {return this.climbMove(ClimberConstants.kClimbHome).until(isClimbHome).withName("climbHome");}
+
   public Command climbExtend() {
     return run(
       () -> {this.goToPositionClimb(ClimberConstants.kClimbExtend);}
@@ -212,7 +209,7 @@ public class Climber extends SubsystemBase {
     ).withName("climbStop");
   }
 
-  //=======================Triggers======================
+  /* Triggers */
   public Trigger isClimbExtended = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbExtend);});
   public Trigger isClimbRetracted = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbRetract);});
   public Trigger isClimbHome = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbHome);});
