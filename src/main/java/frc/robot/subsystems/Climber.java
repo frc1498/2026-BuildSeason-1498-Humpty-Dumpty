@@ -37,10 +37,10 @@ public class Climber extends SubsystemBase {
 
   public boolean hasDSAttachLatched = false;
 
-  ClimberConfig climberConfig; //Create an object of type climber config to use to configure motors
+  private ClimberConfig climberConfig; //Create an object of type climber config to use to configure motors
 
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
   /**
    * The constructor for the climber subsystem.
@@ -54,7 +54,7 @@ public class Climber extends SubsystemBase {
 
     this.climbMotor = new TalonFX(ClimberConfig.kClimbMotorCANID, MotorEnableConstants.canivore);  //Create a motor for this subsystem
     this.climbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
-    this.configureMechanism(climbMotor, config.climbMotorConfig);
+    this.configureMechanism(this.climbMotor, this.climberConfig.climbMotorConfig);
 
     this.dutyCycleOut = new DutyCycleOut(0.0);
     this.climbMotor.setPosition(0);
