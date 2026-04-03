@@ -16,6 +16,9 @@ import edu.wpi.first.math.numbers.N3;
  */
 public class VisionConstants {
 
+    /**
+     * Limelight related constants.
+     */
     public static class limelight {
         public static final String kName = "limelight";
         public static final double kForwardOffset = 0.3048;   // 12 inches (0.3048 meters) from the center of the robot.
@@ -29,6 +32,9 @@ public class VisionConstants {
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
     }
 
+    /**
+     * Photonvision related constants.
+     */
     public static class photonvision {
         public static final String kRightName = "swerveRightCamera";
         public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.3302, 0.1810), new Rotation3d(0.0, 0.2618, -1.5708));

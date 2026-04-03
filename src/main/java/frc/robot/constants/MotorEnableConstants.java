@@ -5,12 +5,8 @@
 package frc.robot.constants;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
+ * Constants used to turn the motors on and off for debugging purposes.
+ * Also includes values for enabling and limiting the robot logging and telemetry.
  */
 public final class MotorEnableConstants {
 //Motor Enable/Disable
