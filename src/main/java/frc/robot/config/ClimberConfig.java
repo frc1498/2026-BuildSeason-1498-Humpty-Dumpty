@@ -1,6 +1,5 @@
 package frc.robot.config;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -14,18 +13,23 @@ public class ClimberConfig {
     public TalonFXConfiguration ClimbMotorConfig;
     public TalonFXConfiguration ClimbMotorZeroConfig;
 
-    //Constructor
-    public ClimberConfig(){
+    /**
+     * Constructor for the climber motor configuration.
+     */
+    public ClimberConfig() {
         ClimbMotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
-        this.configureClimber(ClimbMotorConfig);  //Fill in framework
+        this.configureClimber(ClimbMotorConfig);        //Fill in framework
 
         ClimbMotorZeroConfig = new TalonFXConfiguration();
         this.configureClimberZero(ClimbMotorZeroConfig);
 
     }
 
-
-    public void configureClimber(TalonFXConfiguration Climber){
+    /**
+     * Sets up the base TalonFX configuration for the climber motor.
+     * @param Climber - The TalonFX configuration to apply the settings to.
+     */
+    public void configureClimber(TalonFXConfiguration Climber) {
         //configure motor
         Climber.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         Climber.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -55,7 +59,11 @@ public class ClimberConfig {
         Climber.Audio.AllowMusicDurDisable = true;
     }
 
-    public void configureClimberZero(TalonFXConfiguration Climber){
+    /**
+     * Sets up the TalonFX configuration for the climber motor to use while running the zero-ing routine.
+     * @param Climber - The TalonFX configuration to apply the settings to.
+     */
+    public void configureClimberZero(TalonFXConfiguration Climber) {
         //configure motor
         Climber.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         Climber.MotorOutput.NeutralMode = NeutralModeValue.Brake;
