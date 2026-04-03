@@ -16,7 +16,9 @@ public class ShooterConfig {
     public TalonFXConfiguration shooterLeftMotorConfig; //kraken motor (x60)
     public TalonFXConfiguration shooterRightMotorConfig; //kraken motor (x60)
 
-    //Constructor - only runs one
+    /**
+     * Constructor for the climber motor configuration.
+     */
     public ShooterConfig(){
         hoodMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
         this.configureHoodMotor(hoodMotorConfig); //Fill in framework, requires a method below
@@ -28,7 +30,11 @@ public class ShooterConfig {
         this.configureShooterMotorRight(shooterRightMotorConfig); //Fill in framework, requires a method below
     }
 
-    public void configureHoodMotor(TalonFXConfiguration hood){
+    /**
+     * Sets up the base TalonFX configuration for the hood adjustment motor.
+     * @param hood - The TalonFX configuration to apply the settings to.
+     */
+    public void configureHoodMotor(TalonFXConfiguration hood) {
         //Configure Motor
         hood.MotorOutput.Inverted=InvertedValue.Clockwise_Positive;  //Set 2-17-26
         hood.MotorOutput.NeutralMode=NeutralModeValue.Coast;  //Set 2-17-26
@@ -57,7 +63,11 @@ public class ShooterConfig {
         hood.Audio.AllowMusicDurDisable = true;
     }
 
-    public void configureShooterMotorLeft(TalonFXConfiguration shooterLeft){
+    /**
+     * Sets up the base TalonFX configuration for the left shooter motor.
+     * @param shooterLeft - The TalonFX configuration to apply the settings to.
+     */
+    public void configureShooterMotorLeft(TalonFXConfiguration shooterLeft) {
         //configure motor
         shooterLeft.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
 
@@ -89,7 +99,11 @@ public class ShooterConfig {
         shooterLeft.Audio.AllowMusicDurDisable = true;
     }
 
-    public void configureShooterMotorRight(TalonFXConfiguration shooterRight){
+    /**
+     * Sets up the base TalonFX configuration for the right shooter motor.
+     * @param shooterRight - The TalonFX configuration to apply the settings to.
+     */
+    public void configureShooterMotorRight(TalonFXConfiguration shooterRight) {
         //configure motor
         shooterRight.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //Set 2-17-26
         shooterRight.MotorOutput.NeutralMode = NeutralModeValue.Coast; //Set 2-17-26
