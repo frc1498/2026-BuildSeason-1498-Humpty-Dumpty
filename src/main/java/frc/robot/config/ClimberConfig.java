@@ -10,18 +10,18 @@ public class ClimberConfig {
     public static final int kClimbMotorCANID = 17;
 
     //Variables
-    public TalonFXConfiguration ClimbMotorConfig;
-    public TalonFXConfiguration ClimbMotorZeroConfig;
+    public TalonFXConfiguration climbMotorConfig;
+    public TalonFXConfiguration climbMotorZeroConfig;
 
     /**
      * Constructor for the climber motor configuration.
      */
     public ClimberConfig() {
-        ClimbMotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
-        this.configureClimber(ClimbMotorConfig);        //Fill in framework
+        climbMotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
+        this.configureClimber(climbMotorConfig);        //Fill in framework
 
-        ClimbMotorZeroConfig = new TalonFXConfiguration();
-        this.configureClimberZero(ClimbMotorZeroConfig);
+        climbMotorZeroConfig = new TalonFXConfiguration();
+        this.configureClimberZero(climbMotorZeroConfig);
 
     }
 
