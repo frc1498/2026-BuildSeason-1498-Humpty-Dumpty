@@ -3,7 +3,6 @@ package frc.robot.config;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public class FrontKickupConfig {
     //Constants go Here
@@ -12,14 +11,20 @@ public class FrontKickupConfig {
     //Variables
     public TalonFXConfiguration frontKickupMotorConfig; //kraken motor (x60)
 
-    //Constructor - only runs one
-    public FrontKickupConfig(){
-        frontKickupMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureKickupMotor(frontKickupMotorConfig); //Fill in framework, requires a method below
+    /**
+     * Constructor for the front kickup motor configuration.
+     */
+    public FrontKickupConfig() {
+        frontKickupMotorConfig = new TalonFXConfiguration();    //Instantiate - make a framework
+        this.configureKickupMotor(frontKickupMotorConfig);      //Fill in framework, requires a method below
 
     }
     
-    public void configureKickupMotor(TalonFXConfiguration frontKickup){
+    /**
+     * Sets up the base TalonFX configuration for the frontKickup motor.
+     * @param frontKickup - The TalonFX configuration to apply the settings to.
+     */
+    public void configureKickupMotor(TalonFXConfiguration frontKickup) {
         //configure motor
         frontKickup.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
         frontKickup.MotorOutput.NeutralMode = NeutralModeValue.Brake;  //Set 2-17-26
@@ -47,5 +52,4 @@ public class FrontKickupConfig {
 
         frontKickup.Audio.AllowMusicDurDisable = true;
     }
-
 }
