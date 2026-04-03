@@ -4,6 +4,8 @@
 
 package frc.robot.constants;
 
+import com.ctre.phoenix6.CANBus;
+
 /**
  * Constants used to turn the motors on and off for debugging purposes.
  * Also includes values for enabling and limiting the robot logging and telemetry.
@@ -23,6 +25,8 @@ public final class MotorEnableConstants {
   public static final boolean kFrontKickupMotorEnabled = true;
   public static final boolean kRearKickupMotorEnabled = true;
   public static final boolean kHoodMotorEnabled = true;
+
+  public static final CANBus canivore = new CANBus("canivore");
 
   public static enum LogLevel {
     NONE,
