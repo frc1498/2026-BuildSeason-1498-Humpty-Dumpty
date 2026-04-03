@@ -13,18 +13,22 @@ public class IntakeConfig {
     public TalonFXConfiguration intakeRightMotorConfig;  //Create variable of type TalonFXConfiguration
     public TalonFXConfiguration intakeLeftMotorConfig;  //Create variable of type TalonFXConfiguration
 
-    //Constructor
-    public IntakeConfig(){
+    /**
+     * Constructor for the climber motor configuration.
+     */
+    public IntakeConfig() {
         intakeRightMotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
         this.configureIntakeMotorRight(intakeRightMotorConfig);  //Fill in framework 
 
         intakeLeftMotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
         this.configureIntakeMotorLeft(intakeLeftMotorConfig);  //Fill in framework 
-
-
     }
 
-     public void configureIntakeMotorRight(TalonFXConfiguration intakeRight){
+    /**
+     * Sets up the base TalonFX configuration for the right intake motor.
+     * @param intakeRight - The TalonFX configuration to apply the settings to.
+     */
+     public void configureIntakeMotorRight(TalonFXConfiguration intakeRight) {
 
         //configure motor
         intakeRight.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -54,7 +58,11 @@ public class IntakeConfig {
         intakeRight.Audio.AllowMusicDurDisable = true;
     }
 
-    public void configureIntakeMotorLeft(TalonFXConfiguration intakeLeft){
+    /**
+     * Sets up the base TalonFX configuration for the left intake motor.
+     * @param intakeLeft - The TalonFX configuration to apply the settings to.
+     */
+    public void configureIntakeMotorLeft(TalonFXConfiguration intakeLeft) {
 
         //configure motor
         intakeLeft.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
