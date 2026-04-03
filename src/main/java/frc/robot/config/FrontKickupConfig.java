@@ -6,7 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class FrontKickupConfig {
     //Constants go Here
-    public static final int kKickupMotorCANID = 12;
+    public static final int kFrontKickupMotorCANID = 12;
    
     //Variables
     public TalonFXConfiguration frontKickupMotorConfig; //kraken motor (x60)
