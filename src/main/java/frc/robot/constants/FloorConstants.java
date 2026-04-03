@@ -9,24 +9,21 @@ package frc.robot.constants;
  */
 public class FloorConstants {
 
-  /*===============Speeds===================*/
+  /* Speeds */
+  public static final double kFloorIntake = 0;
+  public static final double kFloorOuttake = 0;
 
   /* Deadbands */
+  public static final double kFloorVelocityDeadband = 0;
   
+  /* Safeties */
   
-  /*===============Safeties==================*/
-  public static final double kHoodSafeExtend = 45.5;  //In degrees.  May be able to go slightly higher
+  /* Duty Cycles */
+  public static final double kFloorZeroDutyCycle = 0;
 
-  
-  //==============DutyCycles====================
-  public static final double kTurretZeroDutyCycle = 0;
+  /* Positions */
 
-  //==============Positions=================
-  public static final double kTurretZeroPosition = 0;
-
-  //==============Gear Ratios================
+  /* Gear Ratios */
  
-  
   /* Simulation Constants */
-
 }
