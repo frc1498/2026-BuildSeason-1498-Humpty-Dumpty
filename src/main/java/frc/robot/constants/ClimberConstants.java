@@ -12,21 +12,21 @@ import edu.wpi.first.math.geometry.Rotation2d;
  */
 public class ClimberConstants {
   //=====================Positions=====================
-  public static final int kLiftClimbExtend = 45;
-  public static final int kLiftClimbHandOff = 0;
-  public static final int kLiftClimbRetract = 0;
-  public static final int kLiftClimbHome = 0;
+  public static final int kClimbExtend = 45;
+  public static final int kClimbHandOff = 0;
+  public static final int kClimbRetract = 0;
+  public static final int kClimbHome = 0;
 
   public static final int kRotateClimbExtend = 0;
   public static final int kRotateClimbHandOff = 0;
   public static final int kRotateClimbRetract = 0;
   public static final int kRotateClimbHome = 0;
-  public static final int kLiftClimbDeadband = 3;
+  public static final int kClimbDeadband = 3;
   public static final int kRotateClimbDeadband = 0;
 
   //=====================Safeties======================
-  public static final int kLiftClimbSafeExtend = 45;
-  public static final int kLiftClimbSafeRetract = 0;
+  public static final int kClimbSafeExtend = 45;
+  public static final int kClimbSafeRetract = 0;
 
   public static final int kRotateClimbSafeExtend = 0;
   public static final int kRotateClimbSafeRetract = 0;
