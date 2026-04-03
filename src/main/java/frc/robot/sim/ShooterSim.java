@@ -21,17 +21,14 @@ public class ShooterSim implements AutoCloseable {
 
     public ShooterConfig shooterConfig;
     public TalonFXSimState hood;
-    public TalonFXSimState turret;
     public TalonFXSimState shooterLeft;
     public TalonFXSimState shooterRight;
 
     public DCMotor shooterGearbox = DCMotor.getKrakenX60Foc(2);
     public DCMotor hoodAdjust = DCMotor.getKrakenX44Foc(1);
-    public DCMotor turretRotate = DCMotor.getKrakenX44Foc(1);
 
     public FlywheelSim shooterFlywheel;
     public DCMotorSim hoodAdjustSim;
-    public DCMotorSim turretRotateSim;
 
     private double flywheelVelocity;
     private double flywheelPosition;
@@ -39,10 +36,6 @@ public class ShooterSim implements AutoCloseable {
     private double hoodVelocity;
     private double hoodPositionDelta;
     private double hoodPosition;
-
-    private double turretVelocity;
-    private double turretPositionDelta;
-    private double turretPosition;
 
     public double simVoltage;
     public double simPeriod = 0.02;
@@ -77,34 +70,39 @@ public class ShooterSim implements AutoCloseable {
     }
   }
 
-     /*new DCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, 0.001, 100.0), gearbox);*/
-    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState turret, TalonFXSimState shooterLeft, TalonFXSimState shooterRight) {
+    /**
+     * Constructs the simulation of the shooter subsystem.
+     * @param config - The configuration for the shooter subsystem.
+     * @param hood - The SimState of the hood motor.
+     * @param shooterLeft - The SimState of the left shooter motor.
+     * @param shooterRight - The SimState of the right shooter motor.
+     */
+    public ShooterSim(ShooterConfig config, TalonFXSimState hood, TalonFXSimState shooterLeft, TalonFXSimState shooterRight) {
         this.shooterConfig = config;
         this.hood = hood;
-        this.turret = turret;
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
 
         this.hoodPosition = 0.0;
-        this.turretPosition = 0.0;
 
         this.shooterFlywheel = new FlywheelSim(
             LinearSystemId.createFlywheelSystem(this.shooterGearbox, 0.001, ShooterConstants.kShooterFlywheelGearing),
             this.shooterGearbox
         );
         this.hoodAdjustSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(this.hoodAdjust, 0.001, ShooterConstants.kHoodGearing), this.hoodAdjust);
-        this.turretRotateSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(this.turretRotate, 0.001, ShooterConstants.kTurretGearing), this.turretRotate);
         
         this.shooter_vis = new Mechanism2d(20.0, 20.0);
         this.shooter_root = this.shooter_vis.getRoot("Origin", 10.0, 10.0);
         this.shooter_hood = shooter_root.append(new MechanismLigament2d("Hood", 0.0, 0.0));
     }
 
+    /**
+     * Runs the simulation of the shooter subsystem.  Updates the simulation state based on inputs from the code.
+     */
     public void simulationPeriodic() {
         // Set motor and sensor voltage.
         this.simVoltage = RoboRioSim.getVInVoltage();
         this.hood.setSupplyVoltage(this.simVoltage);
-        this.turret.setSupplyVoltage(this.simVoltage);
         this.shooterLeft.setSupplyVoltage(this.simVoltage);
         this.shooterRight.setSupplyVoltage(this.simVoltage);
 
@@ -114,9 +112,6 @@ public class ShooterSim implements AutoCloseable {
 
         this.hoodAdjustSim.setInput(hood.getMotorVoltage());
         this.hoodAdjustSim.update(this.simPeriod);
-
-        this.turretRotateSim.setInput(turret.getMotorVoltage());
-        this.turretRotateSim.update(this.simPeriod);
 
         // Update sensor positions.
         this.flywheelVelocity = this.outputRPMToInputRPS(this.shooterFlywheel.getAngularVelocityRPM(), ShooterConstants.kShooterFlywheelGearing);
@@ -133,17 +128,7 @@ public class ShooterSim implements AutoCloseable {
         this.hood.addRotorPosition(this.hoodPositionDelta);
         // If the simulation is overshooting the physical range, clamp it.
         if(!this.inRange(this.hoodPosition, ShooterConstants.kHoodSafeRetract, ShooterConstants.kHoodSafeExtend)) {
-            this.turret.setRawRotorPosition(MathUtil.clamp(this.hoodPosition, ShooterConstants.kHoodSafeRetract, ShooterConstants.kHoodSafeExtend));
-        }
-        
-        this.turretVelocity = this.outputRPMToInputRPS(this.turretRotateSim.getAngularVelocityRPM(), ShooterConstants.kTurretGearing);
-        this.turretPositionDelta = this.turretVelocity * this.simPeriod;
-        this.turretPosition += this.turretPositionDelta;
-        this.turret.setRotorVelocity(this.turretVelocity);
-        this.turret.addRotorPosition(this.turretPositionDelta);
-        // If the simulation is overshooting the physical range, clamp it.
-        if(!this.inRange(this.turretPosition, ShooterConstants.kTurretSafeCounterClockwise, ShooterConstants.kTurretSafeClockwise)) {
-            this.turret.setRawRotorPosition(MathUtil.clamp(this.turretPosition, ShooterConstants.kTurretSafeCounterClockwise, ShooterConstants.kTurretSafeClockwise));
+            this.hood.setRawRotorPosition(MathUtil.clamp(this.hoodPosition, ShooterConstants.kHoodSafeRetract, ShooterConstants.kHoodSafeExtend));
         }
 
         // Divide by 60 for rotations per second.
@@ -175,10 +160,20 @@ public class ShooterSim implements AutoCloseable {
         return (setpoint >= lowerLimit) && (setpoint <= upperLimit);
     }
 
+    /**
+     * Returns the simulation visualization for use within the subsystem the simulation is run in.
+     * @return - The SmartDashboard visualization of the shooter subsystem.
+     */
     public Mechanism2d getVis() {
         return this.shooter_vis;
     }
 
+    /**
+     * Updates the simulation visualization.
+     * @param velocity - The velocity of the flywheel.  Normalized against the maximum speed, then multiplied by 10.
+     * @param angle - The angle of the hood.
+     * @param atVelocity - Changes the color of the velocity vector if true.
+     */
     public void updateShooterHoodVis(double velocity, double angle, boolean atVelocity) {
         this.shooter_hood.setLength((velocity / ShooterConstants.kShooterMaxSpeed) * 10.0);
         this.shooter_hood.setAngle(angle);
