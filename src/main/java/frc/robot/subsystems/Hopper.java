@@ -13,6 +13,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,7 +26,7 @@ import frc.robot.constants.HopperConstants;
 
 public class Hopper extends SubsystemBase {
 
-//======================Variables==========================
+  /* Variables */
   public TalonFX hopperMotor;  //Motor type definition
   
   public PositionTorqueCurrentFOC hopperMotorMode; //Motor control type definition
@@ -41,17 +42,23 @@ public class Hopper extends SubsystemBase {
   public Hopper(HopperConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
     this.telemetryLevel = telemetryLevel;
+    this.hopperConfig = config;
 
-    hopperMotor = new TalonFX(HopperConfig.kHopperExtendCANID, "canivore");  //Create a motor for this subsystem
-    hopperMotorMode = new PositionTorqueCurrentFOC(0);  //Set the motor's control mode
+    this.hopperMotor = new TalonFX(HopperConfig.kHopperExtendCANID, "canivore");  //Create a motor for this subsystem
+    this.hopperMotorMode = new PositionTorqueCurrentFOC(0);  //Set the motor's control mode
 
-    this.configureMechanism(hopperMotor, config.hopperConfig);
+    this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperConfig);
 
     this.hopperMotor.setPosition(0);
 
-    //SmartDashboard.putData("Hopper", this);
+    SmartDashboard.putData("Hopper", this);
   }
 
+  /**
+   * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
+   * @param mechanism - The TalonFX object (motor) to apply the configuration to.
+   * @param config - The set of configurations to apply.
+   */
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
     //Start Configuring Hopper Motor
     StatusCode mechanismStatus = StatusCode.StatusCodeNotInitialized;
@@ -65,7 +72,13 @@ public class Hopper extends SubsystemBase {
     }
   }
 
-//================Private Methods=========================
+  /* Private Methods */
+
+  /**
+   * Set the motor to the desired position.
+   * The setpoint will be ignored if the motor is disabled, or the setpoint is outside of the safety limits.
+   * @param position - The desired position of the motor, in rotations.
+   */
   private void goToPosition(double position) {
     desiredPosition = position;
     if (MotorEnableConstants.kHopperMotorEnabled) {
@@ -76,15 +89,30 @@ public class Hopper extends SubsystemBase {
     }
   }
 
+  /**
+   * Returns the current position of the hopper motor, in rotations.
+   * Please note that this is different from the position of the mechanism.
+   * @return The current position of the hopper motor, in rotations.
+   */
   private double getHopperPosition() {
     return hopperMotor.getPosition().getValueAsDouble();
   }
 
+  /**
+   * Check if the current hopper position is within the allowable deadband of the parameter.
+   * @param position - The position to check the current hopper position against.
+   * @return True if the hopper position is within the allowable deadband of the position.
+   */
   private boolean isHopperAtPosition(double position) {
     return ((position - HopperConstants.kDeadband) <= this.getHopperPosition()) 
     && ((position + HopperConstants.kDeadband) >= this.getHopperPosition());
   }
 
+  /**
+   * Returns a string of the name of the currently running command.
+   * If no command is running, return "No Command".
+   * @return A string with the name of the currently running command.
+   */
   private String getCurrentCommandName() {
       if (this.getCurrentCommand() == null) {
           return "No Command";
@@ -94,6 +122,10 @@ public class Hopper extends SubsystemBase {
       }
   }
 
+  /**
+   * A routine to agitate the hopper to move balls into the kickup.
+   * The hopper moves to the midpoint if it is fully extended, and fully extends if it is at the midpoint.
+   */
   private void agitateHopper(){
     if (isHopperAtPosition(HopperConstants.kHopperExtend)){
       this.goToPosition(HopperConstants.kHopperMidPosition);
@@ -124,26 +156,33 @@ public class Hopper extends SubsystemBase {
     }
   }
 
+  /**
+   * Check the current draw of the hopper against a preset limit of 20 A.
+   * Use to determine if the hopper is stalling against the hard stop for a zeroing routine.
+   * @return True if the stator current of the hopper motor is greater than 20 A.
+   */
   private boolean hopperCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
     return (this.hopperMotor.getStatorCurrent().getValueAsDouble() > 20);
   }
 
-//=================Public Methods=========================
-  
-public Command hopperExtend() {
+  /* Public Methods */
+
+  /**
+   * A factory command that sets the position of the hopper motor.
+   * @param position - The position setpoint of the hopper motor, in rotations.
+   * @return A command that runs the {@code goToPosition} method.
+   */
+  private Command moveHopper(double position) {return run(() -> {this.goToPosition(position);}).withName("moveHopper");}
+
+  public Command newHopperExtend() {return this.moveHopper(HopperConstants.kHopperExtend).until(isHopperExtended).withName("hopperExtend");}
+  public Command newHopperRetract() {return this.moveHopper(HopperConstants.kHopperRetract).until(isHopperRetracted).withName("hopperRetract");}
+  public Command newHopperMidpoint() {return this.moveHopper(HopperConstants.kHopperMidPosition).until(isHopperMidpoint).withName("hopperMidpoint");}
+
+  public Command hopperExtend() {
     return run(
       () -> {this.goToPosition(HopperConstants.kHopperExtend);}
     ).until(isHopperExtended).withName("hopperExtend");
   }
-
-/*
-public Command hopperExtend() {
-  return run(() -> {this.goToPosition(HopperConstants.kHopperExtend);}).until(isHopperExtended).withName("hopperExtend").andThen(
-  run(()-> {this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0.25));})).withTimeout(0.25).andThen(
-  runOnce(()->{this.hopperMotor.setPosition(HopperConstants.kHopperExtend);})).andThen(
-  run(()->{this.goToPosition(HopperConstants.kHopperExtend);})).until(isHopperExtended);
-}
-*/
 
   public Command hopperRetract() {
     return run(
@@ -157,7 +196,11 @@ public Command hopperExtend() {
     ).until(isHopperMidpoint).withName("hopperMidpoint");
   }
 
-   public Command zeroRoutine() {  //This routine goes maximum out and sets that position
+  /**
+   * A zeroing routine for the hopper.  This should drive the motor down until the supply current limit is tripped (or stalled).
+   * @return A command the zeros the hopper.
+   */
+  public Command zeroRoutine() {  //This routine goes maximum out and sets that position
     return run(
       () -> {
         this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperZeroConfig);
@@ -177,22 +220,31 @@ public Command hopperExtend() {
     ).withName("zeroRoutine");
   }
 
+  /**
+   * A command that agitates the hopper by moving between the fully extended position and midpoint position.
+   * Hopefully this dislodges any stuck balls in the robot.
+   * @return A command that agitates the hopper.
+   */
   public Command agitate() {
     return (this.hopperMidPosition()
       .andThen(Commands.waitSeconds(.5))
       .andThen(this.hopperExtend())
       .andThen(Commands.waitSeconds(.75))
-      ).repeatedly().withName("agitate");
+    ).repeatedly().withName("agitate");
       
     //return runOnce(() -> {this.agitateHopper();}).andThen(
     //  Commands.waitSeconds(0.5));
   }
 
+  /**
+   * Sets the current hopper position to zero.
+   * @return A command that sets the hopper motor position to 0.0.
+   */
   public Command setHopperZero() {
     return run(() -> {this.hopperMotor.setPosition(0.0);});
   }
 
-//================================Triggers================================  
+  /* Triggers */
   public Trigger isHopperExtended= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperExtend);});
   public Trigger isHopperRetracted= new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperRetract);});
   public Trigger isHopperMidpoint = new Trigger(() -> {return this.isHopperAtPosition(HopperConstants.kHopperMidPosition);});
