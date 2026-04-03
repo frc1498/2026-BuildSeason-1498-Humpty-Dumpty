@@ -33,12 +33,17 @@ public class Hopper extends SubsystemBase {
   public DutyCycleOut dutyCycleOut;
   private double desiredPosition;
 
-  HopperConfig hopperConfig; //Create an object of type HopperConfig
+  private HopperConfig hopperConfig; //Create an object of type HopperConfig
   public boolean isHopperVelocityLimitLatched = false;
 
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
-
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  
+  /**
+   * The constructor for the hopper subsystem.
+   * @param config - The configuration for the motors in the hopper subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
+   */
   public Hopper(HopperConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
     this.telemetryLevel = telemetryLevel;
