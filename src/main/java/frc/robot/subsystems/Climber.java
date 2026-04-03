@@ -26,7 +26,7 @@ import frc.robot.constants.ClimberConstants;
 //For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
 
 public class Climber extends SubsystemBase {
-//==================Variables=======================
+/* Variables */
   public TalonFX climbMotor;  //Motor type definition
 
   public PositionVoltage climbMotorMode; //Motor control type definition
@@ -42,23 +42,31 @@ public class Climber extends SubsystemBase {
   // Fall back to a default of no telemetry.
   MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-  //===============Constructor======================
+  /**
+   * The constructor for the climber subsystem.
+   * @param config - The motor configuration for the motors in the climber subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
+   */
   public Climber(ClimberConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
     this.telemetryLevel = telemetryLevel;
+    this.climberConfig = config;
 
-    climbMotor = new TalonFX(ClimberConfig.kClimbMotorCANID, "canivore");  //Create a motor for this subsystem
-    climbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
+    this.climbMotor = new TalonFX(ClimberConfig.kClimbMotorCANID, MotorEnableConstants.canivore);  //Create a motor for this subsystem
+    this.climbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
     this.configureMechanism(climbMotor, config.climbMotorConfig);
-    this.climberConfig=config;
-    this.dutyCycleOut = new DutyCycleOut(0.0);
 
+    this.dutyCycleOut = new DutyCycleOut(0.0);
     this.climbMotor.setPosition(0);
 
     SmartDashboard.putData("Climber", this);
   }
 
-  //===================Configuration=====================
+  /**
+   * Applies a TalonFX configuration to a TalonFX motor.
+   * @param mechanism - The motor to apply the configuration to.
+   * @param config - The TalonFX configuration to apply to the motor.
+   */
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
     //Start Configuring Hopper Motor
     StatusCode mechanismStatus = StatusCode.StatusCodeNotInitialized;
@@ -72,10 +80,16 @@ public class Climber extends SubsystemBase {
     }
   }
 
-//=======================================================
-//====================Private Methods====================
-//=======================================================
-//===============Private Set/Goto Methods================
+  /* Private Methods */
+
+  /* Private Set/Goto Methods */
+
+  /**
+   * Commands the climber motor to a position.
+   * The method checks if the motor is enabled, and that the setpoint is within the safety limits for the climber before sending the command to the motor.
+   * This method also caches the parameter as {@code desiredClimbMotorPosition} for use in the subsystem.
+   * @param position - The position setpoint for the climber motor, in rotations.
+   */
   private void goToPositionClimb(double position) {
     desiredClimbMotorPosition = position;
     if (MotorEnableConstants.kClimbMotorEnabled) {
@@ -86,10 +100,19 @@ public class Climber extends SubsystemBase {
     }
   }
 
+  /**
+   * Stops the climber motor.
+   * This method sets the control mode to dutyCycleOut with an output of 0.
+   * This allows the mechanism to 'idle' without attempting to keep it's previously commanded position.
+   */
   private void climberStop(){
     climbMotor.setControl(dutyCycleOut.withOutput(0.0));
   }
 
+  /**
+   * Returns the name of the current command running on the subsystem.
+   * @return The name of the currently running command.  "No Command" if no command is scheduled.
+   */
   private String getCurrentCommandName() {
       if (this.getCurrentCommand() == null) {
           return "No Command";
@@ -178,12 +201,12 @@ public class Climber extends SubsystemBase {
    * @return - A factory command that moves the climb motor to the position defined by the constant.
    */
   private Command climbMove(double climberPosition) {
-    return run (() -> {this.goToPositionClimb(climberPosition);});
+    return run (() -> {this.goToPositionClimb(climberPosition);}).withName("climbMove");
   }
 
-  //public Command climbExtend() {return this.climbMove(ClimberConstants.kClimbExtend).until(isClimbExtended).withName("climbExtend");}
-  //public Command climbRetract() {return this.climbMove(ClimberConstants.kClimbRetract).until(isClimbRetracted).withName("climbRetract");}
-  //public Command climbHome() {return this.climbMove(ClimberConstants.kClimbHome).until(isClimbHome).withName("climbHome");}
+  public Command newClimbExtend() {return this.climbMove(ClimberConstants.kClimbExtend).until(isClimbExtended).withName("climbExtend");}
+  public Command newClimbRetract() {return this.climbMove(ClimberConstants.kClimbRetract).until(isClimbRetracted).withName("climbRetract");}
+  public Command newClimbHome() {return this.climbMove(ClimberConstants.kClimbHome).until(isClimbHome).withName("climbHome");}
 
   public Command climbExtend() {
     return run(
@@ -203,6 +226,10 @@ public class Climber extends SubsystemBase {
     ).until(isClimbHome).withName("climbHome");
   }
 
+  /**
+   * Stops the climber motor, placing it in an idle state.
+   * @return A command that runs the {@code climberStop} method.
+   */
   public Command climbStop() {
     return run(
       () -> {this.climberStop();}
