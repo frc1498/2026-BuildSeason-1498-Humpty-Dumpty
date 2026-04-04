@@ -43,8 +43,10 @@ public class Shooter extends SubsystemBase {
 
   /* Variables */
 
-  private TalonFX shooterLeftMotor;   // Motor type definition
-  private TalonFX shooterRightMotor;   // Motor type definition
+  private TalonFX shooterTopLeftMotor;   // Motor type definition
+  private TalonFX shooterBottomLeftMotor;
+  private TalonFX shooterTopRightMotor;   // Motor type definition
+  private TalonFX shooterBottomRightMotor;
   private TalonFX hoodMotor;       // Motor type definition
 
   private VelocityTorqueCurrentFOC shooterMotorMode;   // Motor control type definition
@@ -112,21 +114,30 @@ public class Shooter extends SubsystemBase {
     this.swerveStateSupplier = swerveDriveState;
     this.shooterConfig = config;
 
-    this.shooterLeftMotor = new TalonFX(ShooterConfig.kShooterLeftMotorCANID, MotorEnableConstants.canivore);    // Create the first shooter motor.
-    this.configureMechanism(this.shooterLeftMotor, this.shooterConfig.shooterLeftMotorConfig);
+    this.shooterTopLeftMotor = new TalonFX(ShooterConfig.kShooterTopLeftMotorCANID, MotorEnableConstants.canivore);    // Create the first shooter motor.
+    this.configureMechanism(this.shooterTopLeftMotor, this.shooterConfig.shooterTopLeftMotorConfig);
 
-    this.shooterRightMotor = new TalonFX(ShooterConfig.kShooterRightMotorCANID, MotorEnableConstants.canivore);    // Create the second shooter motor.
-    this.shooterMotorMode = new VelocityTorqueCurrentFOC(0);                                        // Set the control mode for both shooter motors.
-    this.configureMechanism(this.shooterRightMotor, this.shooterConfig.shooterRightMotorConfig);
-    
-    this.shooterLeftMotor.setControl(new Follower(shooterRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    this.shooterBottomLeftMotor = new TalonFX(ShooterConfig.kShooterBottomLeftMotorCANID, MotorEnableConstants.canivore);
+    this.configureMechanism(this.shooterBottomLeftMotor, this.shooterConfig.shooterBottomLeftMotorConfig);
+
+    this.shooterTopRightMotor = new TalonFX(ShooterConfig.kShooterTopRightMotorCANID, MotorEnableConstants.canivore);    // Create the second shooter motor.                                  
+    this.configureMechanism(this.shooterTopRightMotor, this.shooterConfig.shooterTopRightMotorConfig);
+
+    this.shooterBottomRightMotor = new TalonFX(ShooterConfig.kShooterBottomRightMotorCANID, MotorEnableConstants.canivore);
+    this.configureMechanism(this.shooterBottomRightMotor, this.shooterConfig.shooterBottomRightMotorConfig);
+
+    this.shooterMotorMode = new VelocityTorqueCurrentFOC(0); // Set the control mode for both shooter motors.
+
+    this.shooterTopLeftMotor.setControl(new Follower(shooterTopRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    this.shooterBottomLeftMotor.setControl(new Follower(shooterTopRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+    this.shooterBottomRightMotor.setControl(new Follower(shooterTopRightMotor.getDeviceID(), MotorAlignmentValue.Aligned));
       
     this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, MotorEnableConstants.canivore);            // Create hood adjustment motor.
     this.hoodMotorMode = new PositionTorqueCurrentFOC(0);                                           // Set the contorl mode for the adjustment motor.
     this.configureMechanism(this.hoodMotor, this.shooterConfig.hoodMotorConfig);
 
-    this.shooterLeftMotorSim = this.shooterLeftMotor.getSimState();
-    this.shooterRightMotorSim = this.shooterRightMotor.getSimState();
+    this.shooterLeftMotorSim = this.shooterTopLeftMotor.getSimState();
+    this.shooterRightMotorSim = this.shooterTopRightMotor.getSimState();
     this.hoodMotorSim = this.hoodMotor.getSimState();
 
     this.sim = new ShooterSim(
