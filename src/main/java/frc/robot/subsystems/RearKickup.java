@@ -181,7 +181,7 @@ public class RearKickup extends SubsystemBase {
    * The control mode of the motor is set to DutyCycleOut and the output is set to 0 to 'idle' the motor.
    * @return A command that runs the {@code stopRearKick} method.
    */
-  public Command stopKickup() {
+  public Command stopRearKickup() {
     return runOnce(() -> {this.stopRearKick();});
   }
 
