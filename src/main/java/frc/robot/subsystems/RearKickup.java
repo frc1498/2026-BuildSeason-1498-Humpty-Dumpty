@@ -16,15 +16,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.config.RearKickupConfig;
-import frc.robot.config.ShooterConfig;
 
 import frc.robot.constants.MotorEnableConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.RearKickupConstants;
 
@@ -53,6 +50,7 @@ public class RearKickup extends SubsystemBase {
   /**
    * Creates a new instance of the Rear Kickup subsystem.
    * @param config - The motor configurations for all motors in the subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
    */
   public RearKickup(RearKickupConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
