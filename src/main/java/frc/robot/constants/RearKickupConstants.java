@@ -18,7 +18,10 @@ public class RearKickupConstants {
   /* Safeties */
   public static final double kRearKickupMaxSpeed = 100.0;
   public static final double kRearKickupMinSpeed = -50.0;
-   
+
+  /* Duty Cycles */
+  public static final double kRearKickupZeroDutyCycle = 0.0;
+  
   /* Simulation Constants */
 
 }
