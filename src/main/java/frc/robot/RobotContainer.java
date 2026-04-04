@@ -18,8 +18,8 @@ import frc.robot.config.ClimberConfig;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.ShooterConfig;
-import frc.robot.config.RearKickerConfig;
-import frc.robot.config.FrontKickerConfig;
+import frc.robot.config.RearKickupConfig;
+import frc.robot.config.FrontKickupConfig;
 import frc.robot.config.FloorConfig;
 import frc.robot.commands.Move;
 
@@ -67,6 +67,15 @@ public class RobotContainer {
     public IntakeConfig intakeConfig = new IntakeConfig();
     public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
+    public FrontKickupConfig frontKickupConfig = new FrontKickupConfig();
+    public FrontKickup frontKickup = new FrontKickup(frontKickupConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+
+    public RearKickupConfig rearKickupConfig = new RearKickupConfig();
+    public RearKickup rearKickup = new RearKickup(rearKickupConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+
+    public FloorConfig floorConfig = new FloorConfig();
+    public Floor floor = new Floor(floorConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
     public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public PathPlannerAuto selectedAuton;
@@ -103,12 +112,8 @@ public class RobotContainer {
 
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
-    // Because I'm lazy, I'm leaving the configurations for the kickup and spindexer motors in the shooter config.
-    // We'll just pass the shooter config into the kickup and spindexer subsystems to use the already in-place configurations.
-    public Kickup kickup = new Kickup(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
-    public Spindexer spindexer = new Spindexer(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
-    public final Move move = new Move(climber,hopper,intake,shooter,drivetrain,kickup,spindexer);
+    public final Move move = new Move(climber, hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -170,21 +175,6 @@ public class RobotContainer {
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
             .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
             .andThen(this.setLatch()).ignoringDisable(true));
-
-        /*
-        this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
-            .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
-            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
-        */
-
-         /*this.DSAttached.and(this.alliancePresent).and(this.getDSLatch.negate()).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
-            .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
-            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
-            .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
-            .andThen(this.setLatch()).ignoringDisable(true));*/
-
-        // Add the limelight pose estimate to the drivetrain estimate.
-        //vision.addLimelightPose.whileTrue(vision.addMegaTag2(() -> {return drivetrain;}));
       
         //===================================================
         //===================Driver Commands=================
@@ -295,17 +285,9 @@ public class RobotContainer {
         //.onFalse(move.stopIntake().andThen(hopper.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         //move.stopIntake().andThen(move.hopperExtend())
 
-        //===================================================
-        //==================Developer Commands===============
-        //===================================================        
-        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
-        //developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
+        /* Developer Controls */
 
-        // A test of the sysID functionality.
-        //developer.back().and(developer.a()).whileTrue(shooter.sysIdKickupDynamic(Direction.kForward));
-        //developer.back().and(developer.b()).whileTrue(shooter.sysIdKickupDynamic(Direction.kReverse));
-        //developer.start().and(developer.x()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kForward));
-        //developer.start().and(developer.y()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kReverse));
+
     }
 
     /**
@@ -354,7 +336,6 @@ public class RobotContainer {
         this.precisionDampenerRotation = 1.0;}
         );
     }
-
 
     // Use these triggers to determine when to filter the list of autons.
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);
