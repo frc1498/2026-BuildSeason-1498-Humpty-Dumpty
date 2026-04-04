@@ -143,7 +143,7 @@ public class RearKickup extends SubsystemBase {
   /**
    * Returns a string of the name of the currently running command.
    * If no command is running, return "No Command".
-   * @return
+   * @return A string with the name of the currently running command.
    */
   private String getCurrentCommandName() {
     /*
