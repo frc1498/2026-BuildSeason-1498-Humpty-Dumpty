@@ -127,10 +127,6 @@ public class Shooter extends SubsystemBase {
     this.configureMechanism(this.shooterBottomRightMotor, this.shooterConfig.shooterBottomRightMotorConfig);
 
     this.shooterMotorMode = new VelocityTorqueCurrentFOC(0); // Set the control mode for both shooter motors.
-
-    this.shooterTopLeftMotor.setControl(new Follower(shooterTopRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
-    this.shooterBottomLeftMotor.setControl(new Follower(shooterTopRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
-    this.shooterBottomRightMotor.setControl(new Follower(shooterTopRightMotor.getDeviceID(), MotorAlignmentValue.Aligned));
       
     this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, MotorEnableConstants.canivore);            // Create hood adjustment motor.
     this.hoodMotorMode = new PositionTorqueCurrentFOC(0);                                           // Set the contorl mode for the adjustment motor.

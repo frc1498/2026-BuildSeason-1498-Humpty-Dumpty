@@ -6,7 +6,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class FloorConfig {
     //Constants go Here
-    public static final int kFloorMotorCANID = 14;
+    public static final int kFloorMotorCANID = 11;
 
     //Variables
     public TalonFXConfiguration floorMotorConfig; //x60 motor

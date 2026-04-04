@@ -7,10 +7,10 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public class ShooterConfig {
     //Constants go Here
-    public static final int kShooterTopLeftMotorCANID = 14;
-    public static final int kShooterBottomLeftMotorCANID = 30;
+    public static final int kShooterTopLeftMotorCANID = 13;
+    public static final int kShooterBottomLeftMotorCANID = 14;
     public static final int kShooterTopRightMotorCANID = 15;
-    public static final int kShooterBottomRightMotorCANID = 31;
+    public static final int kShooterBottomRightMotorCANID = 20;
     public static final int kHoodMotorCANID = 16;
 
     //Variables
