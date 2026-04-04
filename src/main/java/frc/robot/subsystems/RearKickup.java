@@ -17,9 +17,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.config.RearKickupConfig;
 import frc.robot.config.ShooterConfig;
 
 import frc.robot.constants.MotorEnableConstants;
@@ -28,104 +29,52 @@ import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.RearKickupConstants;
 
 /**
- * The shooter subsystem.  Contains the flywheel, turret, hood adjustment, spindexer, and ball kickup.
+ * The front kickup subsystem.  Contains the front kickup motor.
  */
 public class RearKickup extends SubsystemBase {
 
-/*==================Variables=======================*/
+  /* Variables */
 
   private TalonFX rearKickupMotor;     // Motor type definition
 
   private VelocityTorqueCurrentFOC rearKickupMotorMode;    // Motor control type definition
 
-  private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
+  private RearKickupConfig rearKickupConfig;  // Create an object of type rear kickup subsystem config used to configure motors
 
-  private double desiredRearKickupVoltage;
+  private double desiredRearKickupVelocity;
 
-  private double currentRearKickupVoltage;
+  private double currentRearKickupVelocity;
   
   public DutyCycleOut rearKickupDutyCycle;
 
-  //boolean turretZeroed;
-  boolean requestShoot;
-
-  public Field2d targetingField = new Field2d();
-
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-  private enum ShooterState {
-    IDLE(0.0, 0.0, true),
-    FORWARD(ShooterConstants.kSpindexerIntake, ShooterConstants.kKickupIntake, true),
-    REVERSE(ShooterConstants.kSpindexerOuttake, ShooterConstants.kKickupOuttake, false);
+  /**
+   * Creates a new instance of the Rear Kickup subsystem.
+   * @param config - The motor configurations for all motors in the subsystem.
+   */
+  public RearKickup(RearKickupConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
-    private double spindexerVelocity;
-    private double KickupVoltage;
-    private boolean direction;
+    this.telemetryLevel = telemetryLevel;
+    this.rearKickupConfig = config;
 
-    /**
-     * Constructor for the ShooterState enumeration.
-     * @param spindexerVelocity - The velocity of the spindexer.
-     * @param KickupVoltage - The direction of the kickup motor.
-     * @param direction - Represents direction of the motors.  True is forward (intake), false is reverse (outtake).
-     */
-    ShooterState(double spindexerVelocity, double KickupVoltage, boolean direction) {
-      this.spindexerVelocity = spindexerVelocity;
-      this.KickupVoltage = KickupVoltage;
-      this.direction = direction;
-    }
+    this.rearKickupMotor = new TalonFX(RearKickupConfig.kRearKickupMotorCANID, MotorEnableConstants.canivore);        // Create the kickup motor.
+    this.rearKickupMotorMode = new VelocityTorqueCurrentFOC(0);                                         // Set the control mode for the kickup motor.
+    this.configureMechanism(this.rearKickupMotor, this.rearKickupConfig.rearKickupMotorConfig);
 
-    /**
-     * Returns the spindexer velocity for the state.
-     * @return - Desired velocity for the spindexer, in rotations per second.
-     */
-    public double spindexer() {
-      return this.spindexerVelocity;
-    }
+    // Publish subsystem data to SmartDashboard.
+    SmartDashboard.putData("Rear Kickup", this);
 
-    /**
-     * Returns the kickup velocity for the state.
-     * @return - Desired velocity for the kickup motor, in rotations per second.
-     */
-    public double kickup() {
-      return this.KickupVoltage;
-    }
-
-    /**
-     * Returns the motor direction for the state.
-     * @return - Motor direction.  True is forward (intake), false is reverse (outtake).
-     */
-    public boolean direction() {
-      return this.direction;
-    }
+    this.rearKickupDutyCycle = new DutyCycleOut(0.0);
   }
 
-/**
- * Creates a new instance of the Kickup subsystem.
- * @param config - The motor configurations for all motors in the subsystem.
- */
-public RearKickup(ShooterConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
-
-  this.telemetryLevel = telemetryLevel;
-  this.shooterConfig = config;
-
-  this.rearKickupMotor = new TalonFX(ShooterConfig.kKickupMotorCANID, "canivore");        // Create the kickup motor.
-  this.rearKickupMotorMode = new VelocityTorqueCurrentFOC(0);                                         // Set the control mode for the kickup motor.
-  this.configureMechanism(this.rearKickupMotor, this.shooterConfig.kickupMotorConfig);
-
-  // Publish subsystem data to SmartDashboard.
-  //SmartDashboard.putData("Kickup", this);
-
-  //turretZeroed = true;
-  rearKickupDutyCycle = new DutyCycleOut(0.0);
-}
-
-/**
- * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
- * @param mechanism - The TalonFX object (motor) to apply the configuration to.
- * @param config - The set of configurations to apply.
- */
-public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
+  /**
+   * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
+   * @param mechanism - The TalonFX object (motor) to apply the configuration to.
+   * @param config - The set of configurations to apply.
+   */
+  public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
 
     // Start Configuring the motor with the supplied configuration.
     StatusCode mechanismStatus = StatusCode.StatusCodeNotInitialized;
@@ -133,9 +82,9 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     // Attempt to apply the configuration 5 times.  Immediately stop if the configuration was successful.
     for(int i = 0; i < 5; ++i) {
 
-        mechanismStatus = mechanism.getConfigurator().apply(config);
+      mechanismStatus = mechanism.getConfigurator().apply(config);
 
-        if (mechanismStatus.isOK()) {break;}
+      if (mechanismStatus.isOK()) {break;}
     }
 
     // If the configuration was still not successful, print an error to the console.
@@ -144,23 +93,21 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     }
   }
 
-  //=========================================================
-  /*===================Private Methods=====================*/
-  //===========================================================
+  /* Private Methods */
 
-  //===================================Kickup Private Methods======================================
+  /* Rear Kickup Private Methods */
 
   /**
-   * Set the velocity of the kickup motor.
-   * @param velocity - The desired velocity of the kickup motor, in rotations per second.
+   * Set the velocity of the rear kickup motor.
+   * @param velocity - The desired velocity of the rear kickup motor, in rotations per second.
    */
-  private void setRearKickupVoltage(double velocity) {
+  private void setRearKickupVelocity(double velocity) {
     // Always store the setpoint, to track the desired velocity.
-    this.desiredRearKickupVoltage = velocity;
+    this.desiredRearKickupVelocity = velocity;
 
     // Use this constant to enable or disable motor output for debugging.
-    if (MotorEnableConstants.kKickupMotorEnabled) {
-      this.rearKickupMotor.setControl(this.rearKickupMotorMode.withVelocity(this.desiredRearKickupVoltage));
+    if (MotorEnableConstants.kRearKickupMotorEnabled) {
+      this.rearKickupMotor.setControl(this.rearKickupMotorMode.withVelocity(this.desiredRearKickupVelocity));
     }
   }
 
@@ -168,23 +115,28 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * Return the current velocity of the kickup motor.
    * @return - The current velocity of the kickup motor, in rotations per second.
    */
-  private double getRearKickupVoltage() {
-    this.currentRearKickupVoltage = this.rearKickupMotor.getVelocity().getValueAsDouble();
-    return this.rearKickupMotor.getVelocity().getValueAsDouble();
+  private double getRearKickupVelocity() {
+    this.currentRearKickupVelocity = this.rearKickupMotor.getVelocity().getValueAsDouble();
+    return this.currentRearKickupVelocity;
   }
 
+  /**
+   * Stops the rear kickup motor.
+   * Sets the control mode of the motor to DutyCycleOut, and sets the output to 0.
+   * This puts the motor into an 'idle' state.
+   */
   private void stopRearKick(){
     rearKickupMotor.setControl(rearKickupDutyCycle.withOutput(RearKickupConstants.kRearKickupZeroDutyCycle));
   }
 
-  //===============================Misc. Private Methods===================
+  /* Misc. Private Methods */
 
   /**
    * Checks if a current variable is within a deadband to the setpoint.
    * @param setpoint - The setpoint the current variable should be at.
    * @param current - The current variable to check (process variable).
    * @param deadBand - The allowable deadband (+ and -) from the setpoint.
-   * @return
+   * @return True if the current value is at the setpoint, within the deadband.
    */
   private boolean atSetpoint(double setpoint, double current, double deadBand) {
     return ((current >= (setpoint - deadBand)) && (current <= (setpoint + deadBand)));
@@ -196,14 +148,16 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    * @return
    */
   private String getCurrentCommandName() {
-      if (this.getCurrentCommand() == null) {
-          return "No Command";
-      }
-      else {
-          return this.getCurrentCommand().getName();
-      }
-      // Refactoring this method with a ternary operator.
-      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
+    /*
+    if (this.getCurrentCommand() == null) {
+      return "No Command";
+    }
+    else {
+      return this.getCurrentCommand().getName();
+    }
+    */
+    // Refactoring this method with a ternary operator.
+    return (this.getCurrentCommand() == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
   /**
@@ -221,18 +175,34 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     }
   }
 
-  //====================Public Methods=====================
-  //======================Public Kickup Commands=====================
+  /* Public Methods */
+  /* Public Rear Kickup Commands */
+
+  /**
+   * A command that stops the rear kickup motor.
+   * The control mode of the motor is set to DutyCycleOut and the output is set to 0 to 'idle' the motor.
+   * @return A command that runs the {@code stopRearKick} method.
+   */
   public Command stopKickup() {
     return runOnce(() -> {this.stopRearKick();});
   }
 
-  public Command reverseKickup() {
-    return runOnce(() -> {this.setRearKickupVoltage(ShooterConstants.kKickupOuttake);});
+  /**
+   * A factory command that sets the velocity of the rear kickup motor.
+   * @param velocity - The velocity setpoint of the kickup motor, in rotations per second.
+   * @return A command that runs the {@code setRearKickupVelocity} method.
+   */
+  private Command setRearKickup(double velocity) {return runOnce(() -> {this.setRearKickupVelocity(velocity);}).withName("setRearKickup");}
+
+  public Command newReverseRearKickup() {return this.setRearKickup(RearKickupConstants.kRearKickupOuttake).withName("reverseRearKickup");}
+  public Command newForwardRearKickup() {return this.setRearKickup(RearKickupConstants.kRearKickupIntake).withName("forwardRearKickup");}
+
+  public Command reverseRearKickup() {
+    return runOnce(() -> {this.setRearKickupVelocity(RearKickupConstants.kRearKickupOuttake);});
   }
 
-  public Command forwardKickup() {
-    return runOnce(() -> {this.setRearKickupVoltage(ShooterConstants.kKickupIntake);});
+  public Command forwardRearKickup() {
+    return runOnce(() -> {this.setRearKickupVelocity(RearKickupConstants.kRearKickupIntake);});
   }
 
   //======================Triggers=========================
