@@ -101,6 +101,7 @@ public class RobotContainer {
         .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001)
         .withDriveRequestType(DriveRequestType.Velocity)
         .withHeadingPID(20.0, 0.0, 0.05);
+        
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -166,7 +167,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.switchToInternalIMU());
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
 
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
@@ -192,13 +193,12 @@ public class RobotContainer {
 
         //Driver left trigger: Shoot
         driver.leftTrigger(0.1)
-        .onTrue(Commands.runOnce(() -> { drivetrain.setDriveCurrentLimits();}))
+        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
         .whileTrue(Commands.sequence(drivetrain.applyRequest(() ->
             driveFacingAngle.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                 .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                 .withTargetDirection(shooter.robotTarget().get())
-            ),
-            move.setTargetToAllianceHub())
+            ), move.setTargetToAllianceHub())
         .andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}, drivetrain), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
 
@@ -210,8 +210,8 @@ public class RobotContainer {
         //Driver x: Zero the Climb System
         driver.x().onTrue(move.zeroClimb());
 
-        //Driver start: zero gyro
-        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+        //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
+        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
 
         //Driver a: Climb extend
         driver.a().onTrue(move.climbExtend());
