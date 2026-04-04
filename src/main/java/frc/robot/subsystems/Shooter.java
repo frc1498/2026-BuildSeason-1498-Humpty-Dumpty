@@ -6,19 +6,15 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Volts;
-
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -33,11 +29,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.ShotCalculation;
 import frc.robot.config.ShooterConfig;
 import frc.robot.sim.ShooterSim;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
@@ -147,9 +141,9 @@ public class Shooter extends SubsystemBase {
     //SmartDashboard.putData("Shooter/Pose", this.targetingField);
     //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
-    shooterDutyCycle = new DutyCycleOut(0.0);
+    this.shooterDutyCycle = new DutyCycleOut(0.0);
 
-    requestShoot = false;
+    this.requestShoot = false;
 
     this.hoodMotor.setPosition(0);
 
@@ -301,17 +295,16 @@ public class Shooter extends SubsystemBase {
     } else {
       // Code to handle the case where the alliance color is not yet available
     }
-    //May need to import the driver station to use it for allianceColor
   }
 
- /* Misc. Private Methods */
+  /* Misc. Private Methods */
 
   /**
    * Checks if a current variable is within a deadband to the setpoint.
    * @param setpoint - The setpoint the current variable should be at.
    * @param current - The current variable to check (process variable).
    * @param deadBand - The allowable deadband (+ and -) from the setpoint.
-   * @return
+   * @return True if the current value is at the setpoint, plus or minus the deadband.
    */
   private boolean atSetpoint(double setpoint, double current, double deadBand) {
     return ((current >= (setpoint - deadBand)) && (current <= (setpoint + deadBand)));
@@ -352,7 +345,6 @@ public class Shooter extends SubsystemBase {
 
   /* Public Methods */
 
- 
   private void requestStopShooting() {this.requestShoot = false;}
   private void requestStartShooting() {this.requestShoot = true;}
 
@@ -366,17 +358,15 @@ public class Shooter extends SubsystemBase {
   }
 
   /* Public Shoot Commands */
-  public Command requestStopShoot() {
-    return runOnce(() -> {this.requestStopShooting();});
-  }
+  public Command requestStopShoot() {return runOnce(() -> {this.requestStopShooting();});}
+  public Command requestStartShoot() {return runOnce(() -> {this.requestStartShooting();});}
 
-  public Command requestStartShoot() {
-    return runOnce(() -> {this.requestStartShooting();});
-  }
+  public Command stopShoot() {return runOnce(() -> {this.stopShooting();});}
 
-  public Command stopShoot(){
-    return runOnce(() -> {this.stopShooting();});
-  }
+  private Command setShooter(double velocity) {return run(() -> {this.setShooterVelocity(velocity);});}
+
+  public Command newStartShootStatic() {return this.setShooter(50.0).until(this.isShooterAtVelocity).withName("startShotStatic");}
+  public Command newStartShootFast() {return this.setShooter(80.0).until(this.isShooterAtVelocity).withName("startShootFast");}
 
   public Command startShootStatic(){
     return run(() -> {this.setShooterVelocity(50);}).until(isShooterAtVelocity); //Was 70
@@ -522,7 +512,7 @@ public class Shooter extends SubsystemBase {
     this.readyToFire = this.hoodAtPosition && this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret), targetLocation);
+    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter), targetLocation);
     
     this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, targetLocation);
 
@@ -531,7 +521,7 @@ public class Shooter extends SubsystemBase {
 
     this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
-    this.whileMoveAngle = this.convertTurretOverturn(ShotCalculation.getInstance().getVirtualTarget().getTranslation().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret).getTranslation()).getAngle().getDegrees());
+    this.whileMoveAngle = ShotCalculation.getInstance().getVirtualTarget().getTranslation().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter).getTranslation()).getAngle().getDegrees();
     
     // Every loop, update the odometry with the pose of the virtual target.
     switch (this.telemetryLevel) {
