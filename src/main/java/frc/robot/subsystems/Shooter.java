@@ -28,6 +28,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -45,16 +46,13 @@ import frc.robot.constants.MotorEnableConstants.LogLevel;
  */
 public class Shooter extends SubsystemBase {
 
-/*==================Variables=======================*/
+  /* Variables */
 
   private TalonFX shooterLeftMotor;   // Motor type definition
   private TalonFX shooterRightMotor;   // Motor type definition
-  private TalonFX turretMotor;     // Motor type definition
   private TalonFX hoodMotor;       // Motor type definition
 
   private VelocityTorqueCurrentFOC shooterMotorMode;   // Motor control type definition
-  private PositionVoltage turretMotorMode; //Motor Control Type Definition - added because I can decorate with .velocity
-  //private PositionTorqueCurrentFOC turretMotorMode; // Motor control type definition
   private PositionTorqueCurrentFOC hoodMotorMode;   // Motor control type definition
 
   private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
@@ -64,12 +62,9 @@ public class Shooter extends SubsystemBase {
 
   private double desiredHoodAngle;
   private double desiredHoodMotorRotations;
-  private double desiredTurretAngle;
-  private double desiredTurretMotorRotations;
   private double desiredShooterVelocity;
 
   private boolean hoodAtPosition;
-  private boolean turretAtPosition;
   private boolean shooterAtVelocity;
   private boolean readyToFire;
 
@@ -80,31 +75,19 @@ public class Shooter extends SubsystemBase {
 
   private double virtualHoodAngle;
   private double virtualFlywheelVelocity;
-  private double virtualTurretAngle;
 
   private double whileMoveHoodAngle;
   private double whileMoveFlywheelVelocity;
-  private double whileMoveTurretAngle;
-  private double turretVelocityFeedforward;
 
   private double currentHoodAngle;
   private double currentHoodRotations;
-  private double currentTurretAngle;
-  private double currentTurretRotations;
   private double currentShooterVelocity;
-
-  private double tuningHoodAngle;
-  private double tuningTurretAngle;
-  private double tuningFlywheelVelocity;
-  private boolean tuningShotSuccessful;
 
   private ShooterSim sim;
   private TalonFXSimState shooterLeftMotorSim;
   private TalonFXSimState shooterRightMotorSim;
-  private TalonFXSimState turretMotorSim;
   private TalonFXSimState hoodMotorSim;
   
-  public DutyCycleOut turretDutyCycle;
   public DutyCycleOut shooterDutyCycle;
 
   private double simTime;
@@ -112,133 +95,67 @@ public class Shooter extends SubsystemBase {
   private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
 
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-  String allianceColor = "Blue";
+  private String allianceColor = "Blue";
   public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
 
-  //boolean turretZeroed;
-  boolean requestShoot;
+  private boolean requestShoot;
 
   public Field2d targetingField = new Field2d();
 
-  /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
-  private SysIdRoutine sysIdRoutineHood = new SysIdRoutine(
-    new SysIdRoutine.Config(
-      null,        // Use default ramp rate (1 V/s)
-      Volts.of(7), // Use dynamic voltage of 7 V
-      null,        // Use default timeout (10 s)
-      // Log state with SignalLogger class
-      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
-    ),
-    new SysIdRoutine.Mechanism(
-      volts -> this.hoodMotor.setControl(new VoltageOut(0).withOutput(volts)),
-      null,
-      this
-    )
-  );
+  /**
+   * Creates a new instance of the shooter subsystem.
+   * @param config - The motor configurations for all motors in the subsystem.
+   * @param swerveDriveState - A supplier of the current swerve drive state from the drivetrain subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
+   */
+  public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
-  /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
-  private SysIdRoutine sysIdRoutineTurret = new SysIdRoutine(
-    new SysIdRoutine.Config(
-      null,        // Use default ramp rate (1 V/s)
-      Volts.of(7), // Use dynamic voltage of 7 V
-      null,        // Use default timeout (10 s)
-      // Log state with SignalLogger class
-      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
-    ),
-    new SysIdRoutine.Mechanism(
-      volts -> this.turretMotor.setControl(new VoltageOut(0).withOutput(volts)),
-      null,
-      this
-    )
-  );
+    this.telemetryLevel = telemetryLevel;
+    this.swerveStateSupplier = swerveDriveState;
+    this.shooterConfig = config;
 
-  /* SysId routine for characterizing the hood motor. This is used to find PID gains for the hood motor. */
-  private SysIdRoutine sysIdRoutineFlywheel = new SysIdRoutine(
-    new SysIdRoutine.Config(
-      null,        // Use default ramp rate (1 V/s)
-      Volts.of(7), // Use dynamic voltage of 7 V
-      null,        // Use default timeout (10 s)
-      // Log state with SignalLogger class
-      state -> SignalLogger.writeString("SysIdHood_State", state.toString())
-    ),
-    new SysIdRoutine.Mechanism(
-      volts -> this.shooterRightMotor.setControl(new VoltageOut(0).withOutput(volts)),
-      null,
-      this
-    )
-  );
+    this.shooterLeftMotor = new TalonFX(ShooterConfig.kShooterLeftMotorCANID, MotorEnableConstants.canivore);    // Create the first shooter motor.
+    this.configureMechanism(this.shooterLeftMotor, this.shooterConfig.shooterLeftMotorConfig);
 
-/**
- * Creates a new instance of the shooter subsystem.
- * @param config - The motor configurations for all motors in the subsystem.
- * @param swerveDriveState - A supplier of the current swerve drive state from the drivetrain subsystem.
- */
-public Shooter(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState, MotorEnableConstants.TelemetryLevel telemetryLevel) {
-
-  this.telemetryLevel = telemetryLevel;
-  this.swerveStateSupplier = swerveDriveState;
-  this.shooterConfig = config;
-
-  this.shooterLeftMotor = new TalonFX(ShooterConfig.kShooterLeftMotorCANID, "canivore");    // Create the first shooter motor.
-  this.configureMechanism(this.shooterLeftMotor, this.shooterConfig.shooterLeftMotorConfig);
-
-  this.shooterRightMotor = new TalonFX(ShooterConfig.kShooterRightMotorCANID, "canivore");    // Create the second shooter motor.
-  this.shooterMotorMode = new VelocityTorqueCurrentFOC(0);                                        // Set the control mode for both shooter motors.
-  this.configureMechanism(this.shooterRightMotor, this.shooterConfig.shooterRightMotorConfig);
-  
-  this.shooterLeftMotor.setControl(new Follower(shooterRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
-   
-  this.turretMotor = new TalonFX(ShooterConfig.kTurretMotorCANID, "canivore");        // Create the turret rotate motor.
-  //this.turretMotorMode = new PositionTorqueCurrentFOC(0);                                         // Set the control mode for the turret motor.
-  this.turretMotorMode = new PositionVoltage(0); //Setting position instead of torque to decorate with velocity as a feed forward
-  this.configureMechanism(this.turretMotor, this.shooterConfig.turretMotorConfig);
+    this.shooterRightMotor = new TalonFX(ShooterConfig.kShooterRightMotorCANID, MotorEnableConstants.canivore);    // Create the second shooter motor.
+    this.shooterMotorMode = new VelocityTorqueCurrentFOC(0);                                        // Set the control mode for both shooter motors.
+    this.configureMechanism(this.shooterRightMotor, this.shooterConfig.shooterRightMotorConfig);
     
-  this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, "canivore");            // Create hood adjustment motor.
-  this.hoodMotorMode = new PositionTorqueCurrentFOC(0);                                           // Set the contorl mode for the adjustment motor.
-  this.configureMechanism(this.hoodMotor, this.shooterConfig.hoodMotorConfig);
+    this.shooterLeftMotor.setControl(new Follower(shooterRightMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+      
+    this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, MotorEnableConstants.canivore);            // Create hood adjustment motor.
+    this.hoodMotorMode = new PositionTorqueCurrentFOC(0);                                           // Set the contorl mode for the adjustment motor.
+    this.configureMechanism(this.hoodMotor, this.shooterConfig.hoodMotorConfig);
 
-  this.shooterLeftMotorSim = this.shooterLeftMotor.getSimState();
-  this.shooterRightMotorSim = this.shooterRightMotor.getSimState();
-  this.turretMotorSim = this.turretMotor.getSimState();
-  this.hoodMotorSim = this.hoodMotor.getSimState();
+    this.shooterLeftMotorSim = this.shooterLeftMotor.getSimState();
+    this.shooterRightMotorSim = this.shooterRightMotor.getSimState();
+    this.hoodMotorSim = this.hoodMotor.getSimState();
 
-  this.sim = new ShooterSim(
-    this.shooterConfig,
-    this.hoodMotorSim,
-    this.turretMotorSim,
-    this.shooterLeftMotorSim,
-    this.shooterRightMotorSim
-    );
+    this.sim = new ShooterSim(
+      this.shooterConfig,
+      this.hoodMotorSim,
+      this.shooterLeftMotorSim,
+      this.shooterRightMotorSim
+      );
 
-  // Publish subsystem data to SmartDashboard.
-  //SmartDashboard.putData("Shooter", this);
-  //SmartDashboard.putData("Shooter/Pose", this.targetingField);
-  //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
+    // Publish subsystem data to SmartDashboard.
+    SmartDashboard.putData("Shooter", this);
+    //SmartDashboard.putData("Shooter/Pose", this.targetingField);
+    //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
 
-  //turretZeroed = true;
-  turretDutyCycle = new DutyCycleOut(0.0);
-  shooterDutyCycle = new DutyCycleOut(0.0);
+    shooterDutyCycle = new DutyCycleOut(0.0);
 
-  requestShoot = false;
+    requestShoot = false;
 
-  this.hoodMotor.setPosition(0);
-  this.turretMotor.setPosition(0);
+    this.hoodMotor.setPosition(0);
 
-  this.setHoodAngle(0);
-  this.setTurretAngle(0);
-  this.desiredShooterVelocity=-10;
-  
+    this.setHoodAngle(0);
+    this.setTurretAngle(0);
+    this.desiredShooterVelocity = -10;
 
-  // Initialize the tuning parameters.
-  // This is not for PID tuning, but instead for interpolation tuning.
-  this.tuningHoodAngle = 0.0;
-  this.tuningTurretAngle = 0.0;
-  this.tuningFlywheelVelocity = 0.0;
-  this.tuningShotSuccessful = false;
-
-}
+  }
 
 /**
  * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
