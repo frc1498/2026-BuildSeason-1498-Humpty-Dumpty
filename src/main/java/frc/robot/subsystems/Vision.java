@@ -82,7 +82,7 @@ public class Vision extends SubsystemBase {
 
         this.setLimelightRobotPosition();
         //In the constructor, set the IMU mode to 1, so the limelight IMU is seeded with the robot gyro heading.
-        LimelightHelpers.SetIMUMode(limelight.kName, 1);
+        this.setLimelightIMUMode(1);
         LimelightHelpers.SetRobotOrientation(limelight.kName, this.getRobotHeading(), 0.0, 0.0, 0.0, 0.0, 0.0);
 
         leftCamera = new PhotonCamera(photonvision.kLeftName);
@@ -111,7 +111,7 @@ public class Vision extends SubsystemBase {
     /**
      * Command the limelight to start using its internal IMU for the pose estimate it produces.
      */
-    private void setLimelightToInternalIMU() {
+    private void setLimelightIMUMode(int IMUMode) {
         /*
          * Mode 0 - External_Only - MegaTag2 uses the yaw sent from the robot to the Limelight.
          * Mode 1 - External_Seed - The Limelight gyro is seeded with the yaw sent from the robot.
@@ -119,7 +119,7 @@ public class Vision extends SubsystemBase {
          * Mode 3 - Internal_MT1_Assist - Corrects the Limelight gyro with MegaTag1 estimated yaw.
          * Mode 4 - Internal_External_Assist - Corrects the Limelight gyro with the robot yaw over time.  Recommended in the Limelight documentation.
          */
-        LimelightHelpers.SetIMUMode(limelight.kName, 4);
+        LimelightHelpers.SetIMUMode(limelight.kName, IMUMode);
     }
 
     /**
@@ -425,12 +425,19 @@ public class Vision extends SubsystemBase {
     }
 
     /**
-     * Switch the limelight to use its internal IMU for the pose estimate.
-     * @return
+     * Switch the limelight IMU mode  The method {@code setLimelightIMUMode()} has a description of each mode.
+     * @param IMUMode - The IMU mode to switch the limelight to.
+     * @return A command that changes the limelight IMU mode.
      */
-    public Command switchToInternalIMU() {
-        return runOnce(() -> {this.setLimelightToInternalIMU();}).withName("Setting Limelight to IMU Mode 2").ignoringDisable(true);
+    private Command switchIMUMode(int IMUMode) {
+        return runOnce(() -> {this.setLimelightIMUMode(IMUMode);}).ignoringDisable(true);
     }
+
+    public Command setLimelightIMUExternalOnly() {return this.switchIMUMode(0).withName("IMU Mode 0: External Only");}
+    public Command setLimelightIMUExternalSeed() {return this.switchIMUMode(1).withName("IMU Mode 1: External Seed");}
+    public Command setLimelightIMUInternalOnly() {return this.switchIMUMode(2).withName("IMU Mode 2: Internal Only");}
+    public Command setLimelightIMUInternalMT1Assist() {return this.switchIMUMode(3).withName("IMU Mode 3: Internal MT1 Assist");}
+    public Command setLimelightIMUInternalExternalAssist() {return this.switchIMUMode(4).withName("IMU Mode 4: Internal External Assist");}
 
     @Override
     public void initSendable(SendableBuilder builder) {
