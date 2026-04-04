@@ -30,11 +30,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
-import frc.robot.constants.VisionConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
-import frc.robot.constants.VisionConstants.photonvision.Camera;
 
 public class Vision extends SubsystemBase {
     
@@ -66,7 +64,6 @@ public class Vision extends SubsystemBase {
     private boolean cachedIsLimelightPoseValid = false;
     private boolean cachedIsLeftPhotonPoseValid = false;
     private boolean cachedIsRightPhotonPoseValid = false;
-    private double limelightTimestamp;
     private double testTimestamp;
 
     private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -413,21 +410,6 @@ public class Vision extends SubsystemBase {
     public Trigger addRightPhotonPose = new Trigger(() -> {return this.cachedIsRightPhotonPoseValid;});
 
     /**
-     * Add the current megaTag2 pose estimate to the drivetrain pose estimate.
-     * @param drivetrain
-     * @return
-     */
-    public Command addMegaTag2(Supplier<CommandSwerveDrivetrain> drivetrain) {
-        return run(
-            () -> {
-                limelightTimestamp = Utils.getCurrentTimeSeconds();
-                drivetrain.get().setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 9999999));
-                drivetrain.get().addVisionMeasurement(megaTag2.pose, megaTag2.timestampSeconds);
-            }
-        ).withName("Adding Limelight Vision Measurement").ignoringDisable(true);
-    }
-
-    /**
      * Add the current test pose estimate to the drivetrain pose estimate.
      * @param drivetrain
      * @return
@@ -517,18 +499,6 @@ public class Vision extends SubsystemBase {
         default:
             break;
         }
-
-        // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
-        /* Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var result : leftCamera.getAllUnreadResults()) {
-            visionEst = leftCameraEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = leftCameraEstimator.estimateLowestAmbiguityPose(result);
-            }
-            this.updateEstimationStdDevs(leftCameraEstimator, visionEst, result.getTargets());
-
-            this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
-        } */
     }
 
     @Override
