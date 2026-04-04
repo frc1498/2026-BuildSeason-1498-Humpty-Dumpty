@@ -88,7 +88,7 @@ public class Move {
     //==================================Climb====================================
     
     public Command zeroClimb() {  
-        return Commands.sequence(climber.zeroRoutine(),shooter.turret0());
+        return climber.zeroRoutine();
     }
 
     public Command stopClimb() {
