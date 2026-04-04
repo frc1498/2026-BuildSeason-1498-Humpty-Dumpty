@@ -225,8 +225,10 @@ public class Shooter extends SubsystemBase {
    * Set the control mode to DutyCycleOut and set the output to zero.
    */
   private void stopShooting() {
-    this.shooterLeftMotor.setControl(this.shooterDutyCycle.withOutput(0));
-    this.shooterRightMotor.setControl(this.shooterDutyCycle.withOutput(0));
+    this.shooterTopLeftMotor.setControl(this.shooterDutyCycle.withOutput(0));
+    this.shooterBottomLeftMotor.setControl(this.shooterDutyCycle.withOutput(0));
+    this.shooterTopRightMotor.setControl(this.shooterDutyCycle.withOutput(0));
+    this.shooterBottomRightMotor.setControl(this.shooterDutyCycle.withOutput(0));
     this.desiredShooterVelocity = 0;
   }
 
@@ -260,9 +262,17 @@ public class Shooter extends SubsystemBase {
     this.desiredShooterVelocity = velocity;
 
     // Use this constant to enable or disable motor output for debugging.
-    if (MotorEnableConstants.kTopShooterLeftMotorEnabled && MotorEnableConstants.kTopShooterRightMotorEnabled) {
-      this.shooterRightMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
-      this.shooterLeftMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
+    if (MotorEnableConstants.kTopShooterLeftMotorEnabled) {
+      this.shooterTopLeftMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
+    } 
+    if (MotorEnableConstants.kTopShooterRightMotorEnabled) {
+      this.shooterTopRightMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
+    }
+    if (MotorEnableConstants.kBottomShooterLeftMotorEnabled) {
+      this.shooterBottomLeftMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));
+    }
+    if (MotorEnableConstants.kBottomShooterRightMotorEnabled) {
+      this.shooterBottomRightMotor.setControl(this.shooterMotorMode.withVelocity(this.desiredShooterVelocity));  
     }
   }
 
@@ -271,7 +281,7 @@ public class Shooter extends SubsystemBase {
    * @return - The current velocity of the first shooter motor, in rotations per second.
    */
   private double getShooterVelocity() {
-    double velocity = velocityFilter.calculate(this.shooterRightMotor.getVelocity().getValueAsDouble());
+    double velocity = velocityFilter.calculate(this.shooterTopRightMotor.getVelocity().getValueAsDouble());
     return velocity;
   }
 
