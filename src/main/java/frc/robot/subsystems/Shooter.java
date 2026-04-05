@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.MatchInfo;
 import frc.robot.ShotCalculation;
 import frc.robot.config.ShooterConfig;
 import frc.robot.sim.ShooterSim;
@@ -75,7 +76,7 @@ public class Shooter extends SubsystemBase {
 
   private double whileMoveHoodAngle;
   private double whileMoveFlywheelVelocity;
-  private double whileMoveAngle;
+  private Rotation2d whileMoveAngle;
 
   private double currentHoodAngle;
   private double currentHoodRotations;
@@ -464,7 +465,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Supplier<Rotation2d> robotTarget() {
-    return () -> {return Rotation2d.fromDegrees(this.whileMoveAngle);};
+    return () -> {return this.whileMoveAngle;};
   }
 
   //======================Triggers=========================
@@ -513,7 +514,7 @@ public class Shooter extends SubsystemBase {
     // Wondering if caching this will reduce the CPU usage of this call.
     this.swerveState = this.swerveStateSupplier.get();
     
-    allianceColor = DriverStation.getAlliance().get().toString();
+    allianceColor = MatchInfo.getInstance().getAlliance();
     
     if (DriverStation.isAutonomousEnabled()) {
       if (allianceColor == "Red") {
@@ -538,7 +539,9 @@ public class Shooter extends SubsystemBase {
 
     this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
-    this.whileMoveAngle = ShotCalculation.getInstance().getVirtualTarget().getTranslation().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter).getTranslation()).getAngle().getDegrees();
+    //this.whileMoveAngle = ShotCalculation.getInstance().getVirtualTarget().getTranslation().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter).getTranslation()).getAngle();
+                        //ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
+    this.whileMoveAngle = ShotCalculation.getInstance().getDriveAngle(this.swerveState.Pose, ShotCalculation.getInstance().getVirtualTarget().getTranslation()).rotateBy(MatchInfo.getInstance().getAlliance() == "Blue" ? Rotation2d.kZero : Rotation2d.k180deg);
     
     // Every loop, update the odometry with the pose of the virtual target.
     switch (this.telemetryLevel) {
