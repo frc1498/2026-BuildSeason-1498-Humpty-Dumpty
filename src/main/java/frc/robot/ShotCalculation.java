@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -60,6 +61,24 @@ public class ShotCalculation {
     public Pose2d getVirtualTarget() {
         return this.virtualTarget;
     }
+
+    /**
+     * 
+     * @param robotPose
+     * @param target
+     * @return
+     */
+    public Rotation2d getDriveAngle(Pose2d robotPose, Translation2d target) {
+    Rotation2d fieldToHubAngle = target.minus(robotPose.getTranslation()).getAngle();
+    Rotation2d hubAngle = new Rotation2d(
+            Math.asin(
+                MathUtil.clamp(
+                    ShooterConstants.kRobotToShooter.getTranslation().getY() / target.getDistance(robotPose.getTranslation()),
+                    -1.0,
+                    1.0)));
+    Rotation2d driveAngle = fieldToHubAngle.plus(hubAngle).plus(ShooterConstants.kRobotToShooter.getRotation());
+    return driveAngle;
+  }
 
     /**
      * Calculate the virtual target based on the current speed.
