@@ -88,7 +88,7 @@ public class Move {
     //==================================Climb====================================
     
     public Command zeroClimb() {  
-        return Commands.sequence(climber.zeroRoutine(),shooter.turret0());
+        return climber.zeroRoutine();
     }
 
     public Command stopClimb() {
@@ -117,22 +117,20 @@ public class Move {
        return Commands.sequence(shooter.hood30(), shooter.startShootStatic()).andThen
             (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());
     }
-/* Yeah... naw... needs fixing now that the subsystems are broken apart
+
     public Command startAutoShoot() {
-        return Commands.sequence(shooter.autoShoot(), shooter.autoHood(), shooter.autoTurret())
+        return Commands.sequence(shooter.autoShoot(), shooter.autoHood())
             .until(shooter.isShooterAtVelocity)
-            .andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer()));
-            //Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
+            .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor()));
+            // Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
 
-*/
-
-/* Needs mods because subsystems are seperated
     public Command startWhileMoveShoot() {   
-        return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood(), shooter.whileMoveTurret()),
-                Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(kickup.forwardKickup(), spindexer.forwardSpindexer())));
+        return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood()),
+            Commands.waitUntil(shooter.isShooterAtVelocity)
+                .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor())));
     }
-*/
+
     public Command hood30(){
         return shooter.hood30();
     }

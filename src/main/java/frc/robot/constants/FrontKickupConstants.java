@@ -5,16 +5,11 @@
 package frc.robot.constants;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
+ * Constants for the front kickup, including intake and outtake speeds.
  */
 public class FrontKickupConstants {
 
-  /*===============Speeds===================*/
+  /* Speeds */
   public static final double kFrontKickupIntake = 90.0;  
   public static final double kFrontKickupOuttake = -12.0;  
 
@@ -24,6 +19,9 @@ public class FrontKickupConstants {
   /* Safeties */
   public static final double kFrontKickupMaxSpeed = 100.0;
   public static final double kFrontKickupMinSpeed = -50.0;
+
+  /* Duty Cycles */
+  public static final double kFrontKickupZeroDutyCycle = 0.0;
    
   /* Simulation Constants */
   public static final double kKickupGearing = 5.0;  //This is incorrect for Humpty Dumpty

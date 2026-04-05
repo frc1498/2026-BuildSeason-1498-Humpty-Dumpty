@@ -17,43 +17,53 @@ import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.IntakeConstants;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 //import dev.doglog.DogLog;
 
 public class Intake extends SubsystemBase {
-  //Variables
+  /* Variables */
   public TalonFX intakeRightMotor;  //Motor type definition
   public TalonFX intakeLeftMotor;  //Motor type definition
 
   public VelocityVoltage intakeVelocityVoltage; //Motor control type definition
 
-  IntakeConfig intakeConfig; //Create an object of type IntakeConfig
+  private IntakeConfig intakeConfig; //Create an object of type IntakeConfig
 
   public String intakeState = "stopped";
 
   public DutyCycleOut intakeDutyCycle;
 
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-  //Constructor
+  /**
+   * The constructor for the intake subsystem.  The two motors that run the intake bar.
+   * @param config - The configuration for the motors in the intake subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
+   */
   public Intake(IntakeConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
     this.telemetryLevel = telemetryLevel;
-    this.intakeConfig=config;
+    this.intakeConfig = config;
 
     this.intakeRightMotor = new TalonFX(IntakeConfig.kIntakeRightCANID, "canivore");  //Create the intake motor for this subsystem
-    this.configureMechanism(intakeRightMotor, this.intakeConfig.intakeRightMotorConfig);
+    this.configureMechanism(this.intakeRightMotor, this.intakeConfig.intakeRightMotorConfig);
 
     intakeLeftMotor = new TalonFX(IntakeConfig.kIntakeLeftCANID, "canivore");  //Create the intake motor for this subsystem
-    this.configureMechanism(intakeLeftMotor, this.intakeConfig.intakeLeftMotorConfig);
+    this.configureMechanism(this.intakeLeftMotor, this.intakeConfig.intakeLeftMotorConfig);
   
-    intakeDutyCycle = new DutyCycleOut(0);
-    intakeVelocityVoltage = new VelocityVoltage(0);
+    this.intakeDutyCycle = new DutyCycleOut(0);
+    this.intakeVelocityVoltage = new VelocityVoltage(0);
 
-    //SmartDashboard.putData("Intake", this);
+    SmartDashboard.putData("Intake", this);
   }
 
+  /**
+   * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
+   * @param mechanism - The TalonFX object (motor) to apply the configuration to.
+   * @param config - The set of configurations to apply.
+   */
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
     //Start Configuring Climber Motor
     StatusCode mechanismStatus = StatusCode.StatusCodeNotInitialized;
@@ -67,10 +77,13 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  //====================================================
-  //=============Private Methods========================
-  //====================================================
+  /* Private Methods */
 
+  /**
+   * Sets the left and right intake motors to the intake velocity, in rotations per second.
+   * The control will only be set if the motor is enabled.
+   * Each motor can be enabled or disabled separately.
+   */
   private void intake(){
     if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
         intakeLeftMotor.setControl(intakeVelocityVoltage.withVelocity(IntakeConstants.kIntakeSpeed));
@@ -80,6 +93,11 @@ public class Intake extends SubsystemBase {
     }
   }
   
+  /**
+   * Sets the left and right intake motors to the outtake velocity, in rotations per second.
+   * The control will only be set if the motor is enabled.
+   * Each motor can be enabled or disabled separately.
+   */
   private void outtake(){
     if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
         intakeLeftMotor.setControl(intakeDutyCycle.withOutput(-0.6));
@@ -90,6 +108,11 @@ public class Intake extends SubsystemBase {
     
   }
 
+  /**
+   * Stops both intake motors.
+   * Both motors are changed over to the duty cycle control mode with the output set to 0.
+   * This puts the motor in an 'idle' state.
+   */
   private void stop(){
     if (MotorEnableConstants.kIntakeLeftMotorEnabled) {
       intakeLeftMotor.setControl(intakeDutyCycle.withOutput(0));
@@ -99,18 +122,25 @@ public class Intake extends SubsystemBase {
     }
   }
 
+  /**
+   * Returns a string of the name of the currently running command.
+   * If no command is running, return "No Command".
+   * @return A string with the name of the currently running command.
+   */
   private String getCurrentCommandName() {
+      /*
       if (this.getCurrentCommand() == null) {
           return "No Command";
       }
       else {
           return this.getCurrentCommand().getName();
       }
+      */
       // Refactoring this method with a ternary operator.
-      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
+      return (this.getCurrentCommand() == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
-    /**
+  /**
    * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
    * @param logLevel - The level of logging to enable.
    */
@@ -129,27 +159,11 @@ public class Intake extends SubsystemBase {
     }
   }
 
-  //=====================================================
-  //=============Public Methods==========================
-  //=====================================================
+  /* Public Methods */
   
-  public Command intakeSuck() {
-    return runOnce(  //changed to runonce
-      () -> {this.intake();}
-    ).withName("intakeSuck");
-  }
-
-  public Command intakeSpit() {
-    return run(
-      () -> {this.outtake();}
-    ).withName("intakeSpit");
-  }
-
-    public Command intakeStop() {
-    return runOnce(
-      () -> {this.stop();}
-    ).withName("intakeStop");
-  }
+  public Command intakeSuck() {return runOnce(() -> {this.intake();}).withName("intakeSuck");}
+  public Command intakeSpit() {return run(() -> {this.outtake();}).withName("intakeSpit");}
+  public Command intakeStop() {return runOnce(() -> {this.stop();}).withName("intakeStop");}
 
   @Override
   public void initSendable(SendableBuilder builder) {

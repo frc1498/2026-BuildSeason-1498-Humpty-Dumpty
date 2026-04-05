@@ -3,21 +3,26 @@ package frc.robot.config;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public class RearKickupConfig {
     //Constants go Here
-    public static final int kRearKickupMotorCANID = 12;
+    public static final int kRearKickupMotorCANID = 19;
    
     //Variables
     public TalonFXConfiguration rearKickupMotorConfig; //kraken motor (x60)
 
-    //Constructor - only runs one
+    /**
+     * Constructor for the rear kickup motor configuration.
+     */
     public RearKickupConfig(){
         rearKickupMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
         this.configureRearKickupMotor(rearKickupMotorConfig); //Fill in framework, requires a method below
     }
 
+    /**
+     * Sets up the base TalonFX configuration for the rear kickup motor.
+     * @param rearKickup - The TalonFX configuration to apply the settings to.
+     */
     public void configureRearKickupMotor(TalonFXConfiguration rearKickup){
         //configure motor
         rearKickup.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26

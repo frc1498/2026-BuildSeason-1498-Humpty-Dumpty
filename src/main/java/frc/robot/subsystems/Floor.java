@@ -11,16 +11,15 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.MotorEnableConstants;
+import frc.robot.config.FloorConfig;
 import frc.robot.constants.FloorConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
-
 
 /**
  * The floor subsystem.  Contains the flywheel, turret, hood adjustment, floor, and ball kickup.
@@ -32,88 +31,67 @@ public class Floor extends SubsystemBase {
   private TalonFX floorMotor;  // Motor type definition
   private VelocityVoltage floorMotorMode; // Motor control type definition
   private double desiredFloorVelocity;
-  private boolean floorAtVelocity;
   private double currentFloorVelocity;
   public DutyCycleOut floorDutyCycle;
-  private double simTime;
-  private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
+  private FloorConfig floorConfig;
 
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-    /**
-     * Returns the floor velocity for the state.
-     * @return - Desired velocity for the floor, in rotations per second.
-     */
-    public double floor() {
-      return this.floorVelocity;
-    }
-
-    /**
-     * Returns the motor direction for the state.
-     * @return - Motor direction.  True is forward (intake), false is reverse (outtake).
-     */
-    public boolean direction() {
-      return this.direction;
-    }
-  }
-
-/**
- * Creates a new instance of the floor subsystem.
- * @param config - The motor configurations for all motors in the subsystem.
- */
-public Floor(FloorConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
+  /**
+   * The constructor for the floor subsystem.
+   * @param config - The motor configuration for the motors in the floor subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
+   */
+  public Floor(FloorConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
   this.telemetryLevel = telemetryLevel;
   this.floorConfig = config;
 
-  this.floorMotor = new TalonFX(FloorConfig.kFloorMotorCANID, "canivore");  // Create the floor motor.
+  this.floorMotor = new TalonFX(FloorConfig.kFloorMotorCANID, MotorEnableConstants.canivore);  // Create the floor motor.
   this.floorMotorMode = new VelocityVoltage(0);                                      // Set the control mode for the floor motor.
-  this.configureMechanism(this.floorMotor, this.FloorConfig.floorMotorConfig);
+  this.floorDutyCycle = new DutyCycleOut(0.0);
+  this.configureMechanism(this.floorMotor, this.floorConfig.floorMotorConfig);
 
 
   // Publish subsystem data to SmartDashboard.
-  //SmartDashboard.putData("Floor", this);
+  SmartDashboard.putData("Floor", this);
+  }
 
-  floorDutyCycle = new DutyCycleOut(0.0);
-}
-
-/**
- * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
- * @param mechanism - The TalonFX object (motor) to apply the configuration to.
- * @param config - The set of configurations to apply.
- */
-public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
-
+  /**
+   * Apply the configuration to the motor.  This will attempt to re-apply the configuration if unsuccessful, up to 5 times.
+   * @param mechanism - The TalonFX object (motor) to apply the configuration to.
+   * @param config - The set of configurations to apply.
+   */
+  public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     // Start Configuring the motor with the supplied configuration.
     StatusCode mechanismStatus = StatusCode.StatusCodeNotInitialized;
 
     // Attempt to apply the configuration 5 times.  Immediately stop if the configuration was successful.
     for(int i = 0; i < 5; ++i) {
-
-        mechanismStatus = mechanism.getConfigurator().apply(config);
-
-        if (mechanismStatus.isOK()) {break;}
+      mechanismStatus = mechanism.getConfigurator().apply(config);
+      if (mechanismStatus.isOK()) {break;}
     }
-
     // If the configuration was still not successful, print an error to the console.
     if (!mechanismStatus.isOK()) {
       System.out.println("Could not configure device. Error: " + mechanismStatus.toString());
     }
   }
 
-  //=========================================================
-  /*===================Private Methods=====================*/
-  //===========================================================
+  /* Private Methods */
 
   /**
-   * Returns true if the current setpoint is within the range of minimum and maximum parameters.
+   * Checks if the current setpoint is within the range of minimum and maximum parameters.
+   * @param currentSetpoint - The setpoint to check.
+   * @param minimum - The lower bound of the allowable range.
+   * @param maximum - The upper bound of the allowable range.
+   * @return True if the current setpoint is within the range of the minimum and maximum.
    */
   private boolean isSetpointWithinSafetyRange(double currentSetpoint, double minimum, double maximum) {
     return ((currentSetpoint >= minimum) && (currentSetpoint <= maximum));
   }
 
-  //===========================Floor Private Methods=====================================
+  /* Floor Private Methods */
 
   /**
    * Set the velocity of the floor motor.
@@ -129,13 +107,21 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     }
   }
 
+  /**
+   * Check if the floor motor is at or near the desired velocity.
+   * @return True if the current floor motor velocity is at the desired floor motor velocity, plus and minus a deadband.
+   */
   private boolean isFloorAtSpeed () {
       return ((floorMotor.getVelocity().getValueAsDouble() < (this.desiredFloorVelocity + FloorConstants.kFloorVelocityDeadband)) 
     && (floorMotor.getVelocity().getValueAsDouble() > (this.desiredFloorVelocity - FloorConstants.kFloorVelocityDeadband)));
   }
 
-  private void stopSpindex(){
-    this.desiredFloorVelocity=0;
+  /**
+   * Stops the floor motor.
+   * Sets the desired velocity to 0, and sets the control mode of the motor to dutyCycleOut to allow the motor to 'idle'.
+   */
+  private void stopFloorMotor(){
+    this.desiredFloorVelocity = 0.0;
     floorMotor.setControl(floorDutyCycle.withOutput(FloorConstants.kFloorZeroDutyCycle));
   }
 
@@ -145,10 +131,10 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
    */
   private double getFloorVelocity() {
     this.currentFloorVelocity = floorMotor.getVelocity().getValueAsDouble();
-    return floorMotor.getVelocity().getValueAsDouble();
+    return this.currentFloorVelocity;
   }
 
-  //===============================Misc. Private Methods===================
+  /* Misc. Private Methods */
 
   /**
    * Checks if a current variable is within a deadband to the setpoint.
@@ -164,17 +150,19 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
   /**
    * Returns a string of the name of the currently running command.
    * If no command is running, return "No Command".
-   * @return
+   * @return A string with the name of the currently running command.
    */
   private String getCurrentCommandName() {
+      /*
       if (this.getCurrentCommand() == null) {
           return "No Command";
       }
       else {
           return this.getCurrentCommand().getName();
       }
+      */
       // Refactoring this method with a ternary operator.
-      // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
+      return (this.getCurrentCommand() == null) ? "No Command" : this.getCurrentCommand().getName();
   }
 
   /**
@@ -192,15 +180,26 @@ public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config) {
     }
   }
 
-  //=========================================================
-  /*====================Public Methods=====================*/
-  //=========================================================
+  /* Public Methods */
 
-  //====================Public Methods=====================
-  //=======================Public Floor Commands==================
+  /* Public Methods */
+
+  /* Public Floor Commands */
   public Command stopFloor() {
-    return run(() -> {this.stopSpindex();}).until(isFloorAtVelocity);
+    return run(() -> {this.stopFloorMotor();}).until(isFloorAtVelocity).withName("stopFloor");
   }
+
+  /**
+   * A factory command that sets the velocity of the floor motor.
+   * @param velocity - The velocity setpoint of the floor motor, in rotations per second.
+   * @return A command that runs the {@code setFloorVelocity} method.
+   */
+  private Command setFloor(double velocity) {
+    return runOnce(() -> {this.setFloorVelocity(velocity);}).withName("setFloorVelocity");
+  }
+
+  public Command newReverseFloor() {return this.setFloor(FloorConstants.kFloorOuttake).withName("reverseFloor");};
+  public Command newForwardFloor() {return this.setFloor(FloorConstants.kFloorIntake).withName("forwardFloor");};
 
   public Command reverseFloor() {
     return runOnce(() -> {this.setFloorVelocity(FloorConstants.kFloorOuttake);});

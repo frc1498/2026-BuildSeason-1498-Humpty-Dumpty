@@ -8,42 +8,30 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
- * globally (i.e. public static). Do not put anything functional in this class.
- *
- * <p>It is advised to statically import this class (or one of its inner classes) wherever the
- * constants are needed, to reduce verbosity.
+ * Constant values for the climber, including mechanism positions and position deadbands.
  */
 public class ClimberConstants {
-  //=====================Positions=====================
-  public static final int kLiftClimbExtend = 45;
-  public static final int kLiftClimbHandOff = 0;
-  public static final int kLiftClimbRetract = 0;
-  public static final int kLiftClimbHome = 0;
+  /* Positions */
+  public static final int kClimbExtend = 45;
+  public static final int kClimbHandOff = 0;
+  public static final int kClimbRetract = 0;
+  public static final int kClimbHome = 0;
 
-  public static final int kRotateClimbExtend = 0;
-  public static final int kRotateClimbHandOff = 0;
-  public static final int kRotateClimbRetract = 0;
-  public static final int kRotateClimbHome = 0;
-  public static final int kLiftClimbDeadband = 3;
-  public static final int kRotateClimbDeadband = 0;
+  /* Deadbands */
+  public static final int kClimbDeadband = 3;
 
-  //=====================Safeties======================
-  public static final int kLiftClimbSafeExtend = 45;
-  public static final int kLiftClimbSafeRetract = 0;
+  /* Safeties */
+  public static final int kClimbSafeExtend = 45;
+  public static final int kClimbSafeRetract = 0;
 
-  public static final int kRotateClimbSafeExtend = 0;
-  public static final int kRotateClimbSafeRetract = 0;
+  /* Sim Values */
 
-  //======================Sim Values===================
-
-  //======================Poses=====================
+  /* Poses */
   /* define a 2D array to hold positions for quick climb
    *        0           1
    * 0 [blue left][blue right]
    * 1 [red left][red right]
-  */
+   */
   public static final Pose2d[][] quickClimbPoses = {
     //Blue
     {

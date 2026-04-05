@@ -12,13 +12,19 @@ public class HopperConfig {
     public TalonFXConfiguration hopperConfig;  //Create variable of type TalonFXConfiguration
     public TalonFXConfiguration hopperZeroConfig;
 
-    //Constructor
-    public HopperConfig(){
+    /**
+     * Constructor for the climber motor configuration.
+     */
+    public HopperConfig() {
         hopperConfig = new TalonFXConfiguration();  //Instantiate - make a framework
-        this.configureHopper(hopperConfig);  //Fill in framework 
+        this.configureHopper(hopperConfig);         //Fill in framework 
     }
 
-    public void configureHopper(TalonFXConfiguration hopper){
+    /**
+     * Sets up the base TalonFX configuration for the hopper motor.
+     * @param hopper - The TalonFX configuration to apply the settings to.
+     */
+    public void configureHopper(TalonFXConfiguration hopper) {
 
         //super low current limit to create software spring
 
@@ -54,6 +60,10 @@ public class HopperConfig {
         hopper.Audio.AllowMusicDurDisable = true;
     }
 
+    /**
+     * Sets up the TalonFX configuration for the hopper motor to use while running the zero-ing routine.
+     * @param hopper - The TalonFX configuration to apply the settings to.
+     */
     public void configureZeroHopper(TalonFXConfiguration hopper){
 
         //super low current limit to create software spring

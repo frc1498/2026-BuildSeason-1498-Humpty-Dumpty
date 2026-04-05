@@ -30,11 +30,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
-import frc.robot.constants.VisionConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
-import frc.robot.constants.VisionConstants.photonvision.Camera;
 
 public class Vision extends SubsystemBase {
     
@@ -66,7 +64,6 @@ public class Vision extends SubsystemBase {
     private boolean cachedIsLimelightPoseValid = false;
     private boolean cachedIsLeftPhotonPoseValid = false;
     private boolean cachedIsRightPhotonPoseValid = false;
-    private double limelightTimestamp;
     private double testTimestamp;
 
     private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -85,7 +82,7 @@ public class Vision extends SubsystemBase {
 
         this.setLimelightRobotPosition();
         //In the constructor, set the IMU mode to 1, so the limelight IMU is seeded with the robot gyro heading.
-        LimelightHelpers.SetIMUMode(limelight.kName, 1);
+        this.setLimelightIMUMode(1);
         LimelightHelpers.SetRobotOrientation(limelight.kName, this.getRobotHeading(), 0.0, 0.0, 0.0, 0.0, 0.0);
 
         leftCamera = new PhotonCamera(photonvision.kLeftName);
@@ -114,7 +111,7 @@ public class Vision extends SubsystemBase {
     /**
      * Command the limelight to start using its internal IMU for the pose estimate it produces.
      */
-    private void setLimelightToInternalIMU() {
+    private void setLimelightIMUMode(int IMUMode) {
         /*
          * Mode 0 - External_Only - MegaTag2 uses the yaw sent from the robot to the Limelight.
          * Mode 1 - External_Seed - The Limelight gyro is seeded with the yaw sent from the robot.
@@ -122,7 +119,7 @@ public class Vision extends SubsystemBase {
          * Mode 3 - Internal_MT1_Assist - Corrects the Limelight gyro with MegaTag1 estimated yaw.
          * Mode 4 - Internal_External_Assist - Corrects the Limelight gyro with the robot yaw over time.  Recommended in the Limelight documentation.
          */
-        LimelightHelpers.SetIMUMode(limelight.kName, 4);
+        LimelightHelpers.SetIMUMode(limelight.kName, IMUMode);
     }
 
     /**
@@ -413,21 +410,6 @@ public class Vision extends SubsystemBase {
     public Trigger addRightPhotonPose = new Trigger(() -> {return this.cachedIsRightPhotonPoseValid;});
 
     /**
-     * Add the current megaTag2 pose estimate to the drivetrain pose estimate.
-     * @param drivetrain
-     * @return
-     */
-    public Command addMegaTag2(Supplier<CommandSwerveDrivetrain> drivetrain) {
-        return run(
-            () -> {
-                limelightTimestamp = Utils.getCurrentTimeSeconds();
-                drivetrain.get().setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, 9999999));
-                drivetrain.get().addVisionMeasurement(megaTag2.pose, megaTag2.timestampSeconds);
-            }
-        ).withName("Adding Limelight Vision Measurement").ignoringDisable(true);
-    }
-
-    /**
      * Add the current test pose estimate to the drivetrain pose estimate.
      * @param drivetrain
      * @return
@@ -443,12 +425,19 @@ public class Vision extends SubsystemBase {
     }
 
     /**
-     * Switch the limelight to use its internal IMU for the pose estimate.
-     * @return
+     * Switch the limelight IMU mode  The method {@code setLimelightIMUMode()} has a description of each mode.
+     * @param IMUMode - The IMU mode to switch the limelight to.
+     * @return A command that changes the limelight IMU mode.
      */
-    public Command switchToInternalIMU() {
-        return runOnce(() -> {this.setLimelightToInternalIMU();}).withName("Setting Limelight to IMU Mode 2").ignoringDisable(true);
+    private Command switchIMUMode(int IMUMode) {
+        return runOnce(() -> {this.setLimelightIMUMode(IMUMode);}).ignoringDisable(true);
     }
+
+    public Command setLimelightIMUExternalOnly() {return this.switchIMUMode(0).withName("IMU Mode 0: External Only");}
+    public Command setLimelightIMUExternalSeed() {return this.switchIMUMode(1).withName("IMU Mode 1: External Seed");}
+    public Command setLimelightIMUInternalOnly() {return this.switchIMUMode(2).withName("IMU Mode 2: Internal Only");}
+    public Command setLimelightIMUInternalMT1Assist() {return this.switchIMUMode(3).withName("IMU Mode 3: Internal MT1 Assist");}
+    public Command setLimelightIMUInternalExternalAssist() {return this.switchIMUMode(4).withName("IMU Mode 4: Internal External Assist");}
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -517,18 +506,6 @@ public class Vision extends SubsystemBase {
         default:
             break;
         }
-
-        // This code is for the photonvision estimate.  Currently, I don't need it, since we don't have the photonvision.
-        /* Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var result : leftCamera.getAllUnreadResults()) {
-            visionEst = leftCameraEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEst.isEmpty()) {
-                visionEst = leftCameraEstimator.estimateLowestAmbiguityPose(result);
-            }
-            this.updateEstimationStdDevs(leftCameraEstimator, visionEst, result.getTargets());
-
-            this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
-        } */
     }
 
     @Override

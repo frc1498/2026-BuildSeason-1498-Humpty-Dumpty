@@ -3,23 +3,28 @@ package frc.robot.config;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public class FloorConfig {
     //Constants go Here
-    public static final int kFloorMotorCANID = 14;
+    public static final int kFloorMotorCANID = 11;
 
     //Variables
     public TalonFXConfiguration floorMotorConfig; //x60 motor
 
 
-    //Constructor - only runs one
-    public FloorConfig(){
-        floorMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureFloorMotor(floorMotorConfig); //Fill in framework, requires a method below
+    /**
+     * Constructor for the floor roller motor configuration.
+     */
+    public FloorConfig() {
+        floorMotorConfig = new TalonFXConfiguration();  //Instantiate - make a framework
+        this.configureFloorMotor(floorMotorConfig);     //Fill in framework, requires a method below
     }
 
-    public void configureFloorMotor(TalonFXConfiguration floor){
+    /**
+     * Sets up the base TalonFX configuration for the floor roller motor.
+     * @param floor - The TalonFX configuration to apply the settings to.
+     */
+    public void configureFloorMotor(TalonFXConfiguration floor) {
         //Configure Motor
         floor.MotorOutput.Inverted=InvertedValue.Clockwise_Positive;  //Set 2-17-26
         floor.MotorOutput.NeutralMode=NeutralModeValue.Coast;  //Set 2-17-26

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,13 +13,11 @@ public class ShotCalculation {
 
     private int convergeLimit = 4;  //Was 20
     private double phaseDelay = 0.03;  //Was .03
-    private double omegaPhaseDelay = 1; //Trying something
     private Pose2d poseEstimate;
-    private double targetDistance;
-    private Pose2d turretPoseEstimate;
-    private double turretVelocityX;
-    private double turretVelocityY;
-    private ChassisSpeeds turretSpeedFieldRelative;
+    private Pose2d shooterPoseEstimate;
+    private double shooterVelocityX;
+    private double shooterVelocityY;
+    private ChassisSpeeds shooterSpeedFieldRelative;
     private Pose2d virtualTarget;
     private double previewTargetDistance;
     private double offsetX;
@@ -64,6 +63,24 @@ public class ShotCalculation {
     }
 
     /**
+     * 
+     * @param robotPose
+     * @param target
+     * @return
+     */
+    public Rotation2d getDriveAngle(Pose2d robotPose, Translation2d target) {
+    Rotation2d fieldToHubAngle = target.minus(robotPose.getTranslation()).getAngle();
+    Rotation2d hubAngle = new Rotation2d(
+            Math.asin(
+                MathUtil.clamp(
+                    ShooterConstants.kRobotToShooter.getTranslation().getY() / target.getDistance(robotPose.getTranslation()),
+                    -1.0,
+                    1.0)));
+    Rotation2d driveAngle = fieldToHubAngle.plus(hubAngle).plus(ShooterConstants.kRobotToShooter.getRotation());
+    return driveAngle;
+  }
+
+    /**
      * Calculate the virtual target based on the current speed.
      * @param robotSpeeds
      * @param timeOfFlight
@@ -82,8 +99,8 @@ public class ShotCalculation {
             )
         );
 
-        turretPoseEstimate = robotPose.transformBy(ShooterConstants.kRobotToTurret);
-        turretSpeedFieldRelative = this.toFieldRelative(robotSpeeds, poseEstimate.getRotation());
+        shooterPoseEstimate = robotPose.transformBy(ShooterConstants.kRobotToShooter);
+        shooterSpeedFieldRelative = this.toFieldRelative(robotSpeeds, poseEstimate.getRotation());
 
         // Determine the field relative velocity of the turret.  This is mostly equal to the robot velocity, with some adjustment based on the current rotational speed of the robot.
         // Part one is just the X (or Y) component of the field relative robot speed.
@@ -92,31 +109,31 @@ public class ShotCalculation {
         // At least, that's what I think.
 
         // I'm breaking this into multiple lines, just because it's a little more readable.
-        turretVelocityX = turretSpeedFieldRelative.vxMetersPerSecond + 
-            turretSpeedFieldRelative.omegaRadiansPerSecond * (
-                ShooterConstants.kRobotToTurret.getY() * Math.cos(poseEstimate.getRotation().getRadians()) - 
-                ShooterConstants.kRobotToTurret.getX() * Math.sin(poseEstimate.getRotation().getRadians())
+        shooterVelocityX = shooterSpeedFieldRelative.vxMetersPerSecond + 
+            shooterSpeedFieldRelative.omegaRadiansPerSecond * (
+                ShooterConstants.kRobotToShooter.getY() * Math.cos(poseEstimate.getRotation().getRadians()) - 
+                ShooterConstants.kRobotToShooter.getX() * Math.sin(poseEstimate.getRotation().getRadians())
             );
 
-        turretVelocityY = turretSpeedFieldRelative.vyMetersPerSecond + 
-            turretSpeedFieldRelative.omegaRadiansPerSecond * (
-                ShooterConstants.kRobotToTurret.getY() * Math.sin(poseEstimate.getRotation().getRadians()) - 
-                ShooterConstants.kRobotToTurret.getX() * Math.cos(poseEstimate.getRotation().getRadians())
+        shooterVelocityY = shooterSpeedFieldRelative.vyMetersPerSecond + 
+            shooterSpeedFieldRelative.omegaRadiansPerSecond * (
+                ShooterConstants.kRobotToShooter.getY() * Math.sin(poseEstimate.getRotation().getRadians()) - 
+                ShooterConstants.kRobotToShooter.getX() * Math.cos(poseEstimate.getRotation().getRadians())
             );
         
         // Initialize these variables before iterating.
         this.virtualTarget = targetPose;
-        this.previewTargetDistance = this.getTargetDistance(turretPoseEstimate, virtualTarget);
+        this.previewTargetDistance = this.getTargetDistance(shooterPoseEstimate, virtualTarget);
 
         // Set the converge limit at the top of the class, to make it quick to change.
         for (int i = 0; i < convergeLimit; i++) {
             timeOfFlight = ShooterConstants.timeOfFlightMap.get(previewTargetDistance);
 
-            this.offsetX = turretVelocityX * timeOfFlight;
-            this.offsetY = turretVelocityY * timeOfFlight;
+            this.offsetX = shooterVelocityX * timeOfFlight;
+            this.offsetY = shooterVelocityY * timeOfFlight;
 
             this.virtualTarget = new Pose2d(targetPose.getTranslation().minus(new Translation2d(offsetX, offsetY)),targetPose.getRotation());
-            this.previewTargetDistance = this.getTargetDistance(turretPoseEstimate, virtualTarget);
+            this.previewTargetDistance = this.getTargetDistance(shooterPoseEstimate, virtualTarget);
         }
 
         return this.previewTargetDistance;

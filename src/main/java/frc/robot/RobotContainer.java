@@ -18,8 +18,8 @@ import frc.robot.config.ClimberConfig;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.ShooterConfig;
-import frc.robot.config.RearKickerConfig;
-import frc.robot.config.FrontKickerConfig;
+import frc.robot.config.RearKickupConfig;
+import frc.robot.config.FrontKickupConfig;
 import frc.robot.config.FloorConfig;
 import frc.robot.commands.Move;
 
@@ -67,6 +67,15 @@ public class RobotContainer {
     public IntakeConfig intakeConfig = new IntakeConfig();
     public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
+    public FrontKickupConfig frontKickupConfig = new FrontKickupConfig();
+    public FrontKickup frontKickup = new FrontKickup(frontKickupConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+
+    public RearKickupConfig rearKickupConfig = new RearKickupConfig();
+    public RearKickup rearKickup = new RearKickup(rearKickupConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+
+    public FloorConfig floorConfig = new FloorConfig();
+    public Floor floor = new Floor(floorConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
     public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public PathPlannerAuto selectedAuton;
@@ -81,14 +90,18 @@ public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     private boolean DSLatch = false;
-    private double precisionDampenerTranslation = 1
-    ; //Translation Speed Limiter
+    private double precisionDampenerTranslation = 1; //Translation Speed Limiter
     private double precisionDampenerRotation = 1; //Rotation Speed Limiter
     
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001) // Add a 5% deadband
             .withDriveRequestType(DriveRequestType.Velocity); // Use open-loop control for drive motors
+    private final SwerveRequest.FieldCentricFacingAngle driveFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
+        .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001)
+        .withDriveRequestType(DriveRequestType.Velocity)
+        .withHeadingPID(20.0, 0.0, 0.05);
+        
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -100,18 +113,17 @@ public class RobotContainer {
 
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
-    // Because I'm lazy, I'm leaving the configurations for the kickup and spindexer motors in the shooter config.
-    // We'll just pass the shooter config into the kickup and spindexer subsystems to use the already in-place configurations.
-    public Kickup kickup = new Kickup(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
-    public Spindexer spindexer = new Spindexer(shooterConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
-    public final Move move = new Move(climber,hopper,intake,shooter,drivetrain,kickup,spindexer);
+    public final Move move = new Move(climber, hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
         // Create DogLog - Temporarily disabled to stop loop overruns
         //DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
         //DogLog.setOptions(new DogLogOptions().withCaptureConsole(false));
+
+        driveFacingAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
         // Configure the trigger bindings
         configureBindings();
         registerAutoCommands();
@@ -138,8 +150,6 @@ public class RobotContainer {
             )
         );
 
-        //shooter.setDefaultCommand(shooter.setShooterOutputs());
-
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -157,28 +167,13 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.switchToInternalIMU());
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
 
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
             .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
             .andThen(this.setLatch()).ignoringDisable(true));
-
-        /*
-        this.DSAttached.onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
-            .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
-            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true));
-        */
-
-         /*this.DSAttached.and(this.alliancePresent).and(this.getDSLatch.negate()).whileTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
-            .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
-            .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
-            .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
-            .andThen(this.setLatch()).ignoringDisable(true));*/
-
-        // Add the limelight pose estimate to the drivetrain estimate.
-        //vision.addLimelightPose.whileTrue(vision.addMegaTag2(() -> {return drivetrain;}));
       
         //===================================================
         //===================Driver Commands=================
@@ -198,10 +193,15 @@ public class RobotContainer {
 
         //Driver left trigger: Shoot
         driver.leftTrigger(0.1)
-        .onTrue(Commands.runOnce(() -> { drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(move.setTargetToAllianceHub()
-        .andThen(Commands.sequence(setShootOnMoveSpeed(),move.startWhileMoveShoot())))
-        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}, drivetrain), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
+        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
+        .whileTrue(Commands.sequence(move.setTargetToAllianceHub(), 
+            drivetrain.applyRequest(() -> driveFacingAngle
+                .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+                .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
+                .withTargetDirection(shooter.robotTarget().get())
+            ))
+        .andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))
+        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
 
         //added move.hopperextend
 
@@ -211,8 +211,8 @@ public class RobotContainer {
         //Driver x: Zero the Climb System
         driver.x().onTrue(move.zeroClimb());
 
-        //Driver start: zero gyro
-        driver.start().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
+        //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
+        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
 
         //Driver a: Climb extend
         driver.a().onTrue(move.climbExtend());
@@ -284,17 +284,9 @@ public class RobotContainer {
         //.onFalse(move.stopIntake().andThen(hopper.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
         //move.stopIntake().andThen(move.hopperExtend())
 
-        //===================================================
-        //==================Developer Commands===============
-        //===================================================        
-        // Running this as 'whileTrue' because otherwise the default command of the tracking shot will take over (I think).
-        //developer.povUp().toggleOnTrue(shooter.setTuningShooterOutputs());
+        /* Developer Controls */
 
-        // A test of the sysID functionality.
-        //developer.back().and(developer.a()).whileTrue(shooter.sysIdKickupDynamic(Direction.kForward));
-        //developer.back().and(developer.b()).whileTrue(shooter.sysIdKickupDynamic(Direction.kReverse));
-        //developer.start().and(developer.x()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kForward));
-        //developer.start().and(developer.y()).whileTrue(shooter.sysIdKickupQuasistatic(Direction.kReverse));
+
     }
 
     /**
@@ -343,7 +335,6 @@ public class RobotContainer {
         this.precisionDampenerRotation = 1.0;}
         );
     }
-
 
     // Use these triggers to determine when to filter the list of autons.
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);

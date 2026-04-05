@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.constants.MotorEnableConstants;
@@ -58,7 +59,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final Rotation2d kRedAlliancePerspectiveRotation = Rotation2d.k180deg;
     /* Keep track if we've ever applied the operator perspective before or not */
     private boolean m_hasAppliedOperatorPerspective = false;
-    
+    private String m_currentFieldLocation = "In Scoring Field";
     /** Swerve request to apply during robot-centric path following */
     private final SwerveRequest.ApplyRobotSpeeds m_pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds();
 
@@ -264,11 +265,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public String isInScoringField(Pose2d pose) {
         String currField = fieldLocationHelper(pose);
-        if (currField == DriverStation.getAlliance().get().toString()) {
+        String alliance = DriverStation.getAlliance().get().toString();
+        if (currField == alliance) {
             return "In Scoring Field";
         }
+        else if (alliance == "Blue") {
+            if (pose.getY() >= 4.0) {
+                return "Pass Left";
+            }
+            else {
+                return "Pass Right";
+            }
+        }
+        else if (alliance == "Red") {
+            if (pose.getY() <= 4.0) {
+                return "Pass Left";
+            }
+            else {
+                return "Pass Right";
+            }
+        }
         else {
-            return "Not in Scoring Field";
+            return "In Scoring Field";
         }
     }
 
@@ -366,6 +384,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }
 
         this.log(LogLevel.NONE);
+        
+        if (DriverStation.isDSAttached()) {
+            this.m_currentFieldLocation = this.isInScoringField(this.getStateCopy().Pose);
+        }
     }
 
     private void startSimThread() {
@@ -382,6 +404,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
         m_simNotifier.startPeriodic(kSimLoopPeriod);
     }
+
+    public Trigger aimAtHub = new Trigger(() -> {return this.m_currentFieldLocation == "In Scoring Field";});
+    public Trigger aimForPassLeft = new Trigger(() -> {return this.m_currentFieldLocation == "Pass Left";});
+    public Trigger aimForPassRight = new Trigger(() -> {return this.m_currentFieldLocation == "Pass Right";});
 
     public void setDriveCurrentLimits() {
         CurrentLimitsConfigs talonConfig= new CurrentLimitsConfigs();

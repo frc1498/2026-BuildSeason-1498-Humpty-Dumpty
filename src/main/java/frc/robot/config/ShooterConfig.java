@@ -7,28 +7,44 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public class ShooterConfig {
     //Constants go Here
-    public static final int kShooterLeftMotorCANID = 14;
-    public static final int kShooterRightMotorCANID = 15;
+    public static final int kShooterTopLeftMotorCANID = 13;
+    public static final int kShooterBottomLeftMotorCANID = 14;
+    public static final int kShooterTopRightMotorCANID = 15;
+    public static final int kShooterBottomRightMotorCANID = 20;
     public static final int kHoodMotorCANID = 16;
 
     //Variables
     public TalonFXConfiguration hoodMotorConfig; //x44 motor
-    public TalonFXConfiguration shooterLeftMotorConfig; //kraken motor (x60)
-    public TalonFXConfiguration shooterRightMotorConfig; //kraken motor (x60)
+    public TalonFXConfiguration shooterTopLeftMotorConfig; //kraken motor (x60)
+    public TalonFXConfiguration shooterBottomLeftMotorConfig; //x60 motor
+    public TalonFXConfiguration shooterTopRightMotorConfig; //kraken motor (x60)
+    public TalonFXConfiguration shooterBottomRightMotorConfig; //x60 motor
 
-    //Constructor - only runs one
+    /**
+     * Constructor for the climber motor configuration.
+     */
     public ShooterConfig(){
         hoodMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
         this.configureHoodMotor(hoodMotorConfig); //Fill in framework, requires a method below
 
-        shooterLeftMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureShooterMotorLeft(shooterLeftMotorConfig); //Fill in framework, requires a method below
+        shooterTopLeftMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
+        this.configureShooterMotorTopLeft(shooterTopLeftMotorConfig); //Fill in framework, requires a method below
 
-        shooterRightMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
-        this.configureShooterMotorRight(shooterRightMotorConfig); //Fill in framework, requires a method below
+        shooterBottomLeftMotorConfig = new TalonFXConfiguration();
+        this.configureShooterMotorBottomLeft(shooterBottomLeftMotorConfig);
+
+        shooterTopRightMotorConfig = new TalonFXConfiguration(); //Instantiate - make a framework
+        this.configureShooterMotorTopRight(shooterTopRightMotorConfig); //Fill in framework, requires a method below
+
+        shooterBottomRightMotorConfig = new TalonFXConfiguration();
+        this.configureShooterMotorBottomRight(shooterBottomRightMotorConfig);
     }
 
-    public void configureHoodMotor(TalonFXConfiguration hood){
+    /**
+     * Sets up the base TalonFX configuration for the hood adjustment motor.
+     * @param hood - The TalonFX configuration to apply the settings to.
+     */
+    public void configureHoodMotor(TalonFXConfiguration hood) {
         //Configure Motor
         hood.MotorOutput.Inverted=InvertedValue.Clockwise_Positive;  //Set 2-17-26
         hood.MotorOutput.NeutralMode=NeutralModeValue.Coast;  //Set 2-17-26
@@ -57,7 +73,11 @@ public class ShooterConfig {
         hood.Audio.AllowMusicDurDisable = true;
     }
 
-    public void configureShooterMotorLeft(TalonFXConfiguration shooterLeft){
+    /**
+     * Sets up the base TalonFX configuration for the top left shooter motor.
+     * @param shooterLeft - The TalonFX configuration to apply the settings to.
+     */
+    public void configureShooterMotorTopLeft(TalonFXConfiguration shooterLeft) {
         //configure motor
         shooterLeft.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
 
@@ -89,7 +109,81 @@ public class ShooterConfig {
         shooterLeft.Audio.AllowMusicDurDisable = true;
     }
 
-    public void configureShooterMotorRight(TalonFXConfiguration shooterRight){
+    /**
+     * Sets up the base TalonFX configuration for the bottom left shooter motor.
+     * @param shooterLeft - The TalonFX configuration to apply the settings to.
+     */
+    public void configureShooterMotorBottomLeft(TalonFXConfiguration shooterLeft) {
+        //configure motor
+        shooterLeft.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
+
+        shooterLeft.MotorOutput.NeutralMode = NeutralModeValue.Coast;  //Set 2-17-26
+        shooterLeft.MotorOutput.PeakForwardDutyCycle = 1;
+        shooterLeft.MotorOutput.PeakReverseDutyCycle = -1;
+
+        shooterLeft.CurrentLimits.StatorCurrentLimit = 150.0; //3-26 was 120
+        shooterLeft.CurrentLimits.StatorCurrentLimitEnable = true;
+        shooterLeft.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
+
+        //Slot 0 Configs
+        shooterLeft.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
+        shooterLeft.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
+        shooterLeft.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
+        shooterLeft.Slot0.kS = 5;
+        shooterLeft.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterLeft.Slot0.kA = 0;
+        shooterLeft.Slot0.kG = 0.0;
+
+        shooterLeft.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+
+        shooterLeft.Voltage.PeakForwardVoltage = 11;
+        shooterLeft.Voltage.PeakReverseVoltage = -11;
+
+        shooterLeft.Audio.AllowMusicDurDisable = true;
+    }
+
+    /**
+     * Sets up the base TalonFX configuration for the top right shooter motor.
+     * @param shooterRight - The TalonFX configuration to apply the settings to.
+     */
+    public void configureShooterMotorTopRight(TalonFXConfiguration shooterRight) {
+        //configure motor
+        shooterRight.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //Set 2-17-26
+        shooterRight.MotorOutput.NeutralMode = NeutralModeValue.Coast; //Set 2-17-26
+        shooterRight.MotorOutput.PeakForwardDutyCycle = 1;
+        shooterRight.MotorOutput.PeakReverseDutyCycle = -1;
+
+        shooterRight.CurrentLimits.StatorCurrentLimit = 150.0; // 3-26 was 120.
+        shooterRight.CurrentLimits.StatorCurrentLimitEnable = true;
+        shooterRight.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLimitEnable = true;
+        shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLowerTime = 1;
+
+        //Slot 0 Configs
+        shooterRight.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
+        shooterRight.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
+        shooterRight.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
+        shooterRight.Slot0.kS = 5;
+        shooterRight.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterRight.Slot0.kA = 0;
+        shooterRight.Slot0.kG = 0;
+        shooterRight.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+
+        shooterRight.Voltage.PeakForwardVoltage = 11;
+        shooterRight.Voltage.PeakReverseVoltage = -11;
+
+        shooterRight.Audio.AllowMusicDurDisable = true;
+    }
+
+    /**
+     * Sets up the base TalonFX configuration for the bottom right shooter motor.
+     * @param shooterRight - The TalonFX configuration to apply the settings to.
+     */
+    public void configureShooterMotorBottomRight(TalonFXConfiguration shooterRight) {
         //configure motor
         shooterRight.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; //Set 2-17-26
         shooterRight.MotorOutput.NeutralMode = NeutralModeValue.Coast; //Set 2-17-26

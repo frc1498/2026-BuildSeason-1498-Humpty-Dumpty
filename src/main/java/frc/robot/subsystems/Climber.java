@@ -14,7 +14,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,7 +26,7 @@ import frc.robot.constants.ClimberConstants;
 //For zeroing - 5 A Supply Current, 50 A Stator Current, 3 V Output
 
 public class Climber extends SubsystemBase {
-//==================Variables=======================
+/* Variables */
   public TalonFX climbMotor;  //Motor type definition
 
   public PositionVoltage climbMotorMode; //Motor control type definition
@@ -35,32 +34,39 @@ public class Climber extends SubsystemBase {
   public DutyCycleOut dutyCycleOut; //Motor Control type definition
 
   private double desiredClimbMotorPosition;
-  private boolean isClimberCurrentLimitLatched=false;
 
   public boolean hasDSAttachLatched = false;
 
-  ClimberConfig climberConfig; //Create an object of type climber config to use to configure motors
+  private ClimberConfig climberConfig; //Create an object of type climber config to use to configure motors
 
   // Fall back to a default of no telemetry.
-  MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
+  private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
-  //===============Constructor======================
+  /**
+   * The constructor for the climber subsystem.
+   * @param config - The motor configuration for the motors in the climber subsystem.
+   * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
+   */
   public Climber(ClimberConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
     this.telemetryLevel = telemetryLevel;
+    this.climberConfig = config;
 
-    climbMotor = new TalonFX(ClimberConfig.kClimbMotorCANID, "canivore");  //Create a motor for this subsystem
-    climbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
-    this.configureMechanism(climbMotor, config.climbMotorConfig);
-    this.climberConfig=config;
+    this.climbMotor = new TalonFX(ClimberConfig.kClimbMotorCANID, MotorEnableConstants.canivore);  //Create a motor for this subsystem
+    this.climbMotorMode = new PositionVoltage(0);  //Set the motor's control mode
+    this.configureMechanism(this.climbMotor, this.climberConfig.climbMotorConfig);
+
     this.dutyCycleOut = new DutyCycleOut(0.0);
-
     this.climbMotor.setPosition(0);
 
     SmartDashboard.putData("Climber", this);
   }
 
-  //===================Configuration=====================
+  /**
+   * Applies a TalonFX configuration to a TalonFX motor.
+   * @param mechanism - The motor to apply the configuration to.
+   * @param config - The TalonFX configuration to apply to the motor.
+   */
   public void configureMechanism(TalonFX mechanism, TalonFXConfiguration config){     
     //Start Configuring Hopper Motor
     StatusCode mechanismStatus = StatusCode.StatusCodeNotInitialized;
@@ -74,10 +80,16 @@ public class Climber extends SubsystemBase {
     }
   }
 
-//=======================================================
-//====================Private Methods====================
-//=======================================================
-//===============Private Set/Goto Methods================
+  /* Private Methods */
+
+  /* Private Set/Goto Methods */
+
+  /**
+   * Commands the climber motor to a position.
+   * The method checks if the motor is enabled, and that the setpoint is within the safety limits for the climber before sending the command to the motor.
+   * This method also caches the parameter as {@code desiredClimbMotorPosition} for use in the subsystem.
+   * @param position - The position setpoint for the climber motor, in rotations.
+   */
   private void goToPositionClimb(double position) {
     desiredClimbMotorPosition = position;
     if (MotorEnableConstants.kClimbMotorEnabled) {
@@ -88,10 +100,19 @@ public class Climber extends SubsystemBase {
     }
   }
 
+  /**
+   * Stops the climber motor.
+   * This method sets the control mode to dutyCycleOut with an output of 0.
+   * This allows the mechanism to 'idle' without attempting to keep it's previously commanded position.
+   */
   private void climberStop(){
     climbMotor.setControl(dutyCycleOut.withOutput(0.0));
   }
 
+  /**
+   * Returns the name of the current command running on the subsystem.
+   * @return The name of the currently running command.  "No Command" if no command is scheduled.
+   */
   private String getCurrentCommandName() {
       if (this.getCurrentCommand() == null) {
           return "No Command";
@@ -101,32 +122,31 @@ public class Climber extends SubsystemBase {
       }
   }
 
-  //=====================Private Get Methods==================================
+  /* Private Get Methods */
 
+  /**
+   * Get the current position of the climber.  This is the motor position, technically different from the mechanism position.
+   * But not in a significant way.
+   * @return The current position of the climber motor, in rotations.
+   */
   private double getClimbPosition() {
     return climbMotor.getPosition().getValueAsDouble();
   }
 
-  //=====================Private Trigger Methods
+  /**
+   * Check if the climber is at or near the position.
+   * @param position - The position to check if the climber is at or near.
+   * @return True if the current climber position is at the position parameter, plus or minus a deadband.
+   */
   private boolean isClimbAtPosition(double position) {
-    return ((position - ClimberConstants.kClimbDeadband) <= this.getClimbPosition()) 
-    && ((position + ClimberConstants.kClimbDeadband) >= this.getClimbPosition());
-  }
-
-  private boolean isClimberReadyToClimb() {
-    return this.isClimbAtPosition(ClimberConstants.kClimbExtend); /*&&
-    this.isRotateClimbAtPosition(ClimberConstants.kRotateClimbExtend))*/
-  }
-
-  private boolean isClimberHome() {
-    return this.isClimbAtPosition(ClimberConstants.kClimbHome);
+    return ((position - ClimberConstants.kClimbDeadband) <= this.getClimbPosition()) && ((position + ClimberConstants.kClimbDeadband) >= this.getClimbPosition());
   }
 
   /**
    * Should return true if the supply limit has been exceeded.
-   * @return
+   * @return True if the climb motor stator current is higher than 20 A.
    */
-  private boolean climberCurrentLimitTripped() {  //Modified to look at the current itself rather than relying on the fault flag
+  private boolean climberCurrentLimitTripped() {
     return (this.climbMotor.getStatorCurrent().getValueAsDouble() > 20);
   }
 
@@ -147,22 +167,9 @@ public class Climber extends SubsystemBase {
       default:
         break;
     }
-
   }
 
-  private boolean isDSAttachLatched() {
-        if (DriverStation.getAlliance().isPresent()) {
-          hasDSAttachLatched=true;
-        } else {
-          hasDSAttachLatched=false;
-        }
-        return hasDSAttachLatched;
-  }
-
-//=======================================================
-//=====================Public Methods====================
-//=======================================================
-//=================Public Climb Climb Methods=============
+  /* Commands */
 
   /**
    * A zeroing routine for the climber.  This should drive the motor down until the supply current limit is tripped (or stalled).
@@ -188,6 +195,19 @@ public class Climber extends SubsystemBase {
     ).withName("zeroRoutine");
   }
 
+  /**
+   * A command that drives the climber to a constant position.  Used as a factory for more specific climber position commands.
+   * @param climberPosition - The climber position to move to.
+   * @return - A factory command that moves the climb motor to the position defined by the constant.
+   */
+  private Command climbMove(double climberPosition) {
+    return run (() -> {this.goToPositionClimb(climberPosition);}).withName("climbMove");
+  }
+
+  public Command newClimbExtend() {return this.climbMove(ClimberConstants.kClimbExtend).until(isClimbExtended).withName("climbExtend");}
+  public Command newClimbRetract() {return this.climbMove(ClimberConstants.kClimbRetract).until(isClimbRetracted).withName("climbRetract");}
+  public Command newClimbHome() {return this.climbMove(ClimberConstants.kClimbHome).until(isClimbHome).withName("climbHome");}
+
   public Command climbExtend() {
     return run(
       () -> {this.goToPositionClimb(ClimberConstants.kClimbExtend);}
@@ -206,13 +226,17 @@ public class Climber extends SubsystemBase {
     ).until(isClimbHome).withName("climbHome");
   }
 
+  /**
+   * Stops the climber motor, placing it in an idle state.
+   * @return A command that runs the {@code climberStop} method.
+   */
   public Command climbStop() {
     return run(
       () -> {this.climberStop();}
     ).withName("climbStop");
   }
 
-  //=======================Triggers======================
+  /* Triggers */
   public Trigger isClimbExtended = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbExtend);});
   public Trigger isClimbRetracted = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbRetract);});
   public Trigger isClimbHome = new Trigger(() -> {return this.isClimbAtPosition(ClimberConstants.kClimbHome);});

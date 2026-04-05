@@ -3,7 +3,10 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MatchInfo {
+
     private static MatchInfo instance;
+
+    private String alliance = "";
 
     /**
      * Return the instance of this class.
@@ -141,5 +144,18 @@ public class MatchInfo {
         else {
             return "Hub will be inactive";
         }
-     }
+    }
+
+    /**
+     * Returns the current alliance from the driver station if present.
+     * Otherwise, return the last known alliance data from the driver station (or default).
+     * @return A string representing the current alliance from the driver station. Either 'Red' or 'Blue'.
+     */
+    public String getAlliance() {
+        if (DriverStation.getAlliance().isPresent()) {
+            this.alliance = DriverStation.getAlliance().get().toString();
+        }
+
+        return this.alliance;
+    }
 }
