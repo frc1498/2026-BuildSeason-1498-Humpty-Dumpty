@@ -194,13 +194,14 @@ public class RobotContainer {
         //Driver left trigger: Shoot
         driver.leftTrigger(0.1)
         .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(Commands.sequence(drivetrain.applyRequest(() ->
-            driveFacingAngle.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+        .whileTrue(Commands.sequence(move.setTargetToAllianceHub(), 
+            drivetrain.applyRequest(() -> driveFacingAngle
+                .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                 .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                 .withTargetDirection(shooter.robotTarget().get())
-            ), move.setTargetToAllianceHub())
+            ))
         .andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))
-        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}, drivetrain), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
+        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
 
         //added move.hopperextend
 
