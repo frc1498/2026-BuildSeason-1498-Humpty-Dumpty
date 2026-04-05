@@ -44,7 +44,7 @@ public class ShooterConstants {
   public static final double kShooterFlywheelGearing = 1.3; // 1 output : 1 input
   public static final double kHoodGearing = 5.0;
 
-  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0));
+  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0.0));
   public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
 
   //Passing Constants
@@ -53,7 +53,7 @@ public class ShooterConstants {
   public static final Pose2d kBlueLeft = new Pose2d(2.2, 5.5, Rotation2d.fromDegrees(180.0));
   public static final Pose2d kBlueRight = new Pose2d(2.2, 2.5, Rotation2d.fromDegrees(180.0));
 
-  public static final Transform2d kRobotToShooter = new Transform2d(new Translation2d(0.1143, -0.1381), new Rotation2d(0.0));
+  public static final Transform2d kRobotToShooter = new Transform2d(new Translation2d(0.1143, -0.1381), Rotation2d.fromDegrees(0.0));
   // 0.138112776225552 m X from center of robot.
   // -0.114300228600457 m Y from centrer of robot.
 
