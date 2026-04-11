@@ -59,6 +59,16 @@ public class Move {
     //=====================Commands=============================
     //==========================================================
 
+    //==============================Hood====================================
+
+    public Command hoodUp() {
+        return shooter.hood30();
+    }
+
+    public Command hoodDown() {
+        return shooter.hood0();
+    }
+
     //================================Hopper================================
     
     public Command hopperRetract() {  //Reviewed 2/21/26 should work now
@@ -88,14 +98,12 @@ public class Move {
 
     //==============================Shoot========================================
     public Command stopShoot() {
-        return shooter.stopShoot();  
-        //return Commands.sequence(floor.stopFloor(),Commands.parallel(rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
+        return Commands.sequence(floor.stopFloor(),Commands.parallel(rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
     }
 
     public Command startShootStatic() {
        return  Commands.sequence(shooter.hood30(), shooter.startShootStatic()).andThen
-            (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());
-            
+            (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());   
     }
 
     public Command startAutoShoot() {

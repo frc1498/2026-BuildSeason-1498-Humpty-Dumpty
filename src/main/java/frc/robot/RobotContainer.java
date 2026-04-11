@@ -178,14 +178,11 @@ public class RobotContainer {
         driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
-
-        //driver.rightTrigger(0.1).whileTrue(move.nakedIntake()).onFalse(move.stopIntake());  //Changed to while
-        //driver.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
-        //driver.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
-        //driver.rightTrigger(0.1).whileTrue(move.hopperExtend()).onFalse(move.hopperRetract());  //Changed to while
+        driver.leftTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
 
         //Driver RTrigger: Intake
         driver.rightTrigger(0.1).whileTrue(move.intake()).onFalse(move.stopIntake());  //Changed to while
+        //driver.rightTrigger(0.1).whileTrue(move.hood30()).onFalse(move.hood0());  //Changed to while
 
         //Driver RBumper hopperRetract
         driver.rightBumper().onTrue(move.hopperRetract());
@@ -211,7 +208,7 @@ public class RobotContainer {
         //driver.x().
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
-        //driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
+        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
 
         //Driver a: 
         //driver.a().

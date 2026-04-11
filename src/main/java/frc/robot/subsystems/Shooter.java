@@ -12,9 +12,8 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -50,8 +49,8 @@ public class Shooter extends SubsystemBase {
   private TalonFX shooterBottomRightMotor;
   private TalonFX hoodMotor;       // Motor type definition
 
-  private VelocityTorqueCurrentFOC shooterMotorMode;   // Motor control type definition
-  private PositionTorqueCurrentFOC hoodMotorMode;   // Motor control type definition
+  private VelocityVoltage shooterMotorMode;   // Motor control type definition
+  private PositionVoltage hoodMotorMode;   // Motor control type definition
 
   private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
 
@@ -127,10 +126,10 @@ public class Shooter extends SubsystemBase {
     this.shooterBottomRightMotor = new TalonFX(ShooterConfig.kShooterBottomRightMotorCANID, MotorEnableConstants.canivore);
     this.configureMechanism(this.shooterBottomRightMotor, this.shooterConfig.shooterBottomRightMotorConfig);
 
-    this.shooterMotorMode = new VelocityTorqueCurrentFOC(0); // Set the control mode for both shooter motors.
+    this.shooterMotorMode = new VelocityVoltage(0); // Set the control mode for both shooter motors.
       
     this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, MotorEnableConstants.canivore);            // Create hood adjustment motor.
-    this.hoodMotorMode = new PositionTorqueCurrentFOC(0);                                           // Set the contorl mode for the adjustment motor.
+    this.hoodMotorMode = new PositionVoltage(0);                                           // Set the contorl mode for the adjustment motor.
     this.configureMechanism(this.hoodMotor, this.shooterConfig.hoodMotorConfig);
 
     this.shooterLeftMotorSim = this.shooterTopLeftMotor.getSimState();
@@ -387,7 +386,7 @@ public class Shooter extends SubsystemBase {
   public Command newStartShootFast() {return this.setShooter(80.0).until(this.isShooterAtVelocity).withName("startShootFast");}
 
   public Command startShootStatic(){
-    return run(() -> {this.setShooterVelocity(15);}).until(isShooterAtVelocity); //Was 70
+    return run(() -> {this.setShooterVelocity(20);}).until(isShooterAtVelocity); //Was 70
   }
 
   public Command startShootFast(){
@@ -445,7 +444,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(15);});
+    return runOnce(() -> {this.setHoodAngle(55);});
   }
 
   /**

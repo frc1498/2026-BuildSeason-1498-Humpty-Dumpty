@@ -22,7 +22,7 @@ public class ShooterConstants {
   public static final double kShooterVelocityDeadband = 1;  //Changed from 2 to improve initial shot accuracy
 
   /*===============Safeties==================*/
-  public static final double kHoodSafeExtend = 45.5;  //In degrees.  May be able to go slightly higher
+  public static final double kHoodSafeExtend = 55.0;  //In degrees.  May be able to go slightly higher
   public static final double kHoodSafeRetract = 0.0;  //In degrees.  Zero is home
   
   public static final double kShooterMaxSpeed = 100.0;

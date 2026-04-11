@@ -59,7 +59,7 @@ public class ShooterConfig {
         hood.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Config
-        hood.Slot0.kP = 10;  // An error of 1 rotation per second results in 2V output
+        hood.Slot0.kP = 10.0;  // An error of 1 rotation per second results in 2V output
         hood.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         hood.Slot0.kD = 0.1;  // A change of 1 rotation per second squared results in 0.01 volts output
         hood.Slot0.kS = 0;
