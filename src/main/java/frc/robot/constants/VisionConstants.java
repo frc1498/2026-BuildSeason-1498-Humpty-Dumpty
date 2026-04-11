@@ -21,11 +21,11 @@ public class VisionConstants {
      */
     public static class limelight {
         public static final String kName = "limelight";
-        public static final double kForwardOffset = 0.3048;   // 12 inches (0.3048 meters) from the center of the robot.
-        public static final double kSideOffset = -0.1111;     // 4-1/8 inches (-0.104775) from the center of the robot. New mount shifts it 0.25 in.
-        public static final double kUpOffset = 0.2937;      // 11-9/16 inches (0.2936875 meters) from the bottom of the floor.
+        public static final double kForwardOffset = 0.33655;   // 13 1/4 inches (0.33655 meters) from the center of the robot.
+        public static final double kSideOffset = -0.05715;     // 2 1/4 inches (-0.05715) from the center of the robot. New mount shifts it 0.25 in.
+        public static final double kUpOffset = 0.3556;      // 14 inches (0.3556 meters) from the bottom of the floor.
         public static final double kRollOffset = 0.0;          // degrees from vertical.
-        public static final double kPitchOffset = 22.5;         // degrees from vertical.
+        public static final double kPitchOffset = 22.0;         // degrees from vertical.
         public static final double kYawOffset = 0.0;           // degrees from vertical.
         public static final Transform3d kRobotToLimelight = new Transform3d(new Translation3d(0.3048, -0.1047, 0.2937), new Rotation3d(0,0,0));
 
