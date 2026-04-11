@@ -6,7 +6,6 @@ package frc.robot;
 
 import frc.robot.constants.ControllerConstants;
 import frc.robot.constants.MotorEnableConstants;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.RearKickup;
@@ -14,7 +13,6 @@ import frc.robot.subsystems.FrontKickup;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Vision;
-import frc.robot.config.ClimberConfig;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.ShooterConfig;
@@ -58,8 +56,6 @@ public class RobotContainer {
     //=======================================================================
     //=======================Assign Subsystem Names==========================
     //======================================================================= 
-    public final ClimberConfig climberConfig = new ClimberConfig();
-    public Climber climber = new Climber(climberConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public HopperConfig hopperConfig = new HopperConfig();
     public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
@@ -114,7 +110,7 @@ public class RobotContainer {
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
 
-    public final Move move = new Move(climber, hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor);
+    public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -182,16 +178,23 @@ public class RobotContainer {
         driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
+
+        //driver.rightTrigger(0.1).whileTrue(move.nakedIntake()).onFalse(move.stopIntake());  //Changed to while
+        //driver.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
+        //driver.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
+        //driver.rightTrigger(0.1).whileTrue(move.hopperExtend()).onFalse(move.hopperRetract());  //Changed to while
+
         //Driver RTrigger: Intake
         driver.rightTrigger(0.1).whileTrue(move.intake()).onFalse(move.stopIntake());  //Changed to while
 
         //Driver RBumper hopperRetract
         driver.rightBumper().onTrue(move.hopperRetract());
 
-        //Driver LBumper climb
-        driver.leftBumper().onTrue(move.climbRetract());
+        //Driver LBumper
+        //driver.leftBumper().
 
         //Driver left trigger: Shoot
+        /*
         driver.leftTrigger(0.1)
         .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
         .whileTrue(Commands.sequence(move.setTargetToAllianceHub(), 
@@ -202,20 +205,16 @@ public class RobotContainer {
             ))
         .andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
+        */
 
-        //added move.hopperextend
-
-        //Driver back: Zero drivetrain
-        //driver.back().onTrue(drivetrain.runOnce(()->drivetrain.seedFieldCentric()));
-
-        //Driver x: Zero the Climb System
-        driver.x().onTrue(move.zeroClimb());
+        //Driver x: 
+        //driver.x().
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
-        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
+        //driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
 
-        //Driver a: Climb extend
-        driver.a().onTrue(move.climbExtend());
+        //Driver a: 
+        //driver.a().
   
         //driver.b Reverse Intake
         driver.b().whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
@@ -240,22 +239,26 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
+        /*
         operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
             Commands.sequence(move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+        */
 
+    
         //Operator B button
+        /*
         operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
             Commands.sequence(move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
-        
+        */
             
 
         //Operator A button
         //operator.a()
 
         //Operator RTrigger: Static pass button
-        operator.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
+        //operator.rightTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());
 
         //Operator RBumper 
         //operator.rightBumper()
@@ -267,7 +270,7 @@ public class RobotContainer {
         //operator.leftBumper()
 
         //Operator y button: Agitate manually
-        operator.y().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
+        //operator.y().onTrue(move.hopperMid()).onFalse(move.hopperExtend());
 
         //Operator Start
         //operator.START().
@@ -277,15 +280,12 @@ public class RobotContainer {
         //===================================================
         
         //Auto agitate when shooting and not intaking
-        
+        /*
         driver.leftTrigger().and(driver.rightTrigger().negate()).whileTrue(
             Commands.sequence(Commands.waitSeconds(2),move.agitateHopper()));
+        */
             
-        //.onFalse(move.stopIntake().andThen(hopper.hopperExtend()));  //Added the onfalse to stop the intake when we are done.  May interfere with normal intaking
-        //move.stopIntake().andThen(move.hopperExtend())
-
         /* Developer Controls */
-
 
     }
 

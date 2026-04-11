@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 15.011041369472181,
-        "y": 5.982268188302426
+        "x": 12.643035714285716,
+        "y": 7.2634880952380945
       },
       "prevControl": null,
       "nextControl": {
-        "x": 15.270184226616864,
-        "y": 6.8180160062988975
+        "x": 13.6430357142857,
+        "y": 7.2634880952380945
       },
       "isLocked": false,
-      "linkedName": "Red Right Shoot"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 15.860726190476193,
-        "y": 7.393059523809524
+        "x": 14.71617857142857,
+        "y": 7.2634880952380945
       },
       "prevControl": {
-        "x": 15.472011904761906,
-        "y": 7.414654761904761
+        "x": 13.71617857142857,
+        "y": 7.2634880952380945
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Red Outpost"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Red",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -147.62907682211136
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

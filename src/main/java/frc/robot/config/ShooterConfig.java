@@ -7,10 +7,10 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 public class ShooterConfig {
     //Constants go Here
-    public static final int kShooterTopLeftMotorCANID = 14;
-    public static final int kShooterBottomLeftMotorCANID = 18;
+    public static final int kShooterTopLeftMotorCANID = 13;
+    public static final int kShooterBottomLeftMotorCANID = 14;
     public static final int kShooterTopRightMotorCANID = 15;
-    public static final int kShooterBottomRightMotorCANID = 19;
+    public static final int kShooterBottomRightMotorCANID = 20;
     public static final int kHoodMotorCANID = 16;
 
     //Variables
@@ -51,17 +51,17 @@ public class ShooterConfig {
         hood.MotorOutput.PeakForwardDutyCycle = 1;
         hood.MotorOutput.PeakReverseDutyCycle = -1;
 
-        hood.CurrentLimits.StatorCurrentLimit = 120;  //Set 2-17-26 to 120
+        hood.CurrentLimits.StatorCurrentLimit = 180;  //Set 2-17-26 to 120
         hood.CurrentLimits.StatorCurrentLimitEnable = true;
         hood.CurrentLimits.SupplyCurrentLimit = 15;    //Set 2-17-26 to 20
         hood.CurrentLimits.SupplyCurrentLimitEnable = true;
         hood.CurrentLimits.SupplyCurrentLowerLimit = 15; //Set 2-17-26 to 20
-        hood.CurrentLimits.SupplyCurrentLowerTime = 1;
+        hood.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Config
-        hood.Slot0.kP = 30;  // An error of 1 rotation per second results in 2V output
+        hood.Slot0.kP = 10;  // An error of 1 rotation per second results in 2V output
         hood.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        hood.Slot0.kD = 1.0;  // A change of 1 rotation per second squared results in 0.01 volts output
+        hood.Slot0.kD = 0.1;  // A change of 1 rotation per second squared results in 0.01 volts output
         hood.Slot0.kS = 0;
         hood.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         hood.Slot0.kA = 0;
@@ -85,19 +85,19 @@ public class ShooterConfig {
         shooterLeft.MotorOutput.PeakForwardDutyCycle = 1;
         shooterLeft.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterLeft.CurrentLimits.StatorCurrentLimit = 150.0; //3-26 was 120
+        shooterLeft.CurrentLimits.StatorCurrentLimit = 180.0; //3-26 was 120
         shooterLeft.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterLeft.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLimit = 30;    //Set 2-17-26
         shooterLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
         shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
-        shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
+        shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
-        shooterLeft.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
+        shooterLeft.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
         shooterLeft.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         shooterLeft.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        shooterLeft.Slot0.kS = 5;
-        shooterLeft.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterLeft.Slot0.kS = 0;
+        shooterLeft.Slot0.kV = 0.145;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         shooterLeft.Slot0.kA = 0;
         shooterLeft.Slot0.kG = 0.0;
 
@@ -121,19 +121,19 @@ public class ShooterConfig {
         shooterLeft.MotorOutput.PeakForwardDutyCycle = 1;
         shooterLeft.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterLeft.CurrentLimits.StatorCurrentLimit = 150.0; //3-26 was 120
+        shooterLeft.CurrentLimits.StatorCurrentLimit = 180.0; //3-26 was 120
         shooterLeft.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterLeft.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
+        shooterLeft.CurrentLimits.SupplyCurrentLimit = 30;    //Set 2-17-26
         shooterLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
         shooterLeft.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
-        shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 1;
+        shooterLeft.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
-        shooterLeft.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
+        shooterLeft.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
         shooterLeft.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         shooterLeft.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        shooterLeft.Slot0.kS = 5;
-        shooterLeft.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterLeft.Slot0.kS = 0;
+        shooterLeft.Slot0.kV = 0.145;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         shooterLeft.Slot0.kA = 0;
         shooterLeft.Slot0.kG = 0.0;
 
@@ -156,19 +156,19 @@ public class ShooterConfig {
         shooterRight.MotorOutput.PeakForwardDutyCycle = 1;
         shooterRight.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterRight.CurrentLimits.StatorCurrentLimit = 150.0; // 3-26 was 120.
+        shooterRight.CurrentLimits.StatorCurrentLimit = 180.0; // 3-26 was 120.
         shooterRight.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterRight.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLimit = 30;    //Set 2-17-26
         shooterRight.CurrentLimits.SupplyCurrentLimitEnable = true;
         shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
-        shooterRight.CurrentLimits.SupplyCurrentLowerTime = 1;
+        shooterRight.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
-        shooterRight.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
+        shooterRight.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
         shooterRight.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         shooterRight.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        shooterRight.Slot0.kS = 5;
-        shooterRight.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterRight.Slot0.kS = 0;
+        shooterRight.Slot0.kV = 0.145;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         shooterRight.Slot0.kA = 0;
         shooterRight.Slot0.kG = 0;
         shooterRight.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -190,19 +190,19 @@ public class ShooterConfig {
         shooterRight.MotorOutput.PeakForwardDutyCycle = 1;
         shooterRight.MotorOutput.PeakReverseDutyCycle = -1;
 
-        shooterRight.CurrentLimits.StatorCurrentLimit = 150.0; // 3-26 was 120.
+        shooterRight.CurrentLimits.StatorCurrentLimit = 180.0; // 3-26 was 120.
         shooterRight.CurrentLimits.StatorCurrentLimitEnable = true;
-        shooterRight.CurrentLimits.SupplyCurrentLimit = 35;    //Set 2-17-26
+        shooterRight.CurrentLimits.SupplyCurrentLimit = 30;    //Set 2-17-26
         shooterRight.CurrentLimits.SupplyCurrentLimitEnable = true;
         shooterRight.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2-17-26
-        shooterRight.CurrentLimits.SupplyCurrentLowerTime = 1;
+        shooterRight.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
-        shooterRight.Slot0.kP = 13;  // An error of 1 rotation per second results in 2V output
+        shooterRight.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
         shooterRight.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         shooterRight.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
-        shooterRight.Slot0.kS = 5;
-        shooterRight.Slot0.kV = 0.59;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        shooterRight.Slot0.kS = 0;
+        shooterRight.Slot0.kV = 0.145;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         shooterRight.Slot0.kA = 0;
         shooterRight.Slot0.kG = 0;
         shooterRight.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;

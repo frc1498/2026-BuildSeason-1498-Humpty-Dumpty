@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.FrontKickup;
@@ -16,7 +15,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class Move {
 
     public Hopper hopper;
-    public Climber climber;
     public Intake intake;
     public Shooter shooter;
     public CommandSwerveDrivetrain drivetrain;
@@ -25,8 +23,7 @@ public class Move {
     public Floor floor;
 
 
-    public Move(Climber climber, Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor) {
-        this.climber = climber;
+    public Move(Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor) {
         this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
@@ -65,12 +62,16 @@ public class Move {
     //================================Hopper================================
     
     public Command hopperRetract() {  //Reviewed 2/21/26 should work now
+        /*
         return Commands.deadline(hopper.hopperRetract(),intake.intakeSuck()).
         andThen(intake.intakeStop());
+        */
+        return hopper.hopperRetract();
     }
 
     public Command hopperExtend() {  //Reviewed 2/21/26 should work now
-        return Commands.parallel(hopper.hopperExtend(),intake.intakeStop());
+        //return Commands.parallel(hopper.hopperExtend(),intake.intakeStop());
+        return hopper.hopperExtend();
     }
 
     public Command hopperMid() {
@@ -85,37 +86,16 @@ public class Move {
         return hopper.agitate().alongWith(intake.intakeSuck());
     }
 
-    //==================================Climb====================================
-    
-    public Command zeroClimb() {  
-        return climber.zeroRoutine();
-    }
-
-    public Command stopClimb() {
-        return Commands.sequence(
-            // climber.rotateClimbStop(),
-            climber.climbStop()
-        );
-    }
-
-    public Command climbExtend() {
-        return climber.climbExtend();  
-    }
-
-    public Command climbRetract() {
-        //return (climber.liftClimbRetract().withTimeout(3)).andThen(climber.liftClimbStop());
-        return climber.climbRetract();
-    }
-
     //==============================Shoot========================================
     public Command stopShoot() {
-        //return shooter.stopShoot();  
-        return Commands.sequence(floor.stopFloor(),Commands.parallel(rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
+        return shooter.stopShoot();  
+        //return Commands.sequence(floor.stopFloor(),Commands.parallel(rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
     }
 
     public Command startShootStatic() {
-       return Commands.sequence(shooter.hood30(), shooter.startShootStatic()).andThen
+       return  Commands.sequence(shooter.hood30(), shooter.startShootStatic()).andThen
             (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());
+            
     }
 
     public Command startAutoShoot() {
@@ -161,7 +141,11 @@ public class Move {
     }
 
     public Command stopIntake() {
-        return Commands.parallel(intake.intakeStop());
+        return intake.intakeStop();
+    }
+
+    public Command nakedIntake() {
+        return intake.intakeSuck();
     }
 
     //======================================================

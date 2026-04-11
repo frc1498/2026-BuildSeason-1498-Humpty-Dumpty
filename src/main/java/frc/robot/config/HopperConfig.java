@@ -42,12 +42,12 @@ public class HopperConfig {
         hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
-        hopper.Slot0.kP = 20;  // 8
+        hopper.Slot0.kP = 7;  // 8
         hopper.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         hopper.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         hopper.Slot0.kS = 0;
-        hopper.Slot0.kV = 0.1666666;  // .1666666
-        hopper.Slot0.kA = 0.05; //0.05
+        hopper.Slot0.kV = 0;  // .1666666
+        hopper.Slot0.kA = 0; //0.05
         hopper.Slot0.kG = 0;
 
         //Motion Magic

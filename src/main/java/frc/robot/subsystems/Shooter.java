@@ -387,7 +387,7 @@ public class Shooter extends SubsystemBase {
   public Command newStartShootFast() {return this.setShooter(80.0).until(this.isShooterAtVelocity).withName("startShootFast");}
 
   public Command startShootStatic(){
-    return run(() -> {this.setShooterVelocity(50);}).until(isShooterAtVelocity); //Was 70
+    return run(() -> {this.setShooterVelocity(15);}).until(isShooterAtVelocity); //Was 70
   }
 
   public Command startShootFast(){
@@ -445,7 +445,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(35);});
+    return runOnce(() -> {this.setHoodAngle(15);});
   }
 
   /**

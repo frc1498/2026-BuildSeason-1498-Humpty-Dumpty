@@ -10,11 +10,11 @@ package frc.robot.constants;
 public class FloorConstants {
 
   /* Speeds */
-  public static final double kFloorIntake = 0;
-  public static final double kFloorOuttake = 0;
+  public static final double kFloorIntake = 40.0;
+  public static final double kFloorOuttake = -20.0;
 
   /* Deadbands */
-  public static final double kFloorVelocityDeadband = 0;
+  public static final double kFloorVelocityDeadband = 5.0;
   
   /* Safeties */
   

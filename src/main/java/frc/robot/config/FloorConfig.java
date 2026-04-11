@@ -31,19 +31,19 @@ public class FloorConfig {
         floor.MotorOutput.PeakForwardDutyCycle = 1;
         floor.MotorOutput.PeakReverseDutyCycle = -1;
 
-        floor.CurrentLimits.StatorCurrentLimit = 120;  //Set 2-17-26 to 120
+        floor.CurrentLimits.StatorCurrentLimit = 180;  //Set 4-10
         floor.CurrentLimits.StatorCurrentLimitEnable = true;
-        floor.CurrentLimits.SupplyCurrentLimit = 15;    //Set 2-17-26 to 20
+        floor.CurrentLimits.SupplyCurrentLimit = 15;    //Set 4-10
         floor.CurrentLimits.SupplyCurrentLimitEnable = true;
-        floor.CurrentLimits.SupplyCurrentLowerLimit = 15; //Set 2-17-26 to 20
-        floor.CurrentLimits.SupplyCurrentLowerTime = 1;
+        floor.CurrentLimits.SupplyCurrentLowerLimit = 15; //Set 4-10
+        floor.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Config
-        floor.Slot0.kP = 30;  // An error of 1 rotation per second results in 2V output
+        floor.Slot0.kP = 1.2;  // An error of 1 rotation per second results in 2V output
         floor.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
-        floor.Slot0.kD = 1.0;  // A change of 1 rotation per second squared results in 0.01 volts output
+        floor.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         floor.Slot0.kS = 0;
-        floor.Slot0.kV = 0;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        floor.Slot0.kV = .127;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         floor.Slot0.kA = 0;
         floor.Slot0.kG = 0;
 

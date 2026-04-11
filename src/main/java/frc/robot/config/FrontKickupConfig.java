@@ -26,24 +26,24 @@ public class FrontKickupConfig {
      */
     public void configureKickupMotor(TalonFXConfiguration frontKickup) {
         //configure motor
-        frontKickup.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;  //Set 2-17-26
+        frontKickup.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;  //Set 2-17-26
         frontKickup.MotorOutput.NeutralMode = NeutralModeValue.Brake;  //Set 2-17-26
         frontKickup.MotorOutput.PeakForwardDutyCycle = 1;
         frontKickup.MotorOutput.PeakReverseDutyCycle = -1;
 
-        frontKickup.CurrentLimits.StatorCurrentLimit = 120.0;
+        frontKickup.CurrentLimits.StatorCurrentLimit = 180.0;
         frontKickup.CurrentLimits.StatorCurrentLimitEnable = true;
-        frontKickup.CurrentLimits.SupplyCurrentLimit = 20;    //Set 2-17-26
+        frontKickup.CurrentLimits.SupplyCurrentLimit = 15;    //Set 2-17-26
         frontKickup.CurrentLimits.SupplyCurrentLimitEnable = true;
-        frontKickup.CurrentLimits.SupplyCurrentLowerLimit = 20.0;  //Was 80.  Turned down for current consumption issues.
-        frontKickup.CurrentLimits.SupplyCurrentLowerTime = 1;
+        frontKickup.CurrentLimits.SupplyCurrentLowerLimit = 15.0;  //Was 80.  Turned down for current consumption issues.
+        frontKickup.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
-        frontKickup.Slot0.kP = 10;  // An error of 1 rotation per second results in 2V output
+        frontKickup.Slot0.kP = 1.2;  // An error of 1 rotation per second results in 2V output
         frontKickup.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         frontKickup.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         frontKickup.Slot0.kS = 8;
-        frontKickup.Slot0.kV = 0.15;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
+        frontKickup.Slot0.kV = 0.127;  // KV for a Kraken X60 is 490 rpm/V. 490/60 is 8.1667 rps/V.  The inverse is 0.122449 V/rps.
         frontKickup.Slot0.kA = 0;
         frontKickup.Slot0.kG = 0.0;
 
