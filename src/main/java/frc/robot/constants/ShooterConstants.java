@@ -73,36 +73,39 @@ public class ShooterConstants {
 
   static {
     // In degrees.
-    hoodAngleMap.put(1.7272, 10.0);
-    hoodAngleMap.put(2.1336, 16.0);
-    hoodAngleMap.put(2.8194, 20.5);
-    hoodAngleMap.put(3.3528, 26.0);
-    hoodAngleMap.put(3.7338, 31.0);
-    hoodAngleMap.put(4.6990, 35.0);
-    hoodAngleMap.put(5.4102, 37.0);
-    hoodAngleMap.put(7.62, 45.0); //For passing shot
-    hoodAngleMap.put(16.0, 45.0); //For passing shot
+    hoodAngleMap.put(1.5748, 5.0);
+    hoodAngleMap.put(2.1336, 15.0);
+    hoodAngleMap.put(2.3368, 17.0);
+    hoodAngleMap.put(3.1496, 25.0);
+    hoodAngleMap.put(3.9370, 28.0);
+    hoodAngleMap.put(4.9276, 33.0);
+    hoodAngleMap.put(5.2324, 33.0);
+    hoodAngleMap.put(5.5324, 34.5);
+    hoodAngleMap.put(6.2738, 37.0); //For passing shot
+    hoodAngleMap.put(9.4488, 37.0); //For passing shot
 
     // In RPS.
-    flywheelSpeedMap.put(1.7272, 40.0); // Was 31
-    flywheelSpeedMap.put(2.1336, 42.0); // Was 33
-    flywheelSpeedMap.put(2.8194, 45.5); // Was 36
-    flywheelSpeedMap.put(3.3528, 48.5); // Was 39.5
-    flywheelSpeedMap.put(3.7338, 49.0); // Was 42
-    flywheelSpeedMap.put(4.6990, 54.0); // Was 45.5
-    flywheelSpeedMap.put(5.4102, 59.0); // Was 50.5
-    flywheelSpeedMap.put(7.62, 75.0); //For passing shot
-    flywheelSpeedMap.put(16.0, 75.0); //For passing shot
+    flywheelSpeedMap.put(1.5748, 34.0);
+    flywheelSpeedMap.put(2.1336, 35.0);
+    flywheelSpeedMap.put(2.3368, 35.0);
+    flywheelSpeedMap.put(3.1496, 37.0);
+    flywheelSpeedMap.put(3.9370, 43.0);
+    flywheelSpeedMap.put(4.9276, 47.0);
+    flywheelSpeedMap.put(5.2324, 49.0);
+    flywheelSpeedMap.put(5.5324, 49.5);
+    flywheelSpeedMap.put(6.2738, 38.0); //For passing shot
+    flywheelSpeedMap.put(9.4488, 50.0); //For passing shot
 
     // In seconds.
-    timeOfFlightMap.put(1.7272, 1.018);
-    timeOfFlightMap.put(2.1336, 1.035);
-    timeOfFlightMap.put(2.8194, 1.033);
-    timeOfFlightMap.put(3.3528, 1.187);
-    timeOfFlightMap.put(3.7338, 1.202);
-    timeOfFlightMap.put(4.6990, 1.234);
-    timeOfFlightMap.put(5.4102, 1.233);
-    timeOfFlightMap.put(7.62, 1.735); //For passing shot
-    timeOfFlightMap.put(16.0, 1.735); //For passing shot
+    timeOfFlightMap.put(1.5748, 1.063);
+    timeOfFlightMap.put(2.1336, 1.063);
+    timeOfFlightMap.put(2.3368, 1.064);
+    timeOfFlightMap.put(3.1496, 1.067);
+    timeOfFlightMap.put(3.9370, 1.105);
+    timeOfFlightMap.put(4.9276, 1.267);
+    timeOfFlightMap.put(5.2324, 1.268);
+    timeOfFlightMap.put(5.5324, 1.275);
+    timeOfFlightMap.put(6.2738, 1.500); //For passing shot
+    timeOfFlightMap.put(9.4488, 1.700); //For passing shot
   }
 }
