@@ -32,6 +32,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
@@ -146,6 +147,8 @@ public class RobotContainer {
             )
         );
 
+        hopper.setDefaultCommand(hopper.hopperHold());
+
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
@@ -164,6 +167,7 @@ public class RobotContainer {
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
 
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
@@ -191,10 +195,14 @@ public class RobotContainer {
         //driver.leftBumper().
 
         //Driver left trigger: Shoot
+
+        drivetrain.aimAtHub.onTrue(move.setTargetToAllianceHub());
+        drivetrain.aimForPassLeft.onTrue(move.setTargetToAllianceCornerLeft());
+        drivetrain.aimForPassRight.onTrue(move.setTargetToAllianceCornerRight());
         
         driver.leftTrigger(0.1)
         .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(Commands.sequence(move.setTargetToAllianceHub(), this.setShootOnMoveSpeed(),
+        .whileTrue(Commands.sequence(/*move.setTargetToAllianceHub(),*/ this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(), 
                 drivetrain.applyRequest(() -> driveFacingAngle
                     .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
@@ -202,8 +210,8 @@ public class RobotContainer {
                     .withTargetDirection(shooter.robotTarget().get())
             ))))
         /*.andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))*/
-        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
-        
+        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend())))
+        .debounce(2.0, DebounceType.kRising).onTrue(move.agitateHopper());
 
         //Driver x: 
         //driver.x().

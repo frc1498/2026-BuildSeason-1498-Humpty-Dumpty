@@ -5,6 +5,8 @@
 //This subsystem manages the in and out motion of the hopper
 
 package frc.robot.subsystems;
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -178,11 +180,12 @@ public class Hopper extends SubsystemBase {
    * @param position - The position setpoint of the hopper motor, in rotations.
    * @return A command that runs the {@code goToPosition} method.
    */
-  private Command moveHopper(double position) {return run(() -> {this.goToPosition(position);}).withName("moveHopper");}
+  private Command moveHopper(DoubleSupplier position) {return run(() -> {this.goToPosition(position.getAsDouble());}).withName("moveHopper");}
 
-  public Command newHopperExtend() {return this.moveHopper(HopperConstants.kHopperExtend).until(isHopperExtended).withName("hopperExtend");}
-  public Command newHopperRetract() {return this.moveHopper(HopperConstants.kHopperRetract).until(isHopperRetracted).withName("hopperRetract");}
-  public Command newHopperMidpoint() {return this.moveHopper(HopperConstants.kHopperMidPosition).until(isHopperMidpoint).withName("hopperMidpoint");}
+  public Command newHopperExtend() {return this.moveHopper(() -> {return HopperConstants.kHopperExtend;}).until(isHopperExtended).withName("hopperExtend");}
+  public Command newHopperRetract() {return this.moveHopper(() -> {return HopperConstants.kHopperRetract;}).until(isHopperRetracted).withName("hopperRetract");}
+  public Command newHopperMidpoint() {return this.moveHopper(() -> {return HopperConstants.kHopperMidPosition;}).until(isHopperMidpoint).withName("hopperMidpoint");}
+  public Command hopperHold() {return this.moveHopper(() -> {return this.getHopperPosition();}).withName("hopperHold");}
 
   public Command hopperExtend() {
     return run(

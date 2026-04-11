@@ -83,6 +83,7 @@ public class ShooterConstants {
     hoodAngleMap.put(5.5324, 34.5);
     hoodAngleMap.put(6.2738, 37.0); //For passing shot
     hoodAngleMap.put(9.4488, 37.0); //For passing shot
+    hoodAngleMap.put(15.0, 55.0); //For passing shot
 
     // In RPS.
     flywheelSpeedMap.put(1.5748, 34.0);
@@ -95,6 +96,7 @@ public class ShooterConstants {
     flywheelSpeedMap.put(5.5324, 49.5);
     flywheelSpeedMap.put(6.2738, 38.0); //For passing shot
     flywheelSpeedMap.put(9.4488, 50.0); //For passing shot
+     flywheelSpeedMap.put(15.0, 75.0); //For passing shot
 
     // In seconds.
     timeOfFlightMap.put(1.5748, 1.063);
@@ -107,5 +109,6 @@ public class ShooterConstants {
     timeOfFlightMap.put(5.5324, 1.275);
     timeOfFlightMap.put(6.2738, 1.500); //For passing shot
     timeOfFlightMap.put(9.4488, 1.700); //For passing shot
+    timeOfFlightMap.put(15.0, 2.3); //For passing shot
   }
 }
