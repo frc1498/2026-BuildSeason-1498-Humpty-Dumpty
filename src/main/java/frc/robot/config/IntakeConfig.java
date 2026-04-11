@@ -38,9 +38,9 @@ public class IntakeConfig {
 
         intakeRight.CurrentLimits.StatorCurrentLimit = 180;  //Updated 2-24-26 - is correct
         intakeRight.CurrentLimits.StatorCurrentLimitEnable = true;
-        intakeRight.CurrentLimits.SupplyCurrentLimit = 30.0;    //Changed 3/26 to try to help current consumption. Was 60.
+        intakeRight.CurrentLimits.SupplyCurrentLimit = 40.0;    //Changed 3/26 to try to help current consumption. Was 60.
         intakeRight.CurrentLimits.SupplyCurrentLimitEnable = true;
-        intakeRight.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Changed 3/26 to try to help current consumption. Was 60.
+        intakeRight.CurrentLimits.SupplyCurrentLowerLimit = 40.0;  //Changed 3/26 to try to help current consumption. Was 60.
         intakeRight.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
@@ -72,9 +72,9 @@ public class IntakeConfig {
 
         intakeLeft.CurrentLimits.StatorCurrentLimit = 180;  //Updated 2-24-26 - is correct
         intakeLeft.CurrentLimits.StatorCurrentLimitEnable = true;
-        intakeLeft.CurrentLimits.SupplyCurrentLimit = 30;    //Updated 2-24-26 - is correct
+        intakeLeft.CurrentLimits.SupplyCurrentLimit = 40;    //Updated 2-24-26 - is correct
         intakeLeft.CurrentLimits.SupplyCurrentLimitEnable = true;
-        intakeLeft.CurrentLimits.SupplyCurrentLowerLimit = 30.0;
+        intakeLeft.CurrentLimits.SupplyCurrentLowerLimit = 40.0;
         intakeLeft.CurrentLimits.SupplyCurrentLowerTime =0;
 
         //Slot 0 Configs

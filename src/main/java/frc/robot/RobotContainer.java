@@ -190,31 +190,18 @@ public class RobotContainer {
         //Driver LBumper
         //driver.leftBumper().
 
-        //Driver left trigger: Shoot
-        /*
-        driver.leftTrigger(0.1)
-        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(Commands.sequence(move.setTargetToAllianceHub(), 
-            drivetrain.applyRequest(() -> driveFacingAngle
-                .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
-                .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
-                .withTargetDirection(shooter.robotTarget().get())
-            ))
-        .andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))
-        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
-        */
-
-        //Driver x: 
-        //driver.x().
+        //Driver b: Pass on Right
+        driver.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
+            Commands.sequence(move.startWhileMoveShoot())))
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
         driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
-
-        //Driver a: 
-        //driver.a().
-  
-        //driver.b Reverse Intake
-        driver.b().whileTrue(move.reverseIntake()).onFalse(move.stopIntake());
+ 
+        //driver.a()
+        driver.a().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
+            Commands.sequence(move.startWhileMoveShoot())))
+            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Driver y: Zero Hopper position
         driver.y().onTrue(move.setHopperZeroPosition());
@@ -236,21 +223,11 @@ public class RobotContainer {
         //operator.povRight()
 
         //Operator X button
-        /*
-        operator.x().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
-            Commands.sequence(move.startWhileMoveShoot())))
-            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
-        */
+        //operator.x().
 
-    
         //Operator B button
-        /*
-        operator.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
-            Commands.sequence(move.startWhileMoveShoot())))
-            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
-        */
-            
-
+        //opeator.b().
+        
         //Operator A button
         //operator.a()
 
@@ -303,6 +280,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopShoot", move.stopShoot());
         NamedCommands.registerCommand("extendHopper", move.hopperExtend());
         NamedCommands.registerCommand("retractHopperMid", move.hopperMid());
+        NamedCommands.registerCommand("retractHopper", move.hopperRetract());
+        
     }
 
     /**
