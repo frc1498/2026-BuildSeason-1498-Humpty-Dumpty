@@ -178,7 +178,7 @@ public class RobotContainer {
         driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
         
-        driver.leftTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
+        //driver.leftTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
 
         //Driver RTrigger: Intake
         driver.rightTrigger(0.1).whileTrue(move.intake()).onFalse(move.stopIntake());  //Changed to while
@@ -190,10 +190,23 @@ public class RobotContainer {
         //Driver LBumper
         //driver.leftBumper().
 
-        //Driver b: Pass on Right
-        driver.b().whileTrue(Commands.sequence(move.setTargetToAllianceCornerLeft(),
-            Commands.sequence(move.startWhileMoveShoot())))
-            .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+        //Driver left trigger: Shoot
+        
+        driver.leftTrigger(0.1)
+        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
+        .whileTrue(Commands.sequence(move.setTargetToAllianceHub(), this.setShootOnMoveSpeed(),
+            Commands.parallel(move.startWhileMoveShoot(), 
+                drivetrain.applyRequest(() -> driveFacingAngle
+                    .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
+                    .withTargetDirection(shooter.robotTarget().get())
+            ))))
+        /*.andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))*/
+        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot()).andThen(move.hopperExtend())));
+        
+
+        //Driver x: 
+        //driver.x().
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
         driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
