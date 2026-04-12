@@ -80,7 +80,7 @@ public class Move {
             frontKickup.setFrontKickupCoast(),
             rearKickup.setRearKickupCoast(),
             floor.setFloorCoast()
-        );
+        ).ignoringDisable(true).withName("coastAllMotors");
     }
 
     /**
@@ -95,7 +95,7 @@ public class Move {
             frontKickup.resetFrontKickupMotorNeutral(),
             rearKickup.resetRearKickupMotorNeutral(),
             floor.resetFloorMotorNeutral()           
-        );
+        ).ignoringDisable(true).withName("resetAllMotorsNeutral");
     }
 
     /* Drive */
@@ -152,7 +152,7 @@ public class Move {
 
     //==============================Shoot========================================
     public Command stopShoot() {
-        return Commands.sequence(floor.stopFloor(),Commands.parallel(rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
+        return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
     }
 
     public Command startShootStatic() {
