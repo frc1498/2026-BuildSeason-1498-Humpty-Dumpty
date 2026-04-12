@@ -30,7 +30,7 @@ public class HopperConfig {
 
         //configure motor
         hopper.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;  //Set 2-17-26
-        hopper.MotorOutput.NeutralMode = NeutralModeValue.Coast;  //Set 2-17-26
+        hopper.MotorOutput.NeutralMode = NeutralModeValue.Brake;  //Set 2-17-26
         hopper.MotorOutput.PeakForwardDutyCycle = 1;
         hopper.MotorOutput.PeakReverseDutyCycle = -1;
 
