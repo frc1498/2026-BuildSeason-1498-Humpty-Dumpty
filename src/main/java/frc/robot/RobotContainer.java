@@ -230,6 +230,9 @@ public class RobotContainer {
         //Driver y: Zero Hopper position
         driver.y().onTrue(move.setHopperZeroPosition());
 
+        //Driver b: Reverse intake
+        driver.b().onTrue(move.reverseIntake()).onFalse(Commands.parallel(move.stopIntake(),move.stopFloor()));
+
         //===================================================
         //==================Operator Commands================ 
         //===================================================
