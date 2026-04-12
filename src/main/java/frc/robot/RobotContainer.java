@@ -216,10 +216,10 @@ public class RobotContainer {
             ))))
         /*.andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))*/
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend())))
-        .debounce(1.0, DebounceType.kRising).onTrue(move.agitateHopper()).onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend())));
+        .debounce(1.0, DebounceType.kRising).onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend()))).and(driver.rightTrigger(0.1).negate()).onTrue(move.agitateHopper());
 
         //Driver x: 
-        //driver.x().
+        driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
         driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
