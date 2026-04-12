@@ -31,10 +31,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.events.EventTrigger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 
@@ -113,7 +115,7 @@ public class RobotContainer {
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
 
-    public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor);
+    public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, driveFacingAngle);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -214,7 +216,7 @@ public class RobotContainer {
             ))))
         /*.andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))*/
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend())))
-        .debounce(1.0, DebounceType.kRising).onTrue(move.agitateHopper());
+        .debounce(1.0, DebounceType.kRising).onTrue(move.agitateHopper()).onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend())));
 
         //Driver x: 
         //driver.x().
@@ -314,6 +316,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("retractHopperMid", move.hopperMid());
         NamedCommands.registerCommand("retractHopper", move.hopperRetract());
         NamedCommands.registerCommand("setTargetToHub", move.setTargetToAllianceHub());
+
+        new EventTrigger("dangerZone").onTrue(Commands.runOnce(() -> {PPHolonomicDriveController.overrideRotationFeedback(() -> {
+           Rotation2d helpfulFriend = drivetrain.getStateCopy().Pose.getRotation().rotateBy(MatchInfo.getInstance().getAlliance() == "Blue" ? Rotation2d.kZero : Rotation2d.k180deg);
+            return driveFacingAngle.HeadingController.calculate(helpfulFriend.getRadians(), shooter.robotTarget().get().getRadians(), Utils.getCurrentTimeSeconds());
+            });
+        }));
+            //.onFalse(Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();}));
     }
 
     /**

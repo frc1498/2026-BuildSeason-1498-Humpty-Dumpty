@@ -6,10 +6,12 @@
 
 package frc.robot.subsystems;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
 import frc.robot.config.IntakeConfig;
@@ -78,6 +80,19 @@ public class Intake extends SubsystemBase {
   }
 
   /* Private Methods */
+
+  /**
+   * Updates the neutral mode of the motor.  Useful for setting the motors to coast to make mechanisms easier to move by hand.
+   * @param mechanism - The TalonFX motor to apply the neutral mode to.
+   * @param mode - The new neutral mode of the motor.  Either Brake or Coast.
+   */
+  private void setMotorNeutralMode(TalonFX mechanism, NeutralModeValue mode) {
+    var motorConfig = new MotorOutputConfigs();
+    var currentConfigurator = mechanism.getConfigurator();
+    currentConfigurator.refresh(motorConfig);
+    motorConfig.NeutralMode = mode;
+    currentConfigurator.apply(motorConfig);
+  }
 
   /**
    * Sets the left and right intake motors to the intake velocity, in rotations per second.
@@ -161,6 +176,28 @@ public class Intake extends SubsystemBase {
 
   /* Public Methods */
   
+  /**
+   * Set the neutral mode of the intake motors to coast.
+   * @return A command that sets the neutral mode of the intake motors to coast.
+   */
+  public Command setIntakeCoast() {
+    return runOnce(() -> {
+      this.setMotorNeutralMode(this.intakeLeftMotor, NeutralModeValue.Coast);
+      this.setMotorNeutralMode(this.intakeRightMotor, NeutralModeValue.Coast);
+    });
+  }
+
+  /**
+   * Reset the neutral mode of the intake motors to the initial code configuration.
+   * @return A command that resets the neutral mode of the intake motors.
+   */
+  public Command resetIntakeMotorsNeutral() {
+    return runOnce(() -> {
+      this.setMotorNeutralMode(this.intakeLeftMotor, this.intakeConfig.intakeLeftMotorConfig.MotorOutput.NeutralMode);
+      this.setMotorNeutralMode(this.intakeRightMotor, this.intakeConfig.intakeRightMotorConfig.MotorOutput.NeutralMode);
+    });
+  }
+
   public Command intakeSuck() {return runOnce(() -> {this.intake();}).withName("intakeSuck");}
   public Command intakeSpit() {return run(() -> {this.outtake();}).withName("intakeSpit");}
   public Command intakeStop() {return runOnce(() -> {this.stop();}).withName("intakeStop");}

@@ -7,13 +7,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -94,6 +95,19 @@ public class RearKickup extends SubsystemBase {
   /* Private Methods */
 
   /* Rear Kickup Private Methods */
+
+  /**
+   * Updates the neutral mode of the motor.  Useful for setting the motors to coast to make mechanisms easier to move by hand.
+   * @param mechanism - The TalonFX motor to apply the neutral mode to.
+   * @param mode - The new neutral mode of the motor.  Either Brake or Coast.
+   */
+  private void setMotorNeutralMode(TalonFX mechanism, NeutralModeValue mode) {
+    var motorConfig = new MotorOutputConfigs();
+    var currentConfigurator = mechanism.getConfigurator();
+    currentConfigurator.refresh(motorConfig);
+    motorConfig.NeutralMode = mode;
+    currentConfigurator.apply(motorConfig);
+  }
 
   /**
    * Set the velocity of the rear kickup motor.
@@ -183,6 +197,22 @@ public class RearKickup extends SubsystemBase {
    */
   public Command stopRearKickup() {
     return runOnce(() -> {this.stopRearKick();});
+  }
+
+  /**
+   * Set the neutral mode of the rear kickup motor to coast.
+   * @return A command that sets the neutral mode of the rear kickup motor to coast.
+   */
+  public Command setRearKickupCoast() {
+    return runOnce(() -> {this.setMotorNeutralMode(this.rearKickupMotor, NeutralModeValue.Coast);});
+  }
+
+  /**
+   * Reset the neutral mode of the rear kickup motor to the initial code configuration.
+   * @return A command that resets the neutral mode of the rear kickup motor.
+   */
+  public Command resetRearKickupMotorNeutral() {
+    return runOnce(() -> {this.setMotorNeutralMode(this.rearKickupMotor, this.rearKickupConfig.rearKickupMotorConfig.MotorOutput.NeutralMode);});
   }
 
   /**

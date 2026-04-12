@@ -2,6 +2,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.Hopper;
@@ -10,6 +16,7 @@ import frc.robot.subsystems.FrontKickup;
 import frc.robot.subsystems.RearKickup;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
+import frc.robot.MatchInfo;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class Move {
@@ -21,9 +28,10 @@ public class Move {
     public RearKickup rearKickup;
     public FrontKickup frontKickup;
     public Floor floor;
+    public SwerveRequest.FieldCentricFacingAngle driveFacingAngle;
 
 
-    public Move(Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor) {
+    public Move(Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor, SwerveRequest.FieldCentricFacingAngle driveFacingAngle) {
         this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
@@ -31,6 +39,7 @@ public class Move {
         this.rearKickup = rearKickup;
         this.frontKickup = frontKickup;
         this.floor = floor;
+        this.driveFacingAngle = driveFacingAngle;
     }
 
     //==========================================================
@@ -58,6 +67,51 @@ public class Move {
     //==========================================================
     //=====================Commands=============================
     //==========================================================
+
+    /**
+     * Put all of the motors (except the drivetrain) into coast mode, so they can be easily moved into position.
+     * @return A command that sets all of the motors into coast mode.
+     */
+    public Command coastAllMotors() {
+        return Commands.parallel(
+            hopper.setHopperCoast(),
+            intake.setIntakeCoast(),
+            shooter.setShooterCoast(),
+            frontKickup.setFrontKickupCoast(),
+            rearKickup.setRearKickupCoast(),
+            floor.setFloorCoast()
+        );
+    }
+
+    /**
+     * Put all of the motors (except for the drivetrain) into their original neutral mode.
+     * @return A command that sets all of the motors into their original neutral mode.
+     */
+    public Command resetAllMotorsNeutral() {
+        return Commands. parallel(
+            hopper.resetHopperMotorNeutral(),
+            intake.resetIntakeMotorsNeutral(),
+            shooter.resetShooterMotorsNeutral(),
+            frontKickup.resetFrontKickupMotorNeutral(),
+            rearKickup.resetRearKickupMotorNeutral(),
+            floor.resetFloorMotorNeutral()           
+        );
+    }
+
+    /* Drive */
+    public Command pathplannerAim() {
+        return Commands.runOnce(
+            () -> {PPHolonomicDriveController.overrideRotationFeedback(
+                () -> {
+                    Rotation2d perspectiveCorrection = drivetrain.getStateCopy().Pose.getRotation().rotateBy(MatchInfo.getInstance().getAlliancePerspective());
+                    return driveFacingAngle.HeadingController.calculate(perspectiveCorrection.getRadians(), shooter.robotTarget().get().getRadians(), Utils.getCurrentTimeSeconds());
+                });}
+        );
+    }
+
+    public Command releasePathplannerAim() {
+        return Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();});
+    }
 
     //==============================Hood====================================
 

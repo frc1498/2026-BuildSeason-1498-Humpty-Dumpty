@@ -10,12 +10,14 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -181,6 +183,20 @@ public class Shooter extends SubsystemBase {
   }
 
   /* Private Methods */
+
+  /**
+   * Updates the neutral mode of the motor.  Useful for setting the motors to coast to make mechanisms easier to move by hand.
+   * @param mechanism - The TalonFX motor to apply the neutral mode to.
+   * @param mode - The new neutral mode of the motor.  Either Brake or Coast.
+   */
+  private void setMotorNeutralMode(TalonFX mechanism, NeutralModeValue mode) {
+    var motorConfig = new MotorOutputConfigs();
+    var currentConfigurator = mechanism.getConfigurator();
+    currentConfigurator.refresh(motorConfig);
+    motorConfig.NeutralMode = mode;
+    currentConfigurator.apply(motorConfig);
+  }
+
   /* Hood Private Methods */
 
   /**
@@ -372,6 +388,34 @@ public class Shooter extends SubsystemBase {
   private boolean isHoodAtPosition() {
     return ((this.getHoodAngle() < (this.desiredHoodAngle + ShooterConstants.kHoodPositionDeadband)) 
     && (this.getHoodAngle() > (this.desiredHoodAngle - ShooterConstants.kHoodPositionDeadband)));
+  }
+
+  /**
+   * Set the neutral mode of the shooter motors to coast.
+   * @return A command that sets the neutral mode of the shooter motors to coast.
+   */
+  public Command setShooterCoast() {
+    return runOnce(() -> {
+      this.setMotorNeutralMode(this.shooterTopLeftMotor, NeutralModeValue.Coast);
+      this.setMotorNeutralMode(this.shooterBottomLeftMotor, NeutralModeValue.Coast);
+      this.setMotorNeutralMode(this.shooterTopRightMotor, NeutralModeValue.Coast);
+      this.setMotorNeutralMode(this.shooterBottomRightMotor, NeutralModeValue.Coast);
+      this.setMotorNeutralMode(this.hoodMotor, NeutralModeValue.Coast);
+    });
+  }
+
+  /**
+   * Reset the neutral mode of the shooter motors to the initial code configuration.
+   * @return A command that resets the neutral mode of the shooter motors.
+   */
+  public Command resetShooterMotorsNeutral() {
+    return runOnce(() -> {
+      this.setMotorNeutralMode(this.shooterTopLeftMotor, this.shooterConfig.shooterTopLeftMotorConfig.MotorOutput.NeutralMode);
+      this.setMotorNeutralMode(this.shooterBottomLeftMotor, this.shooterConfig.shooterBottomLeftMotorConfig.MotorOutput.NeutralMode);
+      this.setMotorNeutralMode(this.shooterTopRightMotor, this.shooterConfig.shooterTopRightMotorConfig.MotorOutput.NeutralMode);
+      this.setMotorNeutralMode(this.shooterBottomRightMotor, this.shooterConfig.shooterBottomRightMotorConfig.MotorOutput.NeutralMode);
+      this.setMotorNeutralMode(this.hoodMotor, this.shooterConfig.hoodMotorConfig.MotorOutput.NeutralMode);
+    });
   }
 
   /* Public Shoot Commands */

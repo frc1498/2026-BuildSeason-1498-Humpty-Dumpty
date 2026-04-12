@@ -5,9 +5,21 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "setTargetToHub"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Red - EXPERIMENTAL"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 20.0
           }
         }
       ]

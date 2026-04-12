@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class MatchInfo {
@@ -157,5 +158,13 @@ public class MatchInfo {
         }
 
         return this.alliance;
+    }
+
+    /**
+     * Return the alliance perspective offset used for the drivetrain, based on our current alliance.
+     * @return A Rotation2d constant of either 0 or 180 degrees, representing the forward direction of the robot based on the current alliance.
+     */
+    public Rotation2d getAlliancePerspective() {
+        return this.alliance == "Blue" ? Rotation2d.kZero : Rotation2d.k180deg;
     }
 }
