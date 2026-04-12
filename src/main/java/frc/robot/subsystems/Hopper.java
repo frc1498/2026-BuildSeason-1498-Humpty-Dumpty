@@ -8,11 +8,13 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -81,6 +83,19 @@ public class Hopper extends SubsystemBase {
   }
 
   /* Private Methods */
+
+  /**
+   * Updates the neutral mode of the motor.  Useful for setting the motors to coast to make mechanisms easier to move by hand.
+   * @param mechanism - The TalonFX motor to apply the neutral mode to.
+   * @param mode - The new neutral mode of the motor.  Either Brake or Coast.
+   */
+  private void setMotorNeutralMode(TalonFX mechanism, NeutralModeValue mode) {
+    var motorConfig = new MotorOutputConfigs();
+    var currentConfigurator = mechanism.getConfigurator();
+    currentConfigurator.refresh(motorConfig);
+    motorConfig.NeutralMode = mode;
+    currentConfigurator.apply(motorConfig);
+  }
 
   /**
    * Set the motor to the desired position.
@@ -174,6 +189,22 @@ public class Hopper extends SubsystemBase {
   }
 
   /* Public Methods */
+
+  /**
+   * Set the neutral mode of the hopper motor to coast.
+   * @return A command that sets the neutral mode of the hopper motor to coast.
+   */
+  public Command setHopperCoast() {
+    return runOnce(() -> {this.setMotorNeutralMode(this.hopperMotor, NeutralModeValue.Coast);});
+  }
+
+  /**
+   * Reset the neutral mode of the hopper motor to the initial code configuration.
+   * @return A command that resets the neutral mode of the hopper motor.
+   */
+  public Command resetHopperMotorNeutral() {
+    return runOnce(() -> {this.setMotorNeutralMode(this.hopperMotor, this.hopperConfig.hopperConfig.MotorOutput.NeutralMode);});
+  }
 
   /**
    * A factory command that sets the position of the hopper motor.
