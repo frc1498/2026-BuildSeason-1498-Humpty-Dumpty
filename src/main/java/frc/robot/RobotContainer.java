@@ -30,6 +30,8 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -123,8 +125,7 @@ public class RobotContainer {
 
         // Configure the trigger bindings
         registerAutoCommands();
-        configureBindings();
-        
+        configureBindings();        
     }
 
     /**
@@ -283,6 +284,13 @@ public class RobotContainer {
         */
             
         /* Developer Controls */
+        /* DANGER ZONE */
+
+        operator.a().onTrue(Commands.runOnce(() -> {PPHolonomicDriveController.overrideRotationFeedback(() -> {
+            return driveFacingAngle.HeadingController.calculate(drivetrain.getStateCopy().Pose.getRotation().getDegrees(), shooter.robotTarget().get().getDegrees(), Utils.getCurrentTimeSeconds());
+            });
+        }))
+            .onFalse(Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();}));
 
     }
 
