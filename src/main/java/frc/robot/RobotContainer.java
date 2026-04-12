@@ -286,12 +286,13 @@ public class RobotContainer {
         /* Developer Controls */
         /* DANGER ZONE */
 
-        operator.a().onTrue(Commands.runOnce(() -> {PPHolonomicDriveController.overrideRotationFeedback(() -> {
+        /*
+        RobotModeTriggers.autonomous().onTrue(Commands.runOnce(() -> {PPHolonomicDriveController.overrideRotationFeedback(() -> {
             return driveFacingAngle.HeadingController.calculate(drivetrain.getStateCopy().Pose.getRotation().getDegrees(), shooter.robotTarget().get().getDegrees(), Utils.getCurrentTimeSeconds());
             });
         }))
             .onFalse(Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();}));
-
+        */
     }
 
     /**
