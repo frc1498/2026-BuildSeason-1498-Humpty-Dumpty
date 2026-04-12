@@ -30,6 +30,8 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -123,8 +125,7 @@ public class RobotContainer {
 
         // Configure the trigger bindings
         registerAutoCommands();
-        configureBindings();
-        
+        configureBindings();        
     }
 
     /**
@@ -197,9 +198,10 @@ public class RobotContainer {
 
         //Driver left trigger: Shoot
 
-        drivetrain.aimAtHub.onTrue(move.setTargetToAllianceHub());
-        drivetrain.aimForPassLeft.onTrue(move.setTargetToAllianceCornerLeft());
-        drivetrain.aimForPassRight.onTrue(move.setTargetToAllianceCornerRight());
+        // These should only be called automatically in teleop.  In autonomous, these should be registered and set by the auton routine.
+        drivetrain.aimAtHub.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
+        drivetrain.aimForPassLeft.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerLeft());
+        drivetrain.aimForPassRight.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerRight());
         
         driver.leftTrigger(0.1)
         .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
@@ -282,7 +284,15 @@ public class RobotContainer {
         */
             
         /* Developer Controls */
+        /* DANGER ZONE */
 
+        /*
+        RobotModeTriggers.autonomous().onTrue(Commands.runOnce(() -> {PPHolonomicDriveController.overrideRotationFeedback(() -> {
+            return driveFacingAngle.HeadingController.calculate(drivetrain.getStateCopy().Pose.getRotation().getDegrees(), shooter.robotTarget().get().getDegrees(), Utils.getCurrentTimeSeconds());
+            });
+        }))
+            .onFalse(Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();}));
+        */
     }
 
     /**
@@ -295,7 +305,7 @@ public class RobotContainer {
 
     }
 
-    public void registerAutoCommands(){
+    public void registerAutoCommands() {
         NamedCommands.registerCommand("intake", move.intake());
         NamedCommands.registerCommand("stopIntake", move.stopIntake());
         NamedCommands.registerCommand("shoot", move.startWhileMoveShoot());
@@ -303,7 +313,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("extendHopper", move.hopperExtend());
         NamedCommands.registerCommand("retractHopperMid", move.hopperMid());
         NamedCommands.registerCommand("retractHopper", move.hopperRetract());
-        
+        NamedCommands.registerCommand("setTargetToHub", move.setTargetToAllianceHub());
     }
 
     /**
