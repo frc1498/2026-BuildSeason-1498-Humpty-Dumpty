@@ -110,7 +110,6 @@ public class Move {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood())
             .until(shooter.isShooterAtVelocity)
             .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor()));
-            // Commands.parallel(spindexer.forwardSpindexer(), hopper.agitate().alongWith(intake.intakeSuck())));
     }
 
     public Command startWhileMoveShoot() {   
