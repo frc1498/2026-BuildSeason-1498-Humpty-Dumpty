@@ -202,7 +202,7 @@ public class Floor extends SubsystemBase {
 
   /* Public Floor Commands */
   public Command stopFloor() {
-    return run(() -> {this.stopFloorMotor();}).until(isFloorAtVelocity).withName("stopFloor");
+    return runOnce(() -> {this.stopFloorMotor();}).withName("stopFloor");
   }
 
   /**
