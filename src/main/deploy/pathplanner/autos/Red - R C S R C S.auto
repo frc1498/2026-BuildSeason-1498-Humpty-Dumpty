@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Red - R C Shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Red - R C Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "setTargetToHub"
+                }
+              }
+            ]
           }
         },
         {
@@ -42,7 +55,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 0.75
                 }
               },
               {
@@ -52,6 +65,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopShoot"
           }
         },
         {
@@ -67,7 +86,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 1.0
                 }
               },
               {
@@ -92,7 +111,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 0.75
                 }
               },
               {
@@ -105,9 +124,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Red - R3"
+            "name": "stopShoot"
           }
         }
       ]

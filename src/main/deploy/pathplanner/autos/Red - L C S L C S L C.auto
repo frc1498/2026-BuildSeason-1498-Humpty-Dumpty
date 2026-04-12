@@ -55,6 +55,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "stopShoot"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Red - L2 C Shoot"
@@ -105,9 +111,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Red - L3 C"
+            "name": "stopShoot"
           }
         }
       ]
