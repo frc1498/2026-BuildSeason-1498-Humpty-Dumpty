@@ -122,8 +122,9 @@ public class RobotContainer {
         driveFacingAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
         // Configure the trigger bindings
-        configureBindings();
         registerAutoCommands();
+        configureBindings();
+        
     }
 
     /**
@@ -147,7 +148,7 @@ public class RobotContainer {
             )
         );
 
-        hopper.setDefaultCommand(hopper.hopperHold());
+        //hopper.setDefaultCommand(hopper.hopperHold());
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -167,7 +168,7 @@ public class RobotContainer {
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
+        // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
 
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
@@ -185,7 +186,7 @@ public class RobotContainer {
         //driver.leftTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
 
         //Driver RTrigger: Intake
-        driver.rightTrigger(0.1).whileTrue(move.intake()).onFalse(move.stopIntake());  //Changed to while
+        driver.rightTrigger(0.1).onTrue(move.intake()).onFalse(move.stopIntake());
         //driver.rightTrigger(0.1).whileTrue(move.hood30()).onFalse(move.hood0());  //Changed to while
 
         //Driver RBumper hopperRetract
@@ -211,7 +212,7 @@ public class RobotContainer {
             ))))
         /*.andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))*/
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()).andThen(move.hopperExtend())))
-        .debounce(2.0, DebounceType.kRising).onTrue(move.agitateHopper());
+        .debounce(1.0, DebounceType.kRising).onTrue(move.agitateHopper());
 
         //Driver x: 
         //driver.x().
