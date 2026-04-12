@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 9.257349153282489,
-        "y": 0.8511892206053495
+        "y": 0.8511892206053491
       },
       "nextControl": {
         "x": 8.756183319424164,
@@ -98,13 +98,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "hopperExtend",
+      "name": "",
       "waypointRelativePos": 0.35061464457509217,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "hopperExtend"
+          "name": null
         }
       }
     },

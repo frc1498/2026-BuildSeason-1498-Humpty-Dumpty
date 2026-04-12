@@ -93,24 +93,24 @@
       }
     },
     {
-      "name": "hopperRetract",
+      "name": "",
       "waypointRelativePos": 0.16385542168674364,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "hopperExtend"
+          "name": null
         }
       }
     },
     {
-      "name": "hopperExtend",
+      "name": "",
       "waypointRelativePos": 1.200000000000008,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "hopperExtend"
+          "name": null
         }
       }
     },

@@ -78,13 +78,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "hopperRetract",
+      "name": "",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "hopperRetract"
+          "name": null
         }
       }
     },
@@ -100,13 +100,13 @@
       }
     },
     {
-      "name": "hopperExtend",
+      "name": "",
       "waypointRelativePos": 1.673971138428659,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "hopperExtend"
+          "name": null
         }
       }
     },

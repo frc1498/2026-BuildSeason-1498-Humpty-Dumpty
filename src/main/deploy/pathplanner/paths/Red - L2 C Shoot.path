@@ -37,7 +37,7 @@
       },
       "prevControl": {
         "x": 9.257349153282489,
-        "y": 0.8511892206053493
+        "y": 0.851189220605349
       },
       "nextControl": {
         "x": 8.756183319424164,
@@ -133,13 +133,13 @@
       }
     },
     {
-      "name": "hopperExtend",
+      "name": "",
       "waypointRelativePos": 0.7,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "hopperExtend"
+          "name": null
         }
       }
     },
