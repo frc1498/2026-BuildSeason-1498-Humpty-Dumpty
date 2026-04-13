@@ -35,8 +35,8 @@ public class FrontKickupConfig {
         frontKickup.CurrentLimits.StatorCurrentLimitEnable = true;
         frontKickup.CurrentLimits.SupplyCurrentLimit = 15;    //Set 2-17-26
         frontKickup.CurrentLimits.SupplyCurrentLimitEnable = true;
-        frontKickup.CurrentLimits.SupplyCurrentLowerLimit = 15.0;  //Was 80.  Turned down for current consumption issues.
-        frontKickup.CurrentLimits.SupplyCurrentLowerTime = 0;
+        frontKickup.CurrentLimits.SupplyCurrentLowerLimit = 60.0;  //Was 80.  Turned down for current consumption issues.
+        frontKickup.CurrentLimits.SupplyCurrentLowerTime = 2;
 
         //Slot 0 Configs
         frontKickup.Slot0.kP = 1.2;  // An error of 1 rotation per second results in 2V output

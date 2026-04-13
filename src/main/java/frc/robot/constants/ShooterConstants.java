@@ -19,7 +19,7 @@ public class ShooterConstants {
 
   /* Deadbands */
   public static final double kHoodPositionDeadband = 0.5;  //In degrees - tentative
-  public static final double kShooterVelocityDeadband = 1;  //Changed from 2 to improve initial shot accuracy
+  public static final double kShooterVelocityDeadband = 0;  //Changed from 2 to improve initial shot accuracy
 
   /*===============Safeties==================*/
   public static final double kHoodSafeExtend = 55.0;  //In degrees.  May be able to go slightly higher

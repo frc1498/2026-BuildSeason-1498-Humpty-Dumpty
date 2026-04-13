@@ -126,11 +126,8 @@ public class Move {
     //================================Hopper================================
     
     public Command hopperRetract() {  //Reviewed 2/21/26 should work now
-        /*
         return Commands.deadline(hopper.hopperRetract(),intake.intakeSuck()).
         andThen(intake.intakeStop());
-        */
-        return hopper.hopperRetract();
     }
 
     public Command hopperExtend() {  //Reviewed 2/21/26 should work now
@@ -194,7 +191,7 @@ public class Move {
 
     //==============================Intake=======================================
     public Command reverseIntake() { 
-        return intake.intakeSpit();
+        return Commands.sequence(hopper.hopperExtend(),Commands.parallel(intake.intakeSpit(),floor.reverseFloor()));
     }
 
     public Command intake() {
@@ -207,6 +204,11 @@ public class Move {
 
     public Command nakedIntake() {
         return intake.intakeSuck();
+    }
+
+    //==============================Floor======================================
+    public Command stopFloor() {
+        return floor.stopFloor();
     }
 
     //======================================================
