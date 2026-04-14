@@ -59,6 +59,8 @@ public class Hopper extends SubsystemBase {
 
     this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperConfig);
 
+    this.dutyCycleOut = new DutyCycleOut(0);
+    
     this.hopperMotor.setPosition(0);
 
     SmartDashboard.putData("Hopper", this);

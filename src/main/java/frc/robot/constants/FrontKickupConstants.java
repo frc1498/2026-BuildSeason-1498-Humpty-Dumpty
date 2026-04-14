@@ -10,11 +10,11 @@ package frc.robot.constants;
 public class FrontKickupConstants {
 
   /* Speeds */
-  public static final double kFrontKickupIntake = 70.0;  
+  public static final double kFrontKickupIntake = 100.0;  
   public static final double kFrontKickupOuttake = -12.0;  
 
   /* Deadbands */
-  public static final double KFrontKickupDeadband = 5.0;
+  public static final double KFrontKickupDeadband = 20.0;
 
   /* Safeties */
   public static final double kFrontKickupMaxSpeed = 100.0;

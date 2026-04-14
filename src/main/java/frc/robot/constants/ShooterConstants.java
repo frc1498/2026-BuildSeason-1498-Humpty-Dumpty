@@ -44,8 +44,10 @@ public class ShooterConstants {
   public static final double kShooterFlywheelGearing = 1.3; // 1 output : 1 input
   public static final double kHoodGearing = 5.0;
 
-  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0.0));
-  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
+  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.228, Rotation2d.fromDegrees(0.0));
+  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.228, Rotation2d.fromDegrees(180.0));
+
+  //y - 4.028, adjusted for pi's field to 4.228
 
   //Passing Constants
   public static final Pose2d kRedLeft = new Pose2d(14.3, 2.5, Rotation2d.fromDegrees(0));
@@ -83,7 +85,7 @@ public class ShooterConstants {
     hoodAngleMap.put(5.5324, 34.5);
     hoodAngleMap.put(6.2738, 37.0); //For passing shot
     hoodAngleMap.put(9.4488, 37.0); //For passing shot
-    hoodAngleMap.put(12.0, 55.0);
+    hoodAngleMap.put(12.0, 55.0);  //For passing shot
     hoodAngleMap.put(15.0, 55.0); //For passing shot
 
     // In RPS.
@@ -91,14 +93,14 @@ public class ShooterConstants {
     flywheelSpeedMap.put(2.1336, 35.0);
     flywheelSpeedMap.put(2.3368, 35.0);
     flywheelSpeedMap.put(3.1496, 37.0);
-    flywheelSpeedMap.put(3.9370, 43.0);
+    flywheelSpeedMap.put(3.9370, 42.0);
     flywheelSpeedMap.put(4.9276, 47.0);
     flywheelSpeedMap.put(5.2324, 49.0);
     flywheelSpeedMap.put(5.5324, 49.5);
     flywheelSpeedMap.put(6.2738, 38.0); //For passing shot
     flywheelSpeedMap.put(9.4488, 50.0); //For passing shot
-    flywheelSpeedMap.put(12.0, 75.0);
-    flywheelSpeedMap.put(15.0, 75.0); //For passing shot
+    flywheelSpeedMap.put(12.0, 75.0); //For passing shot
+    flywheelSpeedMap.put(15.0, 85.0); //For passing shot
 
     // In seconds.
     timeOfFlightMap.put(1.5748, 1.063);
@@ -111,7 +113,7 @@ public class ShooterConstants {
     timeOfFlightMap.put(5.5324, 1.275);
     timeOfFlightMap.put(6.2738, 1.500); //For passing shot
     timeOfFlightMap.put(9.4488, 1.700); //For passing shot
-    timeOfFlightMap.put(12.0, 1.861);
+    timeOfFlightMap.put(12.0, 1.861);  //For passing shot
     timeOfFlightMap.put(15.0, 2.3); //For passing shot
   }
 }

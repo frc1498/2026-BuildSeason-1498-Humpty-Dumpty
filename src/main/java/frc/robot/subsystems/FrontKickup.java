@@ -106,7 +106,9 @@ public class FrontKickup extends SubsystemBase {
 
     // Use this constant to enable or disable motor output for debugging.
     if (MotorEnableConstants.kFrontKickupMotorEnabled) {
-      this.frontKickupMotor.setControl(this.frontKickupMotorMode.withVelocity(this.desiredFrontKickupVelocity));
+      //this.frontKickupMotor.setControl(this.frontKickupMotorMode.withVelocity(this.desiredFrontKickupVelocity));
+        this.frontKickupMotor.setControl(this.frontKickupMotorMode.withVelocity(this.desiredFrontKickupVelocity));
+      //this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0.25));
     }
   }
 

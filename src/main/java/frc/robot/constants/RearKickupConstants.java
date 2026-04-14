@@ -9,11 +9,11 @@ package frc.robot.constants;
  */
 public class RearKickupConstants {
   /*===============Speeds===================*/
-  public static final double kRearKickupIntake = 70.0;  
+  public static final double kRearKickupIntake = 100.0; 
   public static final double kRearKickupOuttake = -12.0;  
 
   /* Deadbands */
-  public static final double KRearKickupDeadband = 5.0;
+  public static final double KRearKickupDeadband = 20.0;
 
   /* Safeties */
   public static final double kRearKickupMaxSpeed = 100.0;
