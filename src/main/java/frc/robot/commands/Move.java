@@ -147,6 +147,10 @@ public class Move {
         return hopper.agitate().alongWith(intake.intakeSuck());
     }
 
+    public Command zeroHopper() {
+        return hopper.zeroHopper();
+    }
+
     //==============================Shoot========================================
     public Command stopShoot() {
         return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       

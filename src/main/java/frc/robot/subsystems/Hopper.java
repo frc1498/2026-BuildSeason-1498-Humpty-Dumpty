@@ -240,23 +240,20 @@ public class Hopper extends SubsystemBase {
    * A zeroing routine for the hopper.  This should drive the motor down until the supply current limit is tripped (or stalled).
    * @return A command the zeros the hopper.
    */
-  public Command zeroRoutine() {  //This routine goes maximum out and sets that position
-    return run(
+  public Command zeroHopper() {  //This routine goes maximum out and sets that position
+    return runOnce(
       () -> {
-        this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperZeroConfig);
         this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0.25));
       }
-    ).until(this.isHopperCurrentLimitTripped)
+    ).andThen(Commands.waitSeconds(1.0))
     .andThen(
       runOnce(
         () -> {
           this.hopperMotor.setControl(this.dutyCycleOut.withOutput(0));
-          this.hopperMotor.setPosition(0);
-          if (this.hopperMotor.getStatorCurrent().getValueAsDouble() > 20) {
-            this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperConfig);
-          }
+          this.hopperMotor.setPosition(10);          
         }
       )
+    .andThen(hopperExtend())
     ).withName("zeroRoutine");
   }
 

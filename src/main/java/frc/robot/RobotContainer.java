@@ -230,7 +230,7 @@ public class RobotContainer {
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
 
         //Driver y: Zero Hopper position
-        driver.y().onTrue(move.setHopperZeroPosition());
+        driver.y().onTrue(move.zeroHopper());
 
         //Driver b: Reverse intake
         driver.b().onTrue(move.reverseIntake()).onFalse(Commands.parallel(move.stopIntake(),move.stopFloor()));
