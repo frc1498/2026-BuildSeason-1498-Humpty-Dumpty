@@ -205,18 +205,38 @@ public class RobotContainer {
         drivetrain.aimForPassLeft.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerLeft());
         drivetrain.aimForPassRight.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerRight());
         
+
+
+        //Driver LeftTrigger:Shoot
+   driver.leftTrigger(0.1)
+        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
+        .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
+            Commands.parallel(move.startWhileMoveShoot(),
+                drivetrain.applyRequest(() -> driveFacingAngle
+                    .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
+                    .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
+                    move.slowHopperRetract())
+            )))
+        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), 
+        Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()), move.hopperExtend()));
+
+
+ /*       
         driver.leftTrigger(0.1)
         .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(Commands.sequence(/*move.setTargetToAllianceHub(),*/ this.setShootOnMoveSpeed(),
+        .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(), 
                 drivetrain.applyRequest(() -> driveFacingAngle
                     .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                     .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                     .withTargetDirection(shooter.robotTarget().get())
             ))))
-        /*.andThen(Commands.sequence(setShootOnMoveSpeed(), move.startWhileMoveShoot())))*/
         .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()), move.hopperExtend()))
         .debounce(1.0, DebounceType.kRising).and(driver.rightTrigger(0.1).negate()).onTrue(move.agitateHopper());
+   */     
+
+
 
         //Driver x: 
         driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
@@ -225,9 +245,14 @@ public class RobotContainer {
         driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
  
         //driver.a()
+        driver.a().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())))
+        .onFalse(Commands.sequence(move.stopShoot(),move.hopperExtend()));
+
+        /*
         driver.a().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
             Commands.sequence(move.startWhileMoveShoot())))
             .onFalse(Commands.sequence(setNormalMoveSpeed(),move.setTargetToAllianceHub(),move.stopShoot()));
+        */
 
         //Driver y: Zero Hopper position
         driver.y().onTrue(move.zeroHopper());

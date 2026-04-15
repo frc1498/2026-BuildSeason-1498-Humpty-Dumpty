@@ -36,23 +36,23 @@ public class HopperConfig {
 
         hopper.CurrentLimits.StatorCurrentLimit = 120.0;  //70
         hopper.CurrentLimits.StatorCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLimit = 20.0;    //Set 2/25/26
+        hopper.CurrentLimits.SupplyCurrentLimit = 30.0;    //Set 2/25/26
         hopper.CurrentLimits.SupplyCurrentLimitEnable = true;
-        hopper.CurrentLimits.SupplyCurrentLowerLimit = 15.0;  //Set 2/25/26
-        hopper.CurrentLimits.SupplyCurrentLowerTime = 1;
+        hopper.CurrentLimits.SupplyCurrentLowerLimit = 30.0;  //Set 2/25/26
+        hopper.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Configs
-        hopper.Slot0.kP = 9;  // 8
+        hopper.Slot0.kP = 40;  // 8
         hopper.Slot0.kI = 0;  // An error of 1 rotation per second increases output by 0.5V every second
         hopper.Slot0.kD = 0;  // A change of 1 rotation per second squared results in 0.01 volts output
         hopper.Slot0.kS = 0;
-        hopper.Slot0.kV = 0;  // .1666666
-        hopper.Slot0.kA = 0; //0.05
+        hopper.Slot0.kV = 0.15;  // .1666666
+        hopper.Slot0.kA = 0.02; //0.05
         hopper.Slot0.kG = 0;
 
         //Motion Magic
-        hopper.MotionMagic.MotionMagicAcceleration = 80;
-        hopper.MotionMagic.MotionMagicCruiseVelocity = 25;
+        hopper.MotionMagic.MotionMagicAcceleration = 150;
+        hopper.MotionMagic.MotionMagicCruiseVelocity = 30;
 
         hopper.Voltage.PeakForwardVoltage = 11;
         hopper.Voltage.PeakReverseVoltage = -11;

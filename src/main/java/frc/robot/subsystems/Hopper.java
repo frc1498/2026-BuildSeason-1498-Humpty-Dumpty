@@ -11,11 +11,11 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import dev.doglog.DogLog;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,9 +34,11 @@ public class Hopper extends SubsystemBase {
   /* Variables */
   public TalonFX hopperMotor;  //Motor type definition
   
-  public PositionVoltage hopperMotorMode; //Motor control type definition
   public DutyCycleOut dutyCycleOut;
+  public MotionMagicVoltage hopperMotorMode; //Motor control type definition
   private double desiredPosition;
+
+  private final DynamicMotionMagicVoltage dynamicMotionMagicVoltage;
 
   private HopperConfig hopperConfig; //Create an object of type HopperConfig
   public boolean isHopperVelocityLimitLatched = false;
@@ -55,7 +57,8 @@ public class Hopper extends SubsystemBase {
     this.hopperConfig = config;
 
     this.hopperMotor = new TalonFX(HopperConfig.kHopperExtendCANID, "canivore");  //Create a motor for this subsystem
-    this.hopperMotorMode = new PositionVoltage(0);  //Set the motor's control mode
+    this.hopperMotorMode = new MotionMagicVoltage(0);  //Set the motor's control mode
+    this.dynamicMotionMagicVoltage = new DynamicMotionMagicVoltage(0.0, 0.0, 0.0);
 
     this.configureMechanism(this.hopperMotor, this.hopperConfig.hopperConfig);
 
@@ -109,10 +112,30 @@ public class Hopper extends SubsystemBase {
     if (MotorEnableConstants.kHopperMotorEnabled) {
       if (position <= HopperConstants.kHopperSafeExtend //Check that Value is below extended distance 
       && position >= HopperConstants.kHopperSafeRetract) { //Check that Value is above retracted distance
-        hopperMotor.setControl(hopperMotorMode.withPosition(position));
+        hopperMotor.setControl(dynamicMotionMagicVoltage
+          .withPosition(position)
+          .withVelocity(HopperConstants.kNormalVelocity)
+          .withAcceleration(HopperConstants.kNormalAcceleration)
+          .withJerk(0));
       }
     }
   }
+
+  private void goToPositionSlow(double position) {
+    desiredPosition = position;
+    if (MotorEnableConstants.kHopperMotorEnabled) {
+      if (position <= HopperConstants.kHopperSafeExtend //Check that Value is below extended distance
+        && position >= HopperConstants.kHopperSafeRetract) { //Check that Value is above retracted distance
+        hopperMotor.setControl(dynamicMotionMagicVoltage
+          .withPosition(position)
+          .withVelocity(HopperConstants.kSlowVelocity)
+          .withAcceleration(HopperConstants.kNormalAcceleration)
+          .withJerk(0));
+      }
+    }
+  }
+
+
 
   /**
    * Returns the current position of the hopper motor, in rotations.
@@ -257,6 +280,10 @@ public class Hopper extends SubsystemBase {
       )
     .andThen(hopperExtend())
     ).withName("zeroRoutine");
+  }
+
+  public Command slowRetract() {
+    return runOnce(() -> { this.goToPositionSlow(HopperConstants.kHopperRetract);});
   }
 
   /**

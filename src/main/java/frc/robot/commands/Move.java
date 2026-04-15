@@ -151,13 +151,17 @@ public class Move {
         return hopper.zeroHopper();
     }
 
+    public Command slowHopperRetract() {
+               return hopper.slowRetract();
+    }
+
     //==============================Shoot========================================
     public Command stopShoot() {
         return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
     }
 
     public Command startShootStatic() {
-       return  Commands.sequence(shooter.hood30(), shooter.startShootStatic()).andThen
+       return  Commands.sequence(shooter.hood20(), shooter.startShootStatic()).andThen
             (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());   
     }
 

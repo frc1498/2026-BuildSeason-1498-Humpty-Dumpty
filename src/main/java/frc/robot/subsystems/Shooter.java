@@ -421,18 +421,17 @@ public class Shooter extends SubsystemBase {
   /* Public Shoot Commands */
   public Command requestStopShoot() {return runOnce(() -> {this.requestStopShooting();});}
   public Command requestStartShoot() {return runOnce(() -> {this.requestStartShooting();});}
-
   public Command stopShoot() {return runOnce(() -> {this.stopShooting();});}
-
   private Command setShooter(double velocity) {return run(() -> {this.setShooterVelocity(velocity);});}
-
   public Command newStartShootStatic() {return this.setShooter(50.0).until(this.isShooterAtVelocity).withName("startShotStatic");}
   public Command newStartShootFast() {return this.setShooter(80.0).until(this.isShooterAtVelocity).withName("startShootFast");}
 
+  //This is used for the static shot in case vision brakes
   public Command startShootStatic(){
-    return run(() -> {this.setShooterVelocity(50);}).until(isShooterAtVelocity); //Was 70
+    return run(() -> {this.setShooterVelocity(41.5);}).until(isShooterAtVelocity); //Was 70
   }
 
+  //Just testing long shots.  This has no particular point aside from that.
   public Command startShootFast(){
     return run(() -> {this.setShooterVelocity(80);}).until(isShooterAtVelocity);
   }
@@ -488,7 +487,11 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(37);});
+    return runOnce(() -> {this.setHoodAngle(30);});
+  }
+
+  public Command hood20() {
+    return runOnce(() -> {this.setHoodAngle(20);});
   }
 
   /**

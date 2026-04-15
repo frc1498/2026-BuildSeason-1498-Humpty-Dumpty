@@ -8,6 +8,12 @@ package frc.robot.constants;
  * Constants for the hopper, including mechanism positions.
  */
 public class HopperConstants {
+  //=====================Motion Magic Values==========-
+  public static final double kNormalVelocity = 30.0;
+  public static final double kNormalAcceleration = 150.0;
+  public static final double kSlowVelocity = 1.5;
+
+
 
   //=====================Positions=====================
   public static final double kHopperExtend = 9.75;
