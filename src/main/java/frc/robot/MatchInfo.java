@@ -1,13 +1,18 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.constants.ShooterConstants;
 
 public class MatchInfo {
 
     private static MatchInfo instance;
 
     private String alliance = "";
+
+    // Default to the blue hub.
+    private Pose2d targetLocation = ShooterConstants.kBlueHubCenter;
 
     /**
      * Return the instance of this class.
@@ -117,7 +122,6 @@ public class MatchInfo {
      * takes in how many seconds before a shift change you want to be notified
      * @return if your hub will be active in the next shift
      */
-    
      public String isNextScoringHubActive(double sec) {
         boolean isNextFlag = true;
         if ((DriverStation.getMatchTime() <= 130.0 + sec) && (DriverStation.getMatchTime() >= 130.0)) { //Next Shift = Shift 1
@@ -165,6 +169,50 @@ public class MatchInfo {
      * @return A Rotation2d constant of either 0 or 180 degrees, representing the forward direction of the robot based on the current alliance.
      */
     public Rotation2d getAlliancePerspective() {
-        return this.alliance == "Blue" ? Rotation2d.kZero : Rotation2d.k180deg;
+        return this.getAlliance() == "Blue" ? Rotation2d.kZero : Rotation2d.k180deg;
+    }
+
+    /**
+     * Return the current target for shooting.
+     * @return The current pose to aim at for shooting.
+     */
+    public Pose2d getCurrentTarget() {
+        return this.targetLocation;
+    }
+
+    /**
+     * Get the position for the right passing shot.  Changes depending on the current alliance.
+     * @return The current pose to aim at for the right passing shot.
+     */
+    public Pose2d getTargetAllianceCornerRight() {
+        return this.getAlliance() == "Blue" ? ShooterConstants.kBlueRight : ShooterConstants.kRedRight;
+    }
+
+    public void setTargetAllianceCornerRight() {
+        this.targetLocation = this.getTargetAllianceCornerRight();
+    }
+
+    /**
+     * Get the position for the left passing shot.  Changes depending on the current alliance.
+     * @return The current pose to aim at for the left passing shot.
+     */
+    public Pose2d getTargetAllianceCornerLeft() {
+        return this.getAlliance() == "Blue" ? ShooterConstants.kBlueLeft : ShooterConstants.kRedLeft;
+    }
+
+    public void setTargetAllianceCornerLeft() {
+        this.targetLocation = this.getTargetAllianceCornerLeft();
+    }
+
+    /**
+     * Get the position for the hub shot.  Changes depending on the current alliance.
+     * @return The current pose to aim at for the hub shot.
+     */
+    public Pose2d getTargetAllianceHub() {
+        return this.getAlliance() == "Blue" ? ShooterConstants.kBlueHubCenter : ShooterConstants.kRedHubCenter;
+    }
+
+    public void setTargetAllianceHub() {
+        this.targetLocation = this.getTargetAllianceHub();
     }
 }
