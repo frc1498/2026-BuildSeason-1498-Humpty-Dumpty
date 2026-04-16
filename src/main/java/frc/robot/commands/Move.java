@@ -206,7 +206,7 @@ public class Move {
     }
 
     public Command intake() {
-        return Commands.parallel(hopper.hopperExtend().unless(hopper.isHopperExtended),intake.intakeSuck()).withName("intake");
+        return Commands.parallel(hopper.hopperExtend(),intake.intakeSuck()).withName("intake");
     }
 
     public Command stopIntake() {
