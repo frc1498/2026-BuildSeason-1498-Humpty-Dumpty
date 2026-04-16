@@ -101,7 +101,7 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentricFacingAngle driveFacingAngle = new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001)
         .withDriveRequestType(DriveRequestType.Velocity)
-        .withHeadingPID(20.0, 0.0, 0.05);
+        .withHeadingPID(10.0, 0.0, 0.05);  //Was 20 kP  And kD .05
         
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -209,7 +209,7 @@ public class RobotContainer {
 
         //Driver LeftTrigger:Shoot
    driver.leftTrigger(0.1)
-        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
+        //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();})*/)
         .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(),
                 drivetrain.applyRequest(() -> driveFacingAngle
@@ -218,25 +218,10 @@ public class RobotContainer {
                     .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
                     move.slowHopperRetract())
             )))
-        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), 
-        Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()), move.hopperExtend()));
-
-
- /*       
-        driver.leftTrigger(0.1)
-        .onTrue(Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}))
-        .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
-            Commands.parallel(move.startWhileMoveShoot(), 
-                drivetrain.applyRequest(() -> driveFacingAngle
-                    .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
-                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
-                    .withTargetDirection(shooter.robotTarget().get())
-            ))))
-        .onFalse(Commands.sequence(Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();}), Commands.parallel(setNormalMoveSpeed(),move.stopShoot(), move.stopIntake()), move.hopperExtend()))
-        .debounce(1.0, DebounceType.kRising).and(driver.rightTrigger(0.1).negate()).onTrue(move.agitateHopper());
-   */     
-
-
+        .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()));
+        /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
+    
+    driver.leftTrigger(0.1).whileFalse(setNormalMoveSpeed());
 
         //Driver x: 
         driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
