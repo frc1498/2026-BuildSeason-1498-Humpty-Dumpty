@@ -44,8 +44,8 @@ public class ShooterConstants {
   public static final double kShooterFlywheelGearing = 1.3; // 1 output : 1 input
   public static final double kHoodGearing = 5.0;
 
-  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.228, Rotation2d.fromDegrees(0.0));
-  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.228, Rotation2d.fromDegrees(180.0));
+  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.034, Rotation2d.fromDegrees(0.0));
+  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.034, Rotation2d.fromDegrees(180.0));
 
   //y - 4.028, adjusted for pi's field to 4.228
 
@@ -89,16 +89,16 @@ public class ShooterConstants {
     hoodAngleMap.put(15.0, 55.0); //For passing shot
 
     // In RPS.
-    flywheelSpeedMap.put(1.5748, 34.0);
-    flywheelSpeedMap.put(2.1336, 34.0);
-    flywheelSpeedMap.put(2.3368, 34.5);
-    flywheelSpeedMap.put(3.1496, 36.5);
-    flywheelSpeedMap.put(3.9370, 42.0);
+    flywheelSpeedMap.put(1.5748, 33.0);
+    flywheelSpeedMap.put(2.1336, 33.8);
+    flywheelSpeedMap.put(2.3368, 33.8);
+    flywheelSpeedMap.put(3.1496, 36.0);
+    flywheelSpeedMap.put(3.9370, 41.0);
     flywheelSpeedMap.put(4.9276, 47.0);
     flywheelSpeedMap.put(5.2324, 49.0);
     flywheelSpeedMap.put(5.5324, 49.5);
-    flywheelSpeedMap.put(6.2738, 38.0); //For passing shot
-    flywheelSpeedMap.put(9.4488, 50.0); //For passing shot
+    flywheelSpeedMap.put(6.2738, 52.0); //For passing shot
+    flywheelSpeedMap.put(9.4488, 60.0); //For passing shot
     flywheelSpeedMap.put(12.0, 75.0); //For passing shot
     flywheelSpeedMap.put(15.0, 85.0); //For passing shot
 

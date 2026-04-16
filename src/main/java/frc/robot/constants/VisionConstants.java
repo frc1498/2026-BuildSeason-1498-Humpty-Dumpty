@@ -26,7 +26,7 @@ public class VisionConstants {
         public static final double kUpOffset = 0.3556;      // 14 inches (0.3556 meters) from the bottom of the floor.
         public static final double kRollOffset = 0.0;          // degrees from vertical.
         public static final double kPitchOffset = 22.0;         // degrees from vertical.
-        public static final double kYawOffset = 0.0;           // degrees from vertical.
+        public static final double kYawOffset = 10.0;           // degrees from vertical.  Was zero
         public static final Transform3d kRobotToLimelight = new Transform3d(new Translation3d(0.3048, -0.1047, 0.2937), new Rotation3d(0,0,0));
 
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
@@ -37,7 +37,7 @@ public class VisionConstants {
      */
     public static class photonvision {
         public static final String kRightName = "swerveRightCamera";
-        public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.3302, 0.1810), new Rotation3d(0.0, 0.2618, -1.5708));
+        public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.31115, 0.1810), new Rotation3d(0.0, 0.2618, -1.5708));
         // 11 in. (0.279400558801118 in meters) X
         // 13 in. (-0.330200660401321 in meters) Y
         // 7-1/8 in. (0.180975361950724 in meters) Z
@@ -45,7 +45,7 @@ public class VisionConstants {
         // 15 deg roll (0.261799387799149 rad)
         // That is in the robot coordinate frame.  To the camera, that is a 15 deg positive pitch.
         public static final String kLeftName = "swerveLeftCamera";
-        public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.2794, 0.3080, 0.1810), new Rotation3d(0.0, 0.2618, 1.5708));
+        public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.2794, 0.31115, 0.1810), new Rotation3d(0.0, 0.2618, 1.5708));
         // 11 in. (0.279400558801118 in meters) X
         // 12-1/8 in. (0.307975615951232 in meters) Y
         // 7-1/8 in. (0.180975361950724 in meters) Z
