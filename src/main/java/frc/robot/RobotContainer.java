@@ -177,14 +177,14 @@ public class RobotContainer {
             .andThen(() -> {this.autonCommands = this.loadAllAutonomous(autonSelect.currentList());}).ignoringDisable(true)
             .andThen(() -> {this.selectedAuton = autonCommands.get(autonSelect.currentIndex().get());}).ignoringDisable(true)
             .andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true))
-            .andThen(this.setLatch()).ignoringDisable(true));
+            .andThen(this.setLatch()).ignoringDisable(true).withName("Filter and Load Autons"));
       
         //===================================================
         //===================Driver Commands=================
         //===================================================
         //Driver POV Up/Down - Auton Select (only in disabled)
-        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
-        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true));
+        driver.povUp().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.increment().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true).withName("Increment Auton"));
+        driver.povDown().and(this.getDSLatch).and(RobotModeTriggers.disabled()).onTrue(autonSelect.decrement().andThen(() -> {this.selectedAuton = this.autonCommands.get(this.autonSelect.currentIndex().get());}).andThen(drivetrain.runOnce(() -> drivetrain.resetPose(this.selectedAuton.getStartingPose())).ignoringDisable(true)).ignoringDisable(true).withName("Decrement Auton"));
         
         //driver.leftTrigger(0.1).whileTrue(move.startShootStatic()).onFalse(move.stopShoot());  //Changed to while
 
@@ -209,7 +209,7 @@ public class RobotContainer {
 
         //Driver LeftTrigger:Shoot
    driver.leftTrigger(0.1)
-        //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();})*/)
+        //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
         .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(),
                 drivetrain.applyRequest(() -> driveFacingAngle
@@ -217,8 +217,8 @@ public class RobotContainer {
                     .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                     .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
                     move.slowHopperRetract())
-            )))
-        .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()));
+            )).withName("Shoot On The Move"))
+        .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting");
         /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
     
     driver.leftTrigger(0.1).whileFalse(setNormalMoveSpeed());
@@ -227,11 +227,11 @@ public class RobotContainer {
         driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
-        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()));
+        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()).withName("Zero Gyro and IMU Mode 1"));
  
         //driver.a()
-        driver.a().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())))
-        .onFalse(Commands.sequence(move.stopShoot(),move.hopperExtend()));
+        driver.a().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())).withName("Static Shot"))
+        .onFalse(Commands.sequence(move.stopShoot(),move.hopperExtend()).withName("Stop Shooting and Extend Hopper"));
 
         /*
         driver.a().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
@@ -243,7 +243,7 @@ public class RobotContainer {
         driver.y().onTrue(move.zeroHopper());
 
         //Driver b: Reverse intake
-        driver.b().onTrue(move.reverseIntake()).onFalse(Commands.parallel(move.stopIntake(),move.stopFloor()));
+        driver.b().onTrue(move.reverseIntake()).onFalse(Commands.parallel(move.stopIntake(),move.stopFloor()).withName("Stop Intake and Floor"));
 
         //===================================================
         //==================Operator Commands================ 

@@ -106,117 +106,121 @@ public class Move {
                     Rotation2d perspectiveCorrection = drivetrain.getStateCopy().Pose.getRotation().rotateBy(MatchInfo.getInstance().getAlliancePerspective());
                     return driveFacingAngle.HeadingController.calculate(perspectiveCorrection.getRadians(), shooter.robotTarget().get().getRadians(), Utils.getCurrentTimeSeconds());
                 });}
-        );
+        ).withName("pathplannerAim");
     }
 
     public Command releasePathplannerAim() {
-        return Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();});
+        return Commands.runOnce(() -> {PPHolonomicDriveController.clearRotationFeedbackOverride();}).withName("releasePathplannerAim");
     }
 
     //==============================Hood====================================
 
     public Command hoodUp() {
-        return shooter.hood30();
+        return shooter.hood30().withName("hoodUp");
     }
 
     public Command hoodDown() {
-        return shooter.hood0();
+        return shooter.hood0().withName("hoodDown");
     }
 
     //================================Hopper================================
     
     public Command hopperRetract() {  //Reviewed 2/21/26 should work now
         return Commands.deadline(hopper.hopperRetract(),intake.intakeSuck()).
-        andThen(intake.intakeStop());
+        andThen(intake.intakeStop()).withName("hopperRetract");
     }
 
     public Command hopperExtend() {  //Reviewed 2/21/26 should work now
         //return Commands.parallel(hopper.hopperExtend(),intake.intakeStop());
-        return hopper.hopperExtend();
+        return hopper.hopperExtend().withName("hopperExtend");
     }
 
     public Command hopperMid() {
-        return Commands.parallel(hopper.hopperMidPosition(),intake.intakeSuck());
+        return Commands.parallel(hopper.hopperMidPosition(),intake.intakeSuck()).withName("hopperMid");
     }
 
     public Command setHopperZeroPosition() {
-        return hopper.setHopperZero();
+        return hopper.setHopperZero().withName("setHopperZeroPosition");
     }
 
     public Command agitateHopper() {
-        return hopper.agitate().alongWith(intake.intakeSuck());
+        return hopper.agitate().alongWith(intake.intakeSuck()).withName("agitateHopper");
     }
 
     public Command zeroHopper() {
-        return hopper.zeroHopper();
+        return hopper.zeroHopper().withName("zeroHopper");
     }
 
     public Command slowHopperRetract() {
-               return (Commands.parallel(hopper.slowRetract(),intake.intakeSuck()));
+        return (Commands.parallel(hopper.slowRetract(),intake.intakeSuck()).withName("slowHopperRetract");
+
     }
 
     //==============================Shoot========================================
     public Command stopShoot() {
-        return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0());       
+        return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0()).withName("stopShoot");       
     }
 
     public Command startShootStatic() {
        return  Commands.sequence(shooter.hood20(), shooter.startShootStatic()).andThen
-            (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor());   
+            (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor()).withName("startShootStatic");   
     }
 
     public Command startAutoShoot() {
         return Commands.sequence(shooter.autoShoot(), shooter.autoHood())
             .until(shooter.isShooterAtVelocity)
-            .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor()));
+            .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor())).withName("startAutoShoot");
     }
 
     public Command startWhileMoveShoot() {   
         return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood()),
             Commands.waitUntil(shooter.isShooterAtVelocity)
-                .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor())));
+                .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor()))).withName("startWhileMoveShoot");
     }
 
     public Command hood30(){
-        return shooter.hood30();
+        return shooter.hood30().withName("hood30");
     }
 
     public Command hood0(){
-        return shooter.hood0();
+        return shooter.hood0().withName("hood0");
     }
 
     public Command setTargetToAllianceCornerRight() {
-        return shooter.setTargetToAllianceCornerRight();
+        return Commands.runOnce(() -> {MatchInfo.getInstance().setTargetAllianceCornerRight();}).withName("setTargetToAllianceCornerRight");
+        // return shooter.setTargetToAllianceCornerRight();
     }
 
     public Command setTargetToAllianceCornerLeft() {
-        return shooter.setTargetToAllianceCornerLeft();
+        return Commands.runOnce(() -> {MatchInfo.getInstance().setTargetAllianceCornerLeft();}).withName("setTargetToAllianceCornerLeft");
+        // return shooter.setTargetToAllianceCornerLeft();
     }
 
     public Command setTargetToAllianceHub() {
-        return shooter.setTargetToAllianceHub();
+        return Commands.runOnce(() -> {MatchInfo.getInstance().setTargetAllianceHub();}).withName("setTargetToAllianceHub");
+        // return shooter.setTargetToAllianceHub();
     }
 
     //==============================Intake=======================================
     public Command reverseIntake() { 
-        return Commands.sequence(hopper.hopperExtend(),Commands.parallel(intake.intakeSpit(),floor.reverseFloor()));
+        return Commands.sequence(hopper.hopperExtend(),Commands.parallel(intake.intakeSpit(),floor.reverseFloor())).withName("reverseIntake");
     }
 
     public Command intake() {
-        return Commands.parallel(hopper.hopperExtend(),intake.intakeSuck());
+        return Commands.parallel(hopper.hopperExtend(),intake.intakeSuck()).withName("intake");
     }
 
     public Command stopIntake() {
-        return intake.intakeStop();
+        return intake.intakeStop().withName("stopIntake");
     }
 
     public Command nakedIntake() {
-        return intake.intakeSuck();
+        return intake.intakeSuck().withName("nakedIntake");
     }
 
     //==============================Floor======================================
     public Command stopFloor() {
-        return floor.stopFloor();
+        return floor.stopFloor().withName("stopFloor");
     }
 
     //======================================================

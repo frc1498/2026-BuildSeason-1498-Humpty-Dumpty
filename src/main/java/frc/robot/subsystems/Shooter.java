@@ -562,6 +562,9 @@ public class Shooter extends SubsystemBase {
     
     allianceColor = MatchInfo.getInstance().getAlliance();
     
+    // Since the shooter command doesn't set it now, I should get the target location continuously in the shooter periodic() method.
+    this.targetLocation = MatchInfo.getInstance().getCurrentTarget();
+
     if (DriverStation.isAutonomousEnabled()) {
       if (allianceColor == "Red") {
         targetLocation = ShooterConstants.kRedHubCenter;
