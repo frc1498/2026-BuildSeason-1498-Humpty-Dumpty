@@ -152,7 +152,7 @@ public class Move {
     }
 
     public Command slowHopperRetract() {
-        return (Commands.parallel(hopper.slowRetract(),intake.intakeSuck()).withName("slowHopperRetract");
+        return (Commands.parallel(hopper.slowRetract(),intake.intakeSuck()).withName("slowHopperRetract"));
 
     }
 

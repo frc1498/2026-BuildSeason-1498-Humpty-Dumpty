@@ -35,7 +35,6 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -218,7 +217,7 @@ public class RobotContainer {
                     .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
                     move.slowHopperRetract())
             )).withName("Shoot On The Move"))
-        .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting");
+        .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
         /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
     
     driver.leftTrigger(0.1).whileFalse(setNormalMoveSpeed());
