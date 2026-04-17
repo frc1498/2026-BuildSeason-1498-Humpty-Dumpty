@@ -25,6 +25,7 @@ import static edu.wpi.first.units.Units.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -38,7 +39,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -203,8 +204,11 @@ public class RobotContainer {
         drivetrain.aimAtHub.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
         drivetrain.aimForPassLeft.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerLeft());
         drivetrain.aimForPassRight.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerRight());
-        
 
+        // If the hood is up (and the driver is holding the controller), set the rumble to 'remind them' to not drive under the trench.
+        shooter.isHoodUp.and(RobotModeTriggers.teleop())
+            .whileTrue(this.setDriverRumble(() -> {return 0.85;}))
+            .whileFalse(this.setDriverRumble(() -> {return 0.0;}));
 
         //Driver LeftTrigger:Shoot
    driver.leftTrigger(0.1)
@@ -220,8 +224,8 @@ public class RobotContainer {
         .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
         /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
     
-    driver.leftTrigger(0.1).whileFalse(setNormalMoveSpeed());
-
+        driver.leftTrigger(0.1).and(driver.a().negate()).whileFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
+        
         //Driver x: 
         driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
 
@@ -319,6 +323,17 @@ public class RobotContainer {
 
     }
 
+    /**
+     * Sets the rumble of the driver controller using a double supplier.  This controls both rumble motors.
+     * @param rumbleValue - A double supplier for the intensity of the rumble.  Valid values are 0 - 1.
+     * @return A command that sets the rumble value of both driver controller motors.
+     */
+    public Command setDriverRumble(DoubleSupplier rumbleValue) {
+        return Commands.runOnce(() -> {
+            driver.setRumble(RumbleType.kBothRumble, rumbleValue.getAsDouble());
+        });
+    }
+
     public void registerAutoCommands() {
         NamedCommands.registerCommand("intake", move.intake());
         NamedCommands.registerCommand("stopIntake", move.stopIntake());
@@ -328,6 +343,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("retractHopperMid", move.hopperMid());
         NamedCommands.registerCommand("retractHopper", move.hopperRetract());
         NamedCommands.registerCommand("setTargetToHub", move.setTargetToAllianceHub());
+        NamedCommands.registerCommand("slowRetract", move.slowHopperRetract());
 
         new EventTrigger("dangerZone").onTrue(Commands.runOnce(() -> {PPHolonomicDriveController.overrideRotationFeedback(() -> {
            Rotation2d helpfulFriend = drivetrain.getStateCopy().Pose.getRotation().rotateBy(MatchInfo.getInstance().getAlliance() == "Blue" ? Rotation2d.kZero : Rotation2d.k180deg);
