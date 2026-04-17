@@ -516,6 +516,7 @@ public class Shooter extends SubsystemBase {
 
   //======================Triggers=========================
   public Trigger isHoodAtPosition = new Trigger(() -> {return isHoodAtPosition();});
+  public Trigger isHoodUp = new Trigger(() -> {return this.getHoodAngle() >= 2.0;});
   public Trigger isShooterAtVelocity = new Trigger(() -> {return isShooterAtSpeed();});
   public Trigger isReadyToFire = new Trigger(() -> {return this.readyToFire;});
 
