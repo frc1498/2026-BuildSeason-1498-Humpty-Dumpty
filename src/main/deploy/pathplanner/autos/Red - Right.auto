@@ -30,7 +30,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.5
+                  "waitTime": 3.0
                 }
               },
               {
@@ -38,30 +38,11 @@
                 "data": {
                   "name": "shoot"
                 }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "retractHopper"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.75
-                }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "shoot"
+                  "name": "slowRetract"
                 }
               }
             ]
@@ -86,7 +67,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 1.0
+                  "waitTime": 3.0
                 }
               },
               {
@@ -94,39 +75,27 @@
                 "data": {
                   "name": "shoot"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "slowRetract"
+                }
               }
             ]
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "retractHopper"
-          }
-        },
-        {
-          "type": "deadline",
+          "type": "sequential",
           "data": {
             "commands": [
               {
-                "type": "wait",
-                "data": {
-                  "waitTime": 0.75
-                }
-              },
-              {
                 "type": "named",
                 "data": {
-                  "name": "shoot"
+                  "name": "extendHopper"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "stopShoot"
           }
         }
       ]
