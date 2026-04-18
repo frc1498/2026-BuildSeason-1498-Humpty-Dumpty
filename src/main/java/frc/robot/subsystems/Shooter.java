@@ -77,7 +77,7 @@ public class Shooter extends SubsystemBase {
 
   private double whileMoveHoodAngle;
   private double whileMoveFlywheelVelocity;
-  private Rotation2d whileMoveAngle;
+  private Rotation2d whileMoveAngle = new Rotation2d(0.0);
 
   private double currentHoodAngle;
   private double currentHoodRotations;
@@ -158,6 +158,8 @@ public class Shooter extends SubsystemBase {
 
     this.setHoodAngle(0);
     this.desiredShooterVelocity = -10;
+
+    this.whileMoveAngle = new Rotation2d(0.0);
 
   }
 
@@ -526,18 +528,7 @@ public class Shooter extends SubsystemBase {
     // That can be used to 'gate' values to log without lines of identical code.
     switch (this.telemetryLevel) {
       case FULL:
-        builder.addDoubleProperty("Virtual Hood Angle", () -> {return this.virtualHoodAngle;}, null);
-        builder.addDoubleProperty("Virtual Flywheel Velocity", () -> {return this.virtualFlywheelVelocity;}, null);
-        builder.addDoubleProperty("Desired Hood Angle", () -> {return this.desiredHoodAngle;}, null);
-        builder.addDoubleProperty("Desired Hood Motor Rotations", () -> {return this.desiredHoodMotorRotations;}, null);
-        builder.addDoubleProperty("Desired Shooter Velocity", () -> {return this.desiredShooterVelocity;}, null);
-        builder.addDoubleProperty("Current Hood Rotations", () -> {return this.currentHoodRotations;},null);
-        builder.addDoubleProperty("Current Hood Angle", () -> {return this.currentHoodAngle;}, null);
-        builder.addDoubleProperty("Current Shooter Velocity", () -> {return this.currentShooterVelocity;}, null);
-        builder.addBooleanProperty("Shooter At Velocity", () -> {return this.shooterAtVelocity;}, null);
-        builder.addDoubleProperty("Distance to Target", () -> {return this.distanceToTarget;}, null);
-        builder.addDoubleProperty("Distance to Virtual Target", () -> {return this.distanceToVirtualTarget;}, null);
-        builder.addStringProperty("Target", () -> {return targetLocation.toString();}, null);
+        builder.addDoubleProperty("Rotation Target", () -> {return this.whileMoveAngle.getDegrees();}, null);
       case LIMITED:
         builder.addStringProperty("Command", this::getCurrentCommandName, null);
       case NONE:
