@@ -230,6 +230,33 @@ public class Vision extends SubsystemBase {
     }
 
     /**
+     * Take a snapshot with the limelight.
+     */
+    private void takeLimelightSnapshot() {
+        LimelightHelpers.triggerSnapshot(limelight.kName);
+    }
+
+    /**
+     * Take a snapshot with the photonvision camera.
+     * This takes a picture of the camera input, and the processed output.
+     * @param camera - The photonvision camera to take a picture with.
+     */
+    private void takePhotonvisionSnapshot(PhotonCamera camera) {
+        camera.takeInputSnapshot();
+        camera.takeOutputSnapshot();
+    }
+
+    /**
+     * Setup a limelight rewind capture.
+     * @param duration - The amount of time, in seconds, to capture a recording for.  The maximum is 165 seconds.
+     */
+    private void takeLimelightVideo(double duration) {
+        // This method is a want, not a need.
+        LimelightHelpers.setRewindEnabled(limelight.kName, true);
+        LimelightHelpers.triggerRewindCapture(limelight.kName, duration);
+    }
+
+    /**
      * Signifies that the latest estimated photon pose is valid if:
      * 1. The photon pose estimate is valid.
      * 2. At least one AprilTag was seen.
@@ -425,8 +452,19 @@ public class Vision extends SubsystemBase {
         ).withName("Adding Test Pose Measurement").ignoringDisable(true);
     }
 
-    public Command takeSnapshot() {
-        return runOnce(() -> {LimelightHelpers.takeSnapshot(limelight.kName, "test.png");});
+    public Command limelightSnapshot() {
+        return runOnce(() -> {this.takeLimelightSnapshot();}).ignoringDisable(true).withName("limelightSnapshot");
+    }
+
+    private Command photonvisionSnapshot(PhotonCamera camera) {
+        return runOnce(() -> {this.takePhotonvisionSnapshot(camera);}).ignoringDisable(true).withName("photonvisionSnapshot");
+    }
+
+    public Command leftPhotonSnapshot() {return this.photonvisionSnapshot(this.leftCamera).withName("leftPhotonSnapshot");};
+    public Command rightPhotonSnapshot() {return this.photonvisionSnapshot(this.rightCamera).withName("rightPhotonSnapshot");};
+
+    public Command allSnapshot() {
+        return this.limelightSnapshot().andThen(leftPhotonSnapshot()).andThen(rightPhotonSnapshot()).withName("allSnapshot");
     }
 
     /**
