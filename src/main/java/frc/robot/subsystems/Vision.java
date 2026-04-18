@@ -452,6 +452,10 @@ public class Vision extends SubsystemBase {
         ).withName("Adding Test Pose Measurement").ignoringDisable(true);
     }
 
+    public Command limelightVideo() {
+        return runOnce(() -> {this.takeLimelightVideo(10);}).ignoringDisable(true).withName("limelightVideo");
+    }
+
     public Command limelightSnapshot() {
         return runOnce(() -> {this.takeLimelightSnapshot();}).ignoringDisable(true).withName("limelightSnapshot");
     }
