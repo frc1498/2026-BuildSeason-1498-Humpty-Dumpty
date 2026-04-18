@@ -170,7 +170,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
+        // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
 
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
@@ -213,6 +213,7 @@ public class RobotContainer {
         //Driver LeftTrigger:Shoot
    driver.leftTrigger(0.1)
         //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
+        // .onTrue(vision.takeSnapshot())
         .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(),
                 drivetrain.applyRequest(() -> driveFacingAngle
@@ -370,8 +371,8 @@ public class RobotContainer {
     public Command setLatch() {return Commands.runOnce(() -> {this.DSLatch = true;});}
 
     public Command setShootOnMoveSpeed () {return Commands.runOnce(() -> {
-        this.precisionDampenerTranslation = 0.8;
-        this.precisionDampenerRotation = 0.5;}
+        this.precisionDampenerTranslation = 1.0;
+        this.precisionDampenerRotation = 1.0;}
         );
     }
 
