@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -422,6 +423,10 @@ public class Vision extends SubsystemBase {
                 drivetrain.get().addVisionMeasurement(this.testPose, this.testTimestamp);
             }
         ).withName("Adding Test Pose Measurement").ignoringDisable(true);
+    }
+
+    public Command takeSnapshot() {
+        return runOnce(() -> {LimelightHelpers.takeSnapshot(limelight.kName, "" + Utils.getCurrentTimeSeconds());});
     }
 
     /**
