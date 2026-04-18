@@ -44,8 +44,8 @@ public class ShooterConstants {
   public static final double kShooterFlywheelGearing = 1.3; // 1 output : 1 input
   public static final double kHoodGearing = 5.0;
 
-  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.034, Rotation2d.fromDegrees(0.0));
-  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.034, Rotation2d.fromDegrees(180.0));
+  public static final Pose2d kRedHubCenter = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0.0));
+  public static final Pose2d kBlueHubCenter = new Pose2d(4.622, 4.028, Rotation2d.fromDegrees(180.0));
 
   //y - 4.028, adjusted for pi's field to 4.228
 
