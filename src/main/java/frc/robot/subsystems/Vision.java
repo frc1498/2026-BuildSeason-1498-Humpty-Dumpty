@@ -426,7 +426,7 @@ public class Vision extends SubsystemBase {
     }
 
     public Command takeSnapshot() {
-        return runOnce(() -> {LimelightHelpers.takeSnapshot(limelight.kName, "" + Utils.getCurrentTimeSeconds());});
+        return runOnce(() -> {LimelightHelpers.takeSnapshot(limelight.kName, "test.png");});
     }
 
     /**

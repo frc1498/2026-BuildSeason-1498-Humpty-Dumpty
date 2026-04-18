@@ -213,7 +213,6 @@ public class RobotContainer {
         //Driver LeftTrigger:Shoot
    driver.leftTrigger(0.1)
         //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
-        // .onTrue(vision.takeSnapshot())
         .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(),
                 drivetrain.applyRequest(() -> driveFacingAngle
