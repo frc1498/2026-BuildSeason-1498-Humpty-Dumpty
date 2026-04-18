@@ -113,7 +113,7 @@ public class RobotContainer {
     public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public ShooterConfig shooterConfig = new ShooterConfig();
-    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
+    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.FULL);
 
     public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, driveFacingAngle);
 
