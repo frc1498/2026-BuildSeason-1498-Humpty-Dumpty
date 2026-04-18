@@ -52,12 +52,12 @@
         "y": 5.62225
       },
       "prevControl": {
-        "x": 7.941145947351228,
-        "y": 5.7654780089347195
+        "x": 7.971767447819932,
+        "y": 5.855197900533777
       },
       "nextControl": {
-        "x": 10.386333333333333,
-        "y": 5.147154761904762
+        "x": 9.500928571428572,
+        "y": 5.190345238095238
       },
       "isLocked": false,
       "linkedName": null
@@ -90,18 +90,14 @@
       "rotationDegrees": 87.86382359067927
     },
     {
-      "waypointRelativePos": 3.157712305026023,
-      "rotationDegrees": 178.64803193179367
-    },
-    {
-      "waypointRelativePos": 3.690121317157721,
-      "rotationDegrees": -176.23192450064977
+      "waypointRelativePos": 3.7377593360995824,
+      "rotationDegrees": 178.98308331311435
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 3.8795180722891542,
+      "minWaypointRelativePos": 3.9464019851116623,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 1.0,
@@ -127,20 +123,9 @@
   ],
   "eventMarkers": [
     {
-      "name": "retractHopper",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "retractHopper"
-        }
-      }
-    },
-    {
       "name": "intake",
       "waypointRelativePos": 1.3936529372045885,
-      "endWaypointRelativePos": 5.272047033671853,
+      "endWaypointRelativePos": 3.795533498759304,
       "command": {
         "type": "named",
         "data": {
@@ -150,7 +135,7 @@
     },
     {
       "name": "stopIntake",
-      "waypointRelativePos": 3.284874398717295,
+      "waypointRelativePos": 3.8193548387096774,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -170,7 +155,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -136.59114027119475
+    "rotation": -142.69605172201642
   },
   "reversed": false,
   "folder": "Red",

@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 7.0174761904761915,
-        "y": 6.971952380952381
+        "x": 7.568154761904763,
+        "y": 6.896369047619048
       },
       "prevControl": {
-        "x": 6.759511791428984,
-        "y": 7.10833629887103
+        "x": 7.402616100807512,
+        "y": 7.136667104050543
       },
       "nextControl": {
-        "x": 7.52224774582219,
-        "y": 6.705083298915291
+        "x": 7.9028809523809525,
+        "y": 6.41047619047619
       },
       "isLocked": false,
       "linkedName": null
@@ -56,7 +56,7 @@
         "y": 5.580678026723798
       },
       "nextControl": {
-        "x": 3.7781904761904754,
+        "x": 3.7781904761904745,
         "y": 5.708630952380952
       },
       "isLocked": false,
@@ -64,12 +64,12 @@
     },
     {
       "anchor": {
-        "x": 3.1592296718972896,
-        "y": 6.163409415121254
+        "x": 2.639974451787035,
+        "y": 6.717463669761547
       },
       "prevControl": {
-        "x": 3.6250213980028523,
-        "y": 5.231825962910129
+        "x": 3.099645706180462,
+        "y": 5.711390735617445
       },
       "nextControl": null,
       "isLocked": false,
@@ -86,10 +86,6 @@
       "rotationDegrees": 57.821011075229464
     },
     {
-      "waypointRelativePos": 2.2474870017330555,
-      "rotationDegrees": 0.0
-    },
-    {
       "waypointRelativePos": 3.0350086655112083,
       "rotationDegrees": 0.0
     },
@@ -101,7 +97,7 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 3.702811244979909,
+      "minWaypointRelativePos": 3.759621877110058,
       "maxWaypointRelativePos": 4.0,
       "constraints": {
         "maxVelocity": 0.75,
@@ -118,7 +114,7 @@
       "maxWaypointRelativePos": 2.7037220843672487,
       "constraints": {
         "maxVelocity": 3.0,
-        "maxAcceleration": 3.0,
+        "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,

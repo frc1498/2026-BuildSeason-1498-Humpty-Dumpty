@@ -17,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 3.75
                 }
               },
               {
@@ -57,7 +57,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Red - L2 C Shoot"
+            "pathName": "Red - L2 C Short"
           }
         },
         {
@@ -67,7 +67,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 3.0
+                  "waitTime": 3.75
                 }
               },
               {
