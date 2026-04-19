@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.MatchInfo;
 import frc.robot.ShotCalculation;
-import frc.robot.config.ShooterConfig;
+import frc.robot.config.HoodConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
@@ -43,7 +43,7 @@ public class Hood extends SubsystemBase {
 
   private PositionVoltage hoodMotorMode;   // Motor control type definition
 
-  private ShooterConfig hoodConfig;  // Create an object of type shooter subsystem config used to configure motors
+  private HoodConfig hoodConfig;  // Create an object of type shooter subsystem config used to configure motors
 
   private double desiredHoodAngle;
   private double desiredHoodMotorRotations;
@@ -80,7 +80,7 @@ public class Hood extends SubsystemBase {
    * @param swerveDriveState - A supplier of the current swerve drive state from the drivetrain subsystem.
    * @param telemetryLevel - The level of telemetry to enable for the subsystem.  Currently FULL, LIMITED, or NONE.
    */
-  public Hood(ShooterConfig config, Supplier<SwerveDriveState> swerveDriveState, MotorEnableConstants.TelemetryLevel telemetryLevel) {
+  public Hood(HoodConfig config, Supplier<SwerveDriveState> swerveDriveState, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
     this.telemetryLevel = telemetryLevel;
     this.swerveStateSupplier = swerveDriveState;
