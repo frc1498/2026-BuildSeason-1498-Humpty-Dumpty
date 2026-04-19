@@ -120,7 +120,7 @@ public class RobotContainer {
     public HoodConfig hoodConfig = new HoodConfig();
     public Hood hood = new Hood(hoodConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.FULL);
 
-    public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, driveFacingAngle);
+    public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, hood, driveFacingAngle);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -211,12 +211,12 @@ public class RobotContainer {
         drivetrain.aimForPassRight.and(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceCornerRight());
 
         // If the hood is up (and the driver is holding the controller), set the rumble to 'remind them' to not drive under the trench.
-        shooter.isHoodUp.and(RobotModeTriggers.teleop())
+        hood.isHoodUp.and(RobotModeTriggers.teleop())
             .whileTrue(this.setDriverRumble(() -> {return 0.85;}))
             .whileFalse(this.setDriverRumble(() -> {return 0.0;}));
 
         //Driver LeftTrigger:Shoot
-   driver.leftTrigger(0.1)
+        driver.leftTrigger(0.1)
         //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
         .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
             Commands.parallel(move.startWhileMoveShoot(),
