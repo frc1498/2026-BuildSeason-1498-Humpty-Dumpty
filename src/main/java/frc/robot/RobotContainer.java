@@ -237,8 +237,13 @@ public class RobotContainer {
         .onFalse(Commands.sequence(move.stopShoot(),move.hopperExtend()).withName("Stop Shooting and Extend Hopper"));
 
         // driver.leftBumper
-        driver.leftBumper().onTrue(Commands.parallel(move.startWhileMoveShoot(), Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())).withName("Distance Based Shot"))
-            .onFalse(Commands.sequence(move.stopShoot(), move.hopperExtend()).withName("Stop Distance Based Shot and Extend Hopper"));
+        // I'm trying out different ways to make the command composition more readable.
+        driver.leftBumper().onTrue(
+            Commands.parallel(
+                move.startDistanceBasedShot(),
+                Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
+            ).withName("Distance Based Shot"))
+        .onFalse(Commands.sequence(move.stopShoot(), move.hopperExtend()).withName("Stop Distance Based Shot and Extend Hopper"));
 
         /*
         driver.a().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
