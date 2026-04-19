@@ -10,6 +10,7 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.RearKickup;
 import frc.robot.subsystems.FrontKickup;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Vision;
@@ -18,6 +19,7 @@ import frc.robot.config.IntakeConfig;
 import frc.robot.config.ShooterConfig;
 import frc.robot.config.RearKickupConfig;
 import frc.robot.config.FrontKickupConfig;
+import frc.robot.config.HoodConfig;
 import frc.robot.config.FloorConfig;
 import frc.robot.commands.Move;
 
@@ -114,6 +116,9 @@ public class RobotContainer {
 
     public ShooterConfig shooterConfig = new ShooterConfig();
     public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.FULL);
+
+    public HoodConfig hoodConfig = new HoodConfig();
+    public Hood hood = new Hood(hoodConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.FULL);
 
     public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, driveFacingAngle);
 
