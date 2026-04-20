@@ -181,6 +181,18 @@ public class Move {
                 .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor()))).withName("startWhileMoveShoot");
     }
 
+    public Command startDistanceBasedShot() {
+        return Commands.parallel(
+            Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood()),
+            Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(
+                frontKickup.forwardFrontKickup(),
+                rearKickup.forwardRearKickup(),
+                floor.forwardFloor()
+                )
+            )
+        ).withName("startDistanceBasedShot");
+    }
+
     public Command hood30(){
         return hood.hood30().withName("hood30");
     }
