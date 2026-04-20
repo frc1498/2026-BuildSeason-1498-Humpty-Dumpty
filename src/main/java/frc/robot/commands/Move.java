@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.FrontKickup;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.RearKickup;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
@@ -28,10 +29,11 @@ public class Move {
     public RearKickup rearKickup;
     public FrontKickup frontKickup;
     public Floor floor;
+    public Hood hood;
     public SwerveRequest.FieldCentricFacingAngle driveFacingAngle;
 
 
-    public Move(Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor, SwerveRequest.FieldCentricFacingAngle driveFacingAngle) {
+    public Move(Hopper hopper, Intake intake, Shooter shooter, CommandSwerveDrivetrain drivetrain, FrontKickup frontKickup, RearKickup rearKickup, Floor floor, Hood hood, SwerveRequest.FieldCentricFacingAngle driveFacingAngle) {
         this.hopper = hopper;
         this.intake = intake;
         this.shooter = shooter;
@@ -39,6 +41,7 @@ public class Move {
         this.rearKickup = rearKickup;
         this.frontKickup = frontKickup;
         this.floor = floor;
+        this.hood = hood;
         this.driveFacingAngle = driveFacingAngle;
     }
 
@@ -116,11 +119,11 @@ public class Move {
     //==============================Hood====================================
 
     public Command hoodUp() {
-        return shooter.hood30().withName("hoodUp");
+        return hood.hood30().withName("hoodUp");
     }
 
     public Command hoodDown() {
-        return shooter.hood0().withName("hoodDown");
+        return hood.hood0().withName("hoodDown");
     }
 
     //================================Hopper================================
@@ -158,29 +161,29 @@ public class Move {
 
     //==============================Shoot========================================
     public Command stopShoot() {
-        return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), shooter.hood0()).withName("stopShoot");       
+        return Commands.sequence(Commands.parallel(floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), hood.hood0()).withName("stopShoot");       
     }
 
     public Command startShootStatic() {
-       return  Commands.sequence(shooter.hood20(), shooter.startShootStatic()).andThen
+       return  Commands.sequence(hood.hood20(), shooter.startShootStatic()).andThen
             (Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup()), floor.forwardFloor()).withName("startShootStatic");   
     }
 
     public Command startAutoShoot() {
-        return Commands.sequence(shooter.autoShoot(), shooter.autoHood())
+        return Commands.sequence(shooter.autoShoot(), hood.autoHood())
             .until(shooter.isShooterAtVelocity)
             .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor())).withName("startAutoShoot");
     }
 
     public Command startWhileMoveShoot() {   
-        return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood()),
+        return Commands.parallel(Commands.repeatingSequence(shooter.whileMoveShoot(), hood.whileMoveHood()),
             Commands.waitUntil(shooter.isShooterAtVelocity)
                 .andThen(Commands.parallel(frontKickup.forwardFrontKickup(), rearKickup.forwardRearKickup(), floor.forwardFloor()))).withName("startWhileMoveShoot");
     }
 
     public Command startDistanceBasedShot() {
         return Commands.parallel(
-            Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood()),
+            Commands.repeatingSequence(shooter.whileMoveShoot(), hood.whileMoveHood()),
             Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(
                 frontKickup.forwardFrontKickup(),
                 rearKickup.forwardRearKickup(),
@@ -191,11 +194,11 @@ public class Move {
     }
 
     public Command hood30(){
-        return shooter.hood30().withName("hood30");
+        return hood.hood30().withName("hood30");
     }
 
     public Command hood0(){
-        return shooter.hood0().withName("hood0");
+        return hood.hood0().withName("hood0");
     }
 
     public Command setTargetToAllianceCornerRight() {
