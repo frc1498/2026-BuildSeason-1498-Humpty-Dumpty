@@ -170,7 +170,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
-        // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
         // RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(move.setTargetToAllianceHub());
 
         driver.povUp().or(driver.povDown()).and(this.DSAttached).and(this.getDSLatch.negate()).onTrue(autonSelect.filterList(() -> {return DriverStation.getAlliance().get().toString();})
