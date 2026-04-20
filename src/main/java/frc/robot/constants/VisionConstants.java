@@ -15,6 +15,8 @@ import edu.wpi.first.math.numbers.N3;
  * Mainly co-processor names, physical coordinates of their positions on the robot, and camera settings.
  */
 public class VisionConstants {
+    // Vision constants used between every camera.
+    public static final double kMaximumRotationRate = 3.3;  // 3.3 radians per second.
 
     /**
      * Limelight related constants.
@@ -29,6 +31,7 @@ public class VisionConstants {
         public static final double kYawOffset = 0.0;           // degrees from vertical.  Was zero
         public static final Transform3d kRobotToLimelight = new Transform3d(new Translation3d(0.3048, -0.1047, 0.2937), new Rotation3d(0,0,0));
 
+        public static final Matrix<N3, N1> kMegaTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
     }
 
@@ -56,6 +59,8 @@ public class VisionConstants {
 
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);  // Setting these to the same as the Limelight until they can be experimentally found.
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);
+
+        public static final double kAmbiguityThreshold = 0.10;
 
         public static enum Camera {
             SWERVE_RIGHT_CAMERA,
