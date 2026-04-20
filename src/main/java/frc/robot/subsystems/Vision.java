@@ -32,6 +32,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.VisionConstants;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
 
@@ -63,9 +64,11 @@ public class Vision extends SubsystemBase {
     private double cachedRobotRotationRate = 0.0;
     private boolean cachedMegaTag2Valid = false;
     private boolean cachedMegaTagValid = false;
-    private boolean cachedAreTagsSeen = false;
+    private boolean cachedAreMegaTagsSeen = false;
+    private boolean cachedAreMegaTag2Seen = false;
     private boolean cachedIsRobotSlowEnough = false;
-    private boolean cachedIsLimelightPoseValid = false;
+    private boolean cachedIsMegaTagPoseValid = false;
+    private boolean cachedIsMegaTag2PoseValid = false;
     private boolean cachedIsLeftPhotonPoseValid = false;
     private boolean cachedIsRightPhotonPoseValid = false;
     private double testTimestamp;
@@ -129,7 +132,7 @@ public class Vision extends SubsystemBase {
     /**
      * Returns true if the pose estimate is not 'null' and a valid target is in view.
      * 'Valid' in this case means the limelight actually sent data and sees a valid target; this method is not checking if the data makes sense.
-     * @param poseEstimate
+     * @param poseEstimate - A limelight pose estimate (megaTag or megaTag2).
      * @return
      */
     private boolean isMegaTagValid(LimelightHelpers.PoseEstimate poseEstimate) {
@@ -169,8 +172,8 @@ public class Vision extends SubsystemBase {
 
     /**
      * Returns true if the latest megaTag estimate identifies at least the amount of tags passed into this method.
-     * @param megaTagEstimate
-     * @param tagCount
+     * @param megaTagEstimate - A limelight pose estimate (megaTag or megaTag2)
+     * @param tagCount - The amount of tags that the estimate must see for a valid estimate.
      * @return
      */
     private boolean areLimelightTagsSeen(LimelightHelpers.PoseEstimate megaTagEstimate, int tagCount) {
@@ -221,15 +224,15 @@ public class Vision extends SubsystemBase {
 
     /**
      * Signifies that the latest estimated pose is valid if:
-     * 1. The megaTag2 estimate is valid.
+     * 1. The megaTag estimate is valid.
      * 2. At least one AprilTag was seen.
      * 3. The robot is not turning too fast.
-     * @param megaTag2Estimate
+     * @param megaTagEstimate - A limelight pose estimate (megaTag or megaTag2).
      * @return
      */
-    private boolean isLimelightPoseValid(LimelightHelpers.PoseEstimate megaTag2Estimate) {
-        //3.3 radians per second is currently 75% of our maximum rotational speed.
-        return this.isMegaTagValid(megaTag2Estimate) && this.areLimelightTagsSeen(megaTag2Estimate, 1) && this.isRobotSlowEnough(3.3);
+    private boolean isLimelightPoseValid(LimelightHelpers.PoseEstimate megaTagEstimate, int tagCount) {
+        // 3.3 radians per second is currently 75% of our maximum rotational speed.
+        return this.isMegaTagValid(megaTagEstimate) && this.areLimelightTagsSeen(megaTagEstimate, tagCount) && this.isRobotSlowEnough(VisionConstants.kMaximumRotationRate);
     }
 
     /**
@@ -268,9 +271,9 @@ public class Vision extends SubsystemBase {
      * @param result
      * @return
      */
-    private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
+    private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result, int tagCount) {
         //3.3 radian per second is currently 75% of our maximum rotational speed.
-        return this.arePhotonTagsSeen(result, 1) && this.isResultAmbiguityBelowThreshold(result.getTargets(), 0.10) && this.isRobotSlowEnough(3.3);
+        return this.arePhotonTagsSeen(result, tagCount) && this.isResultAmbiguityBelowThreshold(result.getTargets(), photonvision.kAmbiguityThreshold) && this.isRobotSlowEnough(VisionConstants.kMaximumRotationRate);
     }
 
     /**
@@ -333,7 +336,7 @@ public class Vision extends SubsystemBase {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : photonResults) {
             // Check if the pose is valid, and ignore everything if it isn't.
-            if (this.isPhotonvisionResultValid(photonEstimator, result)) {
+            if (this.isPhotonvisionResultValid(photonEstimator, result, 1)) {
                 visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
                 if (visionEst.isEmpty()) {
                     visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
@@ -444,7 +447,8 @@ public class Vision extends SubsystemBase {
         // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
     }
 
-    public Trigger addLimelightPose = new Trigger(() -> {return this.cachedIsLimelightPoseValid;});
+    public Trigger addMegaTagPose = new Trigger(() -> {return this.cachedIsMegaTagPoseValid;});
+    public Trigger addMegaTag2Pose = new Trigger(() -> {return this.cachedIsMegaTag2PoseValid;});
     public Trigger addLeftPhotonPose = new Trigger(() -> {return this.cachedIsLeftPhotonPoseValid;});
     public Trigger addRightPhotonPose = new Trigger(() -> {return this.cachedIsRightPhotonPoseValid;});
 
@@ -545,22 +549,34 @@ public class Vision extends SubsystemBase {
 
         // Only check the number of tags and validity of the pose if the megatag is valid.
         // Only update the megaTag if the most recent megaTag is valid.
+        if (this.cachedMegaTagValid) {
+            this.cachedAreMegaTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag, 2);
+            this.cachedIsMegaTagPoseValid = this.isLimelightPoseValid(this.cachedMegaTag, 80);
+            this.megaTag = this.cachedMegaTag;
+        } else {
+            // If the megaTag isn't valid, obviously no tags can be seen and the pose isn't valid.
+            this.cachedAreMegaTagsSeen = false;
+            this.cachedIsMegaTagPoseValid = false;
+        }
+
+        // Only check the number of tags and validity of the pose if the megatag2 is valid.
+        // Only update the megaTag2 if the most recent megaTag2 is valid.
         if (this.cachedMegaTag2Valid) {
-            this.cachedAreTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag2, 1);
-            this.cachedIsLimelightPoseValid = this.isLimelightPoseValid(this.cachedMegaTag2);
+            this.cachedAreMegaTag2Seen = this.areLimelightTagsSeen(this.cachedMegaTag2, 1);
+            this.cachedIsMegaTag2PoseValid = this.isLimelightPoseValid(this.cachedMegaTag2, 1);
             this.megaTag2 = this.cachedMegaTag2;
             this.log(LogLevel.NONE);
         } else {
-            // If the megaTag isn't valid, obviously no tags can be seen and the pose isn't valid.
-            this.cachedAreTagsSeen = false;
-            this.cachedIsLimelightPoseValid = false;
+            // If the megaTag2 isn't valid, obviously no tags can be seen and the pose isn't valid.
+            this.cachedAreMegaTag2Seen = false;
+            this.cachedIsMegaTag2PoseValid = false;
         }
 
-        if (false) {
-            poseConsumer.accept(this.getCurrentMegaTagPose(), this.megaTag.timestampSeconds, limelight.kMegaTag2StdDevs);
+        if (cachedIsMegaTagPoseValid) {
+            poseConsumer.accept(this.getCurrentMegaTagPose(), this.megaTag.timestampSeconds, limelight.kMegaTagStdDevs);
         }
         
-        if (cachedIsLimelightPoseValid) {
+        if (cachedIsMegaTag2PoseValid) {
             poseConsumer.accept(this.getCurrentMegaTag2Pose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
         }
 
