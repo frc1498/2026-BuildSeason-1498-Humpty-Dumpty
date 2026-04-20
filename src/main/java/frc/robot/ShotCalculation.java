@@ -39,7 +39,7 @@ public class ShotCalculation {
      * @param targetPose
      * @return
      */
-    public double getTargetDistance(Pose2d robotPose, Pose2d targetPose) {
+    public double calculateTargetDistance(Pose2d robotPose, Pose2d targetPose) {
         return targetPose.getTranslation().getDistance(robotPose.getTranslation());
     }
     
@@ -87,7 +87,7 @@ public class ShotCalculation {
      * @param targetPose
      * @return
      */
-    public double getDistanceToVirtualTarget(ChassisSpeeds robotSpeeds, Pose2d robotPose, Pose2d targetPose) {
+    public double calculateDistanceToVirtualTarget(ChassisSpeeds robotSpeeds, Pose2d robotPose, Pose2d targetPose) {
 
         // As much as I can tell, this is a 'prediction' so the mechanisms (turret, hood, flywheel) will track closer to what the target will be when this code is run.
         // Starting with 0.03, but I'm willing to move it to 0.02 (one loop iteration), or increase it as a fudge-factor.
@@ -123,7 +123,7 @@ public class ShotCalculation {
         
         // Initialize these variables before iterating.
         this.virtualTarget = targetPose;
-        this.previewTargetDistance = this.getTargetDistance(shooterPoseEstimate, virtualTarget);
+        this.previewTargetDistance = this.calculateTargetDistance(shooterPoseEstimate, virtualTarget);
 
         // Set the converge limit at the top of the class, to make it quick to change.
         for (int i = 0; i < convergeLimit; i++) {
@@ -133,11 +133,19 @@ public class ShotCalculation {
             this.offsetY = shooterVelocityY * timeOfFlight;
 
             this.virtualTarget = new Pose2d(targetPose.getTranslation().minus(new Translation2d(offsetX, offsetY)),targetPose.getRotation());
-            this.previewTargetDistance = this.getTargetDistance(shooterPoseEstimate, virtualTarget);
+            this.previewTargetDistance = this.calculateTargetDistance(shooterPoseEstimate, virtualTarget);
         }
 
         return this.previewTargetDistance;
     }
 
+    /**
+     * Return the most recently calculated distance to the virtual target.
+     * The calculation is performed in calculateDistanceToVirtualTarget(), and also returned from that method.
+     * @return The most recently calculated distance to the virtual target.
+     */
+    public double getDistanceToVirtualTarget() {
+        return this.previewTargetDistance;
+    }
     
 }

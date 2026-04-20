@@ -90,10 +90,15 @@ public class Vision extends SubsystemBase {
         this.setLimelightRobotPosition();
         //In the constructor, set the IMU mode to 1, so the limelight IMU is seeded with the robot gyro heading.
         this.setLimelightIMUMode(1);
+        this.setLimelightPipeline(limelight.kCompPipelineIndex);    // Force the limelight to use the competition pipeline.
         LimelightHelpers.SetRobotOrientation(limelight.kName, this.getRobotHeading(), 0.0, 0.0, 0.0, 0.0, 0.0);
 
         leftCamera = new PhotonCamera(photonvision.kLeftName);
         rightCamera = new PhotonCamera(photonvision.kRightName);
+
+        // Force both photonvision cameras to use the competition pipeline.
+        this.setPhotonvisionPipeline(leftCamera, photonvision.kCompPipelineIndex);
+        this.setPhotonvisionPipeline(rightCamera, photonvision.kCompPipelineIndex);
 
         SmartDashboard.putData("Vision", this);
         SmartDashboard.putData("Vision/Pose", this.visionField);
@@ -127,6 +132,23 @@ public class Vision extends SubsystemBase {
          * Mode 4 - Internal_External_Assist - Corrects the Limelight gyro with the robot yaw over time.  Recommended in the Limelight documentation.
          */
         LimelightHelpers.SetIMUMode(limelight.kName, IMUMode);
+    }
+
+    /**
+     * Sets the current pipeline for the limelight.
+     * @param pipelineIndex - The pipeline to switch to.
+     */
+    private void setLimelightPipeline(int pipelineIndex) {
+        LimelightHelpers.setPipelineIndex(limelight.kName, pipelineIndex);
+    }
+
+    /**
+     * Sets the current pipeline for the photonvision camera.
+     * @param camera - The photonvision camera to switch the pipeline for.
+     * @param pipelineIndex - The pipeline to switch to.
+     */
+    private void setPhotonvisionPipeline(PhotonCamera camera, int pipelineIndex) {
+        camera.setPipelineIndex(pipelineIndex);
     }
 
     /**
@@ -507,6 +529,24 @@ public class Vision extends SubsystemBase {
     public Command setLimelightIMUInternalOnly() {return this.switchIMUMode(2).withName("IMU Mode 2: Internal Only");}
     public Command setLimelightIMUInternalMT1Assist() {return this.switchIMUMode(3).withName("IMU Mode 3: Internal MT1 Assist");}
     public Command setLimelightIMUInternalExternalAssist() {return this.switchIMUMode(4).withName("IMU Mode 4: Internal External Assist");}
+
+    /**
+     * Sets the vision pipelines of every camera on the robot.
+     * Both photonvision cameras will run the same pipeline.
+     * @param limelightPipelineIndex - The limelight pipeline to switch to.
+     * @param photonvisionPipelineIndex - The photonvision pipeline to switch to.
+     * @return - A command that sets the vision pipelines on the robot.
+     */
+    private Command setPipeline(int limelightPipelineIndex, int photonvisionPipelineIndex) {
+        return runOnce(() -> {
+            this.setLimelightPipeline(limelightPipelineIndex);
+            this.setPhotonvisionPipeline(leftCamera, photonvisionPipelineIndex);
+            this.setPhotonvisionPipeline(rightCamera, photonvisionPipelineIndex);
+        }).ignoringDisable(true).withName("setPipeline");
+    }
+
+    public Command setCompPipeline() {return this.setPipeline(limelight.kCompPipelineIndex, photonvision.kCompPipelineIndex).withName("setCompPipeline");}
+    public Command setPracticePipeline() {return this.setPipeline(limelight.kPracticePipelineIndex, photonvision.kPracticePipelineIndex).withName("setPracticePipeline");}
 
     @Override
     public void initSendable(SendableBuilder builder) {

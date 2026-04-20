@@ -49,21 +49,16 @@ public class Shooter extends SubsystemBase {
   private TalonFX shooterBottomLeftMotor;
   private TalonFX shooterTopRightMotor;   // Motor type definition
   private TalonFX shooterBottomRightMotor;
-  private TalonFX hoodMotor;       // Motor type definition
 
   private VelocityVoltage shooterMotorMode;   // Motor control type definition
-  private PositionVoltage hoodMotorMode;   // Motor control type definition
 
   private ShooterConfig shooterConfig;  // Create an object of type shooter subsystem config used to configure motors
 
   public Pose2d currentTarget;
   public Pose2d hubTarget;
 
-  private double desiredHoodAngle;
-  private double desiredHoodMotorRotations;
   private double desiredShooterVelocity;
 
-  private boolean hoodAtPosition;
   private boolean shooterAtVelocity;
   private boolean readyToFire;
 
@@ -72,21 +67,16 @@ public class Shooter extends SubsystemBase {
   private double distanceToTarget;
   private double distanceToVirtualTarget;
 
-  private double virtualHoodAngle;
   private double virtualFlywheelVelocity;
 
-  private double whileMoveHoodAngle;
   private double whileMoveFlywheelVelocity;
   private Rotation2d whileMoveAngle = new Rotation2d(0.0);
 
-  private double currentHoodAngle;
-  private double currentHoodRotations;
   private double currentShooterVelocity;
 
   private ShooterSim sim;
   private TalonFXSimState shooterLeftMotorSim;
   private TalonFXSimState shooterRightMotorSim;
-  private TalonFXSimState hoodMotorSim;
   
   public DutyCycleOut shooterDutyCycle;
 
@@ -129,18 +119,12 @@ public class Shooter extends SubsystemBase {
     this.configureMechanism(this.shooterBottomRightMotor, this.shooterConfig.shooterBottomRightMotorConfig);
 
     this.shooterMotorMode = new VelocityVoltage(0); // Set the control mode for both shooter motors.
-      
-    this.hoodMotor = new TalonFX(ShooterConfig.kHoodMotorCANID, MotorEnableConstants.canivore);            // Create hood adjustment motor.
-    this.hoodMotorMode = new PositionVoltage(0);                                           // Set the contorl mode for the adjustment motor.
-    this.configureMechanism(this.hoodMotor, this.shooterConfig.hoodMotorConfig);
 
     this.shooterLeftMotorSim = this.shooterTopLeftMotor.getSimState();
     this.shooterRightMotorSim = this.shooterTopRightMotor.getSimState();
-    this.hoodMotorSim = this.hoodMotor.getSimState();
 
     this.sim = new ShooterSim(
       this.shooterConfig,
-      this.hoodMotorSim,
       this.shooterLeftMotorSim,
       this.shooterRightMotorSim
     );
@@ -154,9 +138,6 @@ public class Shooter extends SubsystemBase {
 
     this.requestShoot = false;
 
-    this.hoodMotor.setPosition(0);
-
-    this.setHoodAngle(0);
     this.desiredShooterVelocity = -10;
 
     this.whileMoveAngle = new Rotation2d(0.0);
@@ -202,39 +183,6 @@ public class Shooter extends SubsystemBase {
   /* Hood Private Methods */
 
   /**
-   * Set the position of hood.
-   * @param position - The desired hood position, in angle of hood
-   */
-  private void setHoodAngle(double position) {
-    // Always store the setpoint, to track the desired position.
-    this.desiredHoodAngle = position;
-
-    //Convert to Rotations
-    this.desiredHoodMotorRotations = this.desiredHoodAngle / 360 * ShooterConstants.kHoodGearRatio;
-
-    // Use this constant to enable or disable motor output for debugging.
-    if (MotorEnableConstants.kHoodMotorEnabled) {
-      // Check if the desired hood position is within the allowable safety range.
-      // Do not update the hood position if it is out of range.
-      if (this.isSetpointWithinSafetyRange(this.desiredHoodAngle, ShooterConstants.kHoodSafeRetract, ShooterConstants.kHoodSafeExtend)) {
-        this.hoodMotor.setControl(this.hoodMotorMode.withPosition(this.desiredHoodMotorRotations));
-      } else {
-        // Log a fault with DogLog if the desired hood position was out of range.
-        // DogLog.logFault(ShooterFault.HOOD_SETPOINT_OUT_OF_RANGE);
-      }
-    }
-  }
-
-  /**
-   * Return the current position of the hood.
-   * @return - The current position of the hood, in rotations.
-   */
-  private double getHoodAngle() {
-    // Convert motor rotations and return Angle
-    return (this.hoodMotor.getPosition().getValueAsDouble() * 360 / ShooterConstants.kHoodGearRatio);
-  }
-
-  /**
    * Put both shooter motors in an 'idle' state.
    * Set the control mode to DutyCycleOut and set the output to zero.
    */
@@ -244,14 +192,6 @@ public class Shooter extends SubsystemBase {
     this.shooterTopRightMotor.setControl(this.shooterDutyCycle.withOutput(0));
     this.shooterBottomRightMotor.setControl(this.shooterDutyCycle.withOutput(0));
     this.desiredShooterVelocity = 0;
-  }
-
-  /**
-   * Return the current position of the hood.
-   * @return The current position of the hood, in motor rotations.
-   */
-  private double getHoodRotations() {
-    return (this.hoodMotor.getPosition().getValueAsDouble());
   }
 
   /**
@@ -387,11 +327,6 @@ public class Shooter extends SubsystemBase {
     return ((this.getShooterVelocity() > (this.desiredShooterVelocity - ShooterConstants.kShooterVelocityDeadband)));
   }
 
-  private boolean isHoodAtPosition() {
-    return ((this.getHoodAngle() < (this.desiredHoodAngle + ShooterConstants.kHoodPositionDeadband)) 
-    && (this.getHoodAngle() > (this.desiredHoodAngle - ShooterConstants.kHoodPositionDeadband)));
-  }
-
   /**
    * Set the neutral mode of the shooter motors to coast.
    * @return A command that sets the neutral mode of the shooter motors to coast.
@@ -402,7 +337,6 @@ public class Shooter extends SubsystemBase {
       this.setMotorNeutralMode(this.shooterBottomLeftMotor, NeutralModeValue.Coast);
       this.setMotorNeutralMode(this.shooterTopRightMotor, NeutralModeValue.Coast);
       this.setMotorNeutralMode(this.shooterBottomRightMotor, NeutralModeValue.Coast);
-      this.setMotorNeutralMode(this.hoodMotor, NeutralModeValue.Coast);
     });
   }
 
@@ -416,7 +350,6 @@ public class Shooter extends SubsystemBase {
       this.setMotorNeutralMode(this.shooterBottomLeftMotor, this.shooterConfig.shooterBottomLeftMotorConfig.MotorOutput.NeutralMode);
       this.setMotorNeutralMode(this.shooterTopRightMotor, this.shooterConfig.shooterTopRightMotorConfig.MotorOutput.NeutralMode);
       this.setMotorNeutralMode(this.shooterBottomRightMotor, this.shooterConfig.shooterBottomRightMotorConfig.MotorOutput.NeutralMode);
-      this.setMotorNeutralMode(this.hoodMotor, this.shooterConfig.hoodMotorConfig.MotorOutput.NeutralMode);
     });
   }
 
@@ -475,50 +408,11 @@ public class Shooter extends SubsystemBase {
     return runOnce(() -> {getAlliance();});
   }
 
-  /* Public Hood Commands */
-
-  private Command setHood(DoubleSupplier position) {return runOnce(() -> {this.setHoodAngle(position.getAsDouble());}).withName("setHoodAngle");}
-
-  public Command newHood0() {return this.setHood(() -> {return 0.0;}).withName("hood0");}
-  public Command newHood35() {return this.setHood(() -> {return 35.0;}).withName("hood35");}
-  public Command newAutoHood() {return this.setHood(() -> {return this.virtualHoodAngle;}).withName("autoHood");}
-  public Command newWhileMoveHood() {return this.setHood(() -> {return this.whileMoveHoodAngle;}).withName("whileMoveHood");}
-
-  public Command hood0() {
-    return runOnce(() -> {this.setHoodAngle(0);});
-  }
-
-  public Command hood30() {
-    return runOnce(() -> {this.setHoodAngle(30);});
-  }
-
-  public Command hood20() {
-    return runOnce(() -> {this.setHoodAngle(20);});
-  }
-
-  /**
-   * Set the hood based on the distance to the hub.
-   * @return
-   */
-  public Command autoHood() {
-    return runOnce(() -> {this.setHoodAngle(this.virtualHoodAngle);});
-  }
-
-  /**
-   * Set the hood based on the estimated distance to the hub for the shoot while move.
-   * @return
-   */
-  public Command whileMoveHood() {
-    return runOnce(() -> {this.setHoodAngle(this.whileMoveHoodAngle);});
-  }
-
   public Supplier<Rotation2d> robotTarget() {
     return () -> {return this.whileMoveAngle;};
   }
 
   //======================Triggers=========================
-  public Trigger isHoodAtPosition = new Trigger(() -> {return isHoodAtPosition();});
-  public Trigger isHoodUp = new Trigger(() -> {return this.getHoodAngle() >= 4.5;});
   public Trigger isShooterAtVelocity = new Trigger(() -> {return isShooterAtSpeed();});
   public Trigger isReadyToFire = new Trigger(() -> {return this.readyToFire;});
 
@@ -545,8 +439,6 @@ public class Shooter extends SubsystemBase {
 
     this.swerveState = this.swerveStateSupplier.get();
 
-    this.currentHoodAngle = this.getHoodAngle();
-    this.currentHoodRotations = this.getHoodRotations();
     this.currentShooterVelocity = this.getShooterVelocity();
 
     // Wondering if caching this will reduce the CPU usage of this call.
@@ -568,17 +460,15 @@ public class Shooter extends SubsystemBase {
     }
 
     // Signal that we are ready to fire if the hood is at position and the shooter is at velocity.
-    this.readyToFire = this.hoodAtPosition && this.shooterAtVelocity;
+    this.readyToFire = this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter), targetLocation);
+    this.distanceToTarget = ShotCalculation.getInstance().calculateTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter), targetLocation);
     
-    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, targetLocation);
+    this.distanceToVirtualTarget = ShotCalculation.getInstance().calculateDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, targetLocation);
 
-    this.virtualHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToTarget);
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
 
-    this.whileMoveHoodAngle = ShooterConstants.hoodAngleMap.get(this.distanceToVirtualTarget);
     this.whileMoveFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToVirtualTarget);
     //this.whileMoveAngle = ShotCalculation.getInstance().getVirtualTarget().getTranslation().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter).getTranslation()).getAngle();
                         //ShotCalculation.getInstance().getVirtualTarget().minus(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToTurret)).getTranslation().getAngle().getDegrees());
