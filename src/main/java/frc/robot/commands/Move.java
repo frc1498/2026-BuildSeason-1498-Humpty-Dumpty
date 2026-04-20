@@ -183,7 +183,7 @@ public class Move {
 
     public Command startDistanceBasedShot() {
         return Commands.parallel(
-            Commands.repeatingSequence(shooter.whileMoveShoot(), shooter.whileMoveHood()),
+            Commands.repeatingSequence(shooter.whileMoveShoot(), hood.whileMoveHood()),
             Commands.waitUntil(shooter.isShooterAtVelocity).andThen(Commands.parallel(
                 frontKickup.forwardFrontKickup(),
                 rearKickup.forwardRearKickup(),
