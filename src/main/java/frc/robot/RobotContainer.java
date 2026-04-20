@@ -211,18 +211,18 @@ public class RobotContainer {
             .whileFalse(this.setDriverRumble(() -> {return 0.0;}));
 
         //Driver LeftTrigger:Shoot
-   driver.leftTrigger(0.1)
-        //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
-        .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
-            Commands.parallel(move.startWhileMoveShoot(),
-                drivetrain.applyRequest(() -> driveFacingAngle
-                    .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
-                    .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
-                    .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                    move.slowHopperRetract())
-            )).withName("Shoot On The Move"))
-        .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
-        /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
+        driver.leftTrigger(0.1)
+            //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
+            .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
+                Commands.parallel(move.startWhileMoveShoot(),
+                    drivetrain.applyRequest(() -> driveFacingAngle
+                        .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+                        .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
+                        .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
+                        move.slowHopperRetract())
+                )).withName("Shoot On The Move"))
+            .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
+            /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
     
         driver.leftTrigger(0.1).and(driver.a().negate()).whileFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
         
@@ -235,6 +235,15 @@ public class RobotContainer {
         //driver.a()
         driver.a().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())).withName("Static Shot"))
         .onFalse(Commands.sequence(move.stopShoot(),move.hopperExtend()).withName("Stop Shooting and Extend Hopper"));
+
+        // driver.leftBumper
+        // I'm trying out different ways to make the command composition more readable.
+        driver.leftBumper().onTrue(
+            Commands.parallel(
+                move.startDistanceBasedShot(),
+                Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
+            ).withName("Distance Based Shot"))
+        .onFalse(Commands.sequence(move.stopShoot(), move.hopperExtend()).withName("Stop Distance Based Shot and Extend Hopper"));
 
         /*
         driver.a().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
