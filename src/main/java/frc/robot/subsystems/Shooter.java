@@ -463,9 +463,9 @@ public class Shooter extends SubsystemBase {
     this.readyToFire = this.shooterAtVelocity;
 
     //First attempt of the shoot while moving calculation.
-    this.distanceToTarget = ShotCalculation.getInstance().getTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter), targetLocation);
+    this.distanceToTarget = ShotCalculation.getInstance().calculateTargetDistance(this.swerveState.Pose.transformBy(ShooterConstants.kRobotToShooter), targetLocation);
     
-    this.distanceToVirtualTarget = ShotCalculation.getInstance().getDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, targetLocation);
+    this.distanceToVirtualTarget = ShotCalculation.getInstance().calculateDistanceToVirtualTarget(this.swerveState.Speeds, this.swerveState.Pose, targetLocation);
 
     this.virtualFlywheelVelocity = ShooterConstants.flywheelSpeedMap.get(this.distanceToTarget);
 
