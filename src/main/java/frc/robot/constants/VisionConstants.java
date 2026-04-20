@@ -15,6 +15,8 @@ import edu.wpi.first.math.numbers.N3;
  * Mainly co-processor names, physical coordinates of their positions on the robot, and camera settings.
  */
 public class VisionConstants {
+    // Vision constants used between every camera.
+    public static final double kMaximumRotationRate = 3.3;  // 3.3 radians per second.
 
     /**
      * Limelight related constants.
@@ -32,6 +34,7 @@ public class VisionConstants {
         public static final int kCompPipelineIndex = 0;         // Treat index '0' as the competition index.
         public static final int kPracticePipelineIndex = 1;     // Treat index '1' as the practice index.
 
+        public static final Matrix<N3, N1> kMegaTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
     }
 
@@ -60,6 +63,7 @@ public class VisionConstants {
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);  // Setting these to the same as the Limelight until they can be experimentally found.
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);
 
+        public static final double kAmbiguityThreshold = 0.10;
         public static final int kCompPipelineIndex = 0;         // Treat index '0' as the competition index.
         public static final int kPracticePipelineIndex = 1;     // Treat index '1' as the pipeline index.
 

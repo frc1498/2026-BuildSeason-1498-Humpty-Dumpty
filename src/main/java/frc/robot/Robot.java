@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private Command m_limelightCommand;
 
   private final RobotContainer m_robotContainer;
 
@@ -103,7 +104,11 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    // Schedule the command to record the limelight video for auton when the auton period ends.
+    m_limelightCommand = m_robotContainer.vision.limelightAutonVideo();
+    CommandScheduler.getInstance().schedule(m_limelightCommand.withName("limelightAutonVideo"));
+  }
 
   @Override
   public void teleopInit() {
@@ -124,7 +129,11 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopExit() {}
+  public void teleopExit() {
+    // Schedule the command to record the limelight video for teleop when the teleop period ends.
+    m_limelightCommand = m_robotContainer.vision.limelightTeleopVideo();
+    CommandScheduler.getInstance().schedule(m_limelightCommand.withName("limelightTeleopVideo"));
+  }
 
   @Override
   public void testInit() {
