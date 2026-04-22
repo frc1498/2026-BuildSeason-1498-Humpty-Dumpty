@@ -15,7 +15,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import dev.doglog.DogLog;
-
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -72,6 +72,10 @@ public class Vision extends SubsystemBase {
     private boolean cachedIsLeftPhotonPoseValid = false;
     private boolean cachedIsRightPhotonPoseValid = false;
     private double testTimestamp;
+
+    /* Logging Variables */
+    @Logged
+    private String currentCommand = "";
 
     private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
@@ -570,6 +574,7 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run.
+        this.currentCommand = this.getCurrentCommandName();
      
         // Start by caching important values.
         // By caching these values, any other code that requires them will use the same values for the current 20 ms loop.

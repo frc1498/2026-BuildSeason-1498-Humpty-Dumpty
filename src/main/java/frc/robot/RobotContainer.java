@@ -38,6 +38,7 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -65,6 +66,7 @@ public class RobotContainer {
     //======================================================================= 
 
     public HopperConfig hopperConfig = new HopperConfig();
+    @Logged
     public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public IntakeConfig intakeConfig = new IntakeConfig();

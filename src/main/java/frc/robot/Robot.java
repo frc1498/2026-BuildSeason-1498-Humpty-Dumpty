@@ -5,9 +5,18 @@
 package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
+import com.ctre.phoenix6.HootEpilogueBackend;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.epilogue.logging.EpilogueBackend;
+import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,8 +27,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
+@Logged
 public class Robot extends TimedRobot {
+  @NotLogged
   private Command m_autonomousCommand;
+  @NotLogged
   private Command m_limelightCommand;
 
   private final RobotContainer m_robotContainer;
@@ -36,6 +48,16 @@ public class Robot extends TimedRobot {
   public Robot() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+
+    /*Epilogue.configure(config -> {
+      config.backend = EpilogueBackend.multi(
+        new HootEpilogueBackend()
+      );
+    });*/
+    //Epilogue.bind(this);
+    //DataLogManager.start();
+    //DriverStation.startDataLog(DataLogManager.getLog());
+
     m_robotContainer = new RobotContainer();
   }
 

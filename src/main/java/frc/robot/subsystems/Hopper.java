@@ -17,6 +17,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import dev.doglog.DogLog;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,6 +43,10 @@ public class Hopper extends SubsystemBase {
 
   private HopperConfig hopperConfig; //Create an object of type HopperConfig
   public boolean isHopperVelocityLimitLatched = false;
+
+  /* Logging Variables */
+  @Logged
+  private String currentCommand = "";
 
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -339,6 +344,7 @@ public class Hopper extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    this.currentCommand = this.getCurrentCommandName();
     this.log(LogLevel.NONE);
   }
 

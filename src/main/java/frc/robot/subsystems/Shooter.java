@@ -20,6 +20,8 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -83,6 +85,10 @@ public class Shooter extends SubsystemBase {
   private double simTime;
 
   private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
+
+  /* Logging Variables */
+  @Logged
+  private String currentCommand = "";
 
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -436,6 +442,7 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    this.currentCommand = this.getCurrentCommandName();
 
     this.swerveState = this.swerveStateSupplier.get();
 
