@@ -91,11 +91,12 @@ public class RobotContainer {
     // private final CommandXboxController developer = new CommandXboxController(ControllerConstants.kDeveloperControllerPort);
 
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private double MaxAngularRate = RotationsPerSecond.of(1).in(RadiansPerSecond); // was 0.75 now 1.0 for testing 
     private boolean DSLatch = false;
     private double precisionDampenerTranslation = 1; //Translation Speed Limiter
     private double precisionDampenerRotation = 1; //Rotation Speed Limiter
-    
+    private double shooterAngleOffset = 5.0; //Offset in degrees.  Positive is counter clockwise.
+
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.001).withRotationalDeadband(MaxAngularRate * 0.001) // Add a 5% deadband
@@ -223,13 +224,16 @@ public class RobotContainer {
                     drivetrain.applyRequest(() -> driveFacingAngle
                         .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
-                        .withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                        move.slowHopperRetract())
+                        //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
+                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))), 
+                        Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper())
                 )).withName("Shoot On The Move"))
-            .onFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
+            //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
+            .onFalse(Commands.sequence(move.stopShoot()));
             /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
-    
-        driver.leftTrigger(0.1).and(driver.a().negate()).whileFalse(Commands.sequence(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
+            //shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset))
+
+        driver.leftTrigger(0.1).and(driver.a().negate()).whileFalse(Commands.sequence(move.stopShoot()).withName("Stop Shooting"));
         
         //Driver x: 
         driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());

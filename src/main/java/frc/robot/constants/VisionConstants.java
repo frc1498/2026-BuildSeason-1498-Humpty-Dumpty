@@ -43,20 +43,29 @@ public class VisionConstants {
      */
     public static class photonvision {
         public static final String kRightName = "swerveRightCamera";
-        public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.31115, 0.1810), new Rotation3d(0.0, 0.2618, -1.5708));
+        public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.31115, 0.1810), 
+        new Rotation3d(0.0, 0.314159, -1.5708));
         // 11 in. (0.279400558801118 in meters) X
         // 13 in. (-0.330200660401321 in meters) Y
         // 7-1/8 in. (0.180975361950724 in meters) Z
         // 1.5707963267949 rad (pi / 2) 90 deg
-        // 15 deg roll (0.261799387799149 rad)
+        // 15 deg roll (0.261799387799149 rad) 
+        // 12 deg roll (0.20944)
+        // 18 deg roll (0.314159)
+        //
         // That is in the robot coordinate frame.  To the camera, that is a 15 deg positive pitch.
         public static final String kLeftName = "swerveLeftCamera";
-        public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.2794, 0.31115, 0.1810), new Rotation3d(0.0, 0.2618, 1.5708));
+        public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.2794, 0.31115, 0.1810), 
+        new Rotation3d(0.0, 0.349, 1.5708));
         // 11 in. (0.279400558801118 in meters) X
         // 12-1/8 in. (0.307975615951232 in meters) Y
         // 7-1/8 in. (0.180975361950724 in meters) Z
         // -1.5707963267949 rad (-pi / 2) -90 deg
-        // 15 deg roll (0.261799387799149 rad)
+        // 15 deg pitch (0.261799387799149 rad)
+        // 12 deg pitch (0.20944)
+        // 18 deg pitch (0.314159)
+        // 10 deg pitch (0.175)
+        // 20 deg pitch (0.349)
         // That is in the robot coordinate frame.  To the camera, that is a 15 deg positive pitch.
         public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);  // FiM fields are welded.
 

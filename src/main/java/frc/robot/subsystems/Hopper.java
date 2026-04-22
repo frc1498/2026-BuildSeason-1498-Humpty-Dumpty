@@ -292,10 +292,10 @@ public class Hopper extends SubsystemBase {
    * @return A command that agitates the hopper.
    */
   public Command agitate() {
-    return (this.hopperRetract()
-      .andThen(Commands.waitSeconds(1.5))
+    return (this.hopperMidPosition()
+      .andThen(Commands.waitSeconds(0.25))
       .andThen(this.hopperExtend())
-      .andThen(Commands.waitSeconds(.25))
+      .andThen(Commands.waitSeconds(0.25))
     ).repeatedly().withName("agitate");
       
     //return runOnce(() -> {this.agitateHopper();}).andThen(
