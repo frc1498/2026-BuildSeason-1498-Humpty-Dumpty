@@ -413,7 +413,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         CurrentLimitsConfigs talonConfig= new CurrentLimitsConfigs();
         talonConfig.StatorCurrentLimit=180;
         talonConfig.StatorCurrentLimitEnable=true;
-        talonConfig.SupplyCurrentLimit=80;
+        talonConfig.SupplyCurrentLimit=60;
         talonConfig.SupplyCurrentLimitEnable=true;
         this.getModule(0).getDriveMotor().getConfigurator().apply(talonConfig,0);
         this.getModule(1).getDriveMotor().getConfigurator().apply(talonConfig,0);
@@ -425,7 +425,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         CurrentLimitsConfigs talonConfig= new CurrentLimitsConfigs();
         talonConfig.StatorCurrentLimit=180;
         talonConfig.StatorCurrentLimitEnable=true;
-        talonConfig.SupplyCurrentLimit=80;
+        talonConfig.SupplyCurrentLimit=60;
         talonConfig.SupplyCurrentLimitEnable=true;
         this.getModule(0).getDriveMotor().getConfigurator().apply(talonConfig,0);
         this.getModule(1).getDriveMotor().getConfigurator().apply(talonConfig,0);

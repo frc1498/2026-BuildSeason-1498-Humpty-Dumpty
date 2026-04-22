@@ -33,9 +33,9 @@ public class FloorConfig {
 
         floor.CurrentLimits.StatorCurrentLimit = 180;  //Set 4-10
         floor.CurrentLimits.StatorCurrentLimitEnable = true;
-        floor.CurrentLimits.SupplyCurrentLimit = 15;    //Set 4-10
+        floor.CurrentLimits.SupplyCurrentLimit = 20;    //Set 4-10
         floor.CurrentLimits.SupplyCurrentLimitEnable = true;
-        floor.CurrentLimits.SupplyCurrentLowerLimit = 15; //Set 4-10
+        floor.CurrentLimits.SupplyCurrentLowerLimit = 20; //Set 4-10
         floor.CurrentLimits.SupplyCurrentLowerTime = 0;
 
         //Slot 0 Config
