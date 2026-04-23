@@ -83,14 +83,14 @@ public class Robot extends TimedRobot {
 
     // Record all of the code build constants to the data log to correlate log data to a specific branch and commit of code.
     buildInformation.append("MAVEN_GROUP/" + BuildConstants.MAVEN_GROUP);
-    buildInformation.append("MAVEN_NAME/" + BuildConstants.MAVEN_GROUP);
+    buildInformation.append("MAVEN_NAME/" + BuildConstants.MAVEN_NAME);
     buildInformation.append("VERSION/" + BuildConstants.VERSION);
     buildInformation.append("GIT_REVISION/" + BuildConstants.GIT_REVISION);
     buildInformation.append("GIT_SHA/" + BuildConstants.GIT_SHA);
     buildInformation.append("GIT_DATE/" + BuildConstants.GIT_DATE);
     buildInformation.append("GIT_BRANCH/" + BuildConstants.GIT_BRANCH);
     buildInformation.append("BUILD_DATE/" + BuildConstants.BUILD_DATE);
-    buildInformation.append("BUILD_UNIX_TIME/" +BuildConstants.BUILD_UNIX_TIME);
+    buildInformation.append("BUILD_UNIX_TIME/" + BuildConstants.BUILD_UNIX_TIME);
     buildInformation.append("DIRTY/" + BuildConstants.DIRTY);
 
     // Set the RoboRIO2 custom brownout voltage.
