@@ -15,12 +15,14 @@ import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.BuildConstants;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -33,6 +35,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   @NotLogged
   private Command m_limelightCommand;
+
+  private StringLogEntry buildInformation;
 
   private final RobotContainer m_robotContainer;
 
@@ -61,6 +65,9 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
+    // Use this to record the build constants to the data log.
+    buildInformation = new StringLogEntry(DataLogManager.getLog(), "/BuildConstants/");
+
     m_robotContainer = new RobotContainer();
   }
 
@@ -73,6 +80,18 @@ public class Robot extends TimedRobot {
 
     // Get the deploy directory for Elastic.
     //WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
+    // Record all of the code build constants to the data log to correlate log data to a specific branch and commit of code.
+    buildInformation.append("MAVEN_GROUP/" + BuildConstants.MAVEN_GROUP);
+    buildInformation.append("MAVEN_NAME/" + BuildConstants.MAVEN_GROUP);
+    buildInformation.append("VERSION/" + BuildConstants.VERSION);
+    buildInformation.append("GIT_REVISION/" + BuildConstants.GIT_REVISION);
+    buildInformation.append("GIT_SHA/" + BuildConstants.GIT_SHA);
+    buildInformation.append("GIT_DATE/" + BuildConstants.GIT_DATE);
+    buildInformation.append("GIT_BRANCH/" + BuildConstants.GIT_BRANCH);
+    buildInformation.append("BUILD_DATE/" + BuildConstants.BUILD_DATE);
+    buildInformation.append("BUILD_UNIX_TIME/" +BuildConstants.BUILD_UNIX_TIME);
+    buildInformation.append("DIRTY/" + BuildConstants.DIRTY);
 
     // Set the RoboRIO2 custom brownout voltage.
     RobotController.setBrownoutVoltage(4.5);
