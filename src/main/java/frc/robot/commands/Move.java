@@ -161,7 +161,7 @@ public class Move {
 
     //==============================Shoot========================================
     public Command stopShoot() {
-        return Commands.sequence(Commands.parallel(intake.intakeStop(), hopper.hopperExtend(), floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), hood.hood0()).withName("stopShoot");       
+        return Commands.sequence(Commands.parallel(intake.intakeStop(), floor.stopFloor(), rearKickup.stopRearKickup(),frontKickup.stopFrontKickup()), shooter.stopShoot(), hood.hood0()).withName("stopShoot");       
     }
 
     public Command startShootStatic() {

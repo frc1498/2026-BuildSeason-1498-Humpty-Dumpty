@@ -42,12 +42,6 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "extendHopper"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
                   "name": "stopShoot"
                 }
               }
@@ -88,20 +82,7 @@
         {
           "type": "parallel",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "extendHopper"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopShoot"
-                }
-              }
-            ]
+            "commands": []
           }
         }
       ]

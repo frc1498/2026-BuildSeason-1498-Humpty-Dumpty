@@ -90,13 +90,13 @@ public class ShooterConstants {
 
     // In RPS.
     flywheelSpeedMap.put(1.5748, 33.0);
-    flywheelSpeedMap.put(2.1336, 34.8);
-    flywheelSpeedMap.put(2.3368, 36.8);
-    flywheelSpeedMap.put(3.1496, 39.5);
-    flywheelSpeedMap.put(3.9370, 43.0);
-    flywheelSpeedMap.put(4.9276, 48.0);
-    flywheelSpeedMap.put(5.2324, 49.0);
-    flywheelSpeedMap.put(5.5324, 49.5);
+    flywheelSpeedMap.put(2.1336, 34.0);  //Was 34.8
+    flywheelSpeedMap.put(2.3368, 36.8);  //Was 
+    flywheelSpeedMap.put(3.1496, 39.5);  //Was
+    flywheelSpeedMap.put(3.9370, 43.0);  //Was
+    flywheelSpeedMap.put(4.9276, 48.0);  //Was
+    flywheelSpeedMap.put(5.2324, 49.0);  //Was
+    flywheelSpeedMap.put(5.5324, 49.5);  //Was
     flywheelSpeedMap.put(6.2738, 52.0); //For passing shot
     flywheelSpeedMap.put(9.4488, 60.0); //For passing shot
     flywheelSpeedMap.put(12.0, 75.0); //For passing shot

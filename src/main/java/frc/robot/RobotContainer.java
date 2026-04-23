@@ -355,7 +355,7 @@ public class RobotContainer {
     public void registerAutoCommands() {
         NamedCommands.registerCommand("intake", move.intake());
         NamedCommands.registerCommand("stopIntake", move.stopIntake());
-        NamedCommands.registerCommand("shoot", move.startWhileMoveShoot());
+        NamedCommands.registerCommand("shoot", move.startDistanceBasedShot());
         NamedCommands.registerCommand("stopShoot", move.stopShoot());
         NamedCommands.registerCommand("extendHopper", move.hopperExtend());
         NamedCommands.registerCommand("retractHopperMid", move.hopperMid());

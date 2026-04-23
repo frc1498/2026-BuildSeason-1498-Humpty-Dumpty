@@ -7,7 +7,50 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Blue - L"
+            "pathName": "Red - L Backup"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 3.75
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "slowRetract"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stopShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hopperRetract"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red - L2 Backup"
           }
         },
         {
@@ -38,45 +81,7 @@
         {
           "type": "parallel",
           "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "stopShoot"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Blue - L2"
-          }
-        },
-        {
-          "type": "deadline",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.75
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "shoot"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "slowRetract"
-                }
-              }
-            ]
+            "commands": []
           }
         }
       ]

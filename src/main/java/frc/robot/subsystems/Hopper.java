@@ -237,28 +237,27 @@ public class Hopper extends SubsystemBase {
    * @return A command that runs the {@code goToPosition} method.
    */
   private Command moveHopper(DoubleSupplier position) {return run(() -> {this.goToPosition(position.getAsDouble());}).withName("moveHopper");}
-
-  public Command newHopperExtend() {return this.moveHopper(() -> {return HopperConstants.kHopperExtend;}).until(isHopperExtended).withName("hopperExtend");}
-  public Command newHopperRetract() {return this.moveHopper(() -> {return HopperConstants.kHopperRetract;}).until(isHopperRetracted).withName("hopperRetract");}
-  public Command newHopperMidpoint() {return this.moveHopper(() -> {return HopperConstants.kHopperMidPosition;}).until(isHopperMidpoint).withName("hopperMidpoint");}
-  public Command hopperHold() {return this.moveHopper(() -> {return this.getHopperPosition();}).withName("hopperHold");}
+  
+  public Command hopperHold() {
+    return this.moveHopper(() -> {return this.getHopperPosition();}).withName("hopperHold");
+  }
 
   public Command hopperExtend() {
-    return run(
+    return runOnce(
       () -> {this.goToPosition(HopperConstants.kHopperExtend);}
-    ).until(isHopperExtended).withName("hopperExtend");
+    ).withName("hopperExtend");
   }
 
   public Command hopperRetract() {
-    return run(
+    return runOnce(
       () -> {this.goToPosition(HopperConstants.kHopperRetract);}
-    ).until(isHopperRetracted).withName("hopperRetract");
+    ).withName("hopperRetract");
   }
 
   public Command hopperMidPosition() {
-    return run(
+    return runOnce(
       () -> {this.goToPosition(HopperConstants.kHopperMidPosition);}
-    ).until(isHopperMidpoint).withName("hopperMidpoint");
+    ).withName("hopperMidpoint");
   }
 
   /**
