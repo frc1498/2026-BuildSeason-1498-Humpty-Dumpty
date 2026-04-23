@@ -49,14 +49,16 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
 
-    /*Epilogue.configure(config -> {
+    Epilogue.configure(config -> {
       config.backend = EpilogueBackend.multi(
-        new HootEpilogueBackend()
+        new HootEpilogueBackend(),
+        new NTEpilogueBackend(NetworkTableInstance.getDefault())
       );
-    });*/
-    //Epilogue.bind(this);
-    //DataLogManager.start();
-    //DriverStation.startDataLog(DataLogManager.getLog());
+    });
+
+    Epilogue.bind(this);
+    DataLogManager.start();
+    DriverStation.startDataLog(DataLogManager.getLog());
 
     m_robotContainer = new RobotContainer();
   }
