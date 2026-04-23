@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
         new HootEpilogueBackend(),
         new NTEpilogueBackend(NetworkTableInstance.getDefault())
       );
+      config.minimumImportance = Logged.Importance.DEBUG;
     });
 
     Epilogue.bind(this);
