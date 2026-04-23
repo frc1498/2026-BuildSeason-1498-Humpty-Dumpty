@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "setTargetToHub"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -43,6 +49,12 @@
                 "type": "named",
                 "data": {
                   "name": "stopShoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "hopperRetract"
                 }
               }
             ]
@@ -77,12 +89,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": []
           }
         }
       ]

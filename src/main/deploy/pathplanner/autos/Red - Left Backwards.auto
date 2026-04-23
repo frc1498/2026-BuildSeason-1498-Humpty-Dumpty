@@ -11,6 +11,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "setTargetToHub"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
