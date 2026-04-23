@@ -19,6 +19,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -68,7 +69,7 @@ public class Hood extends SubsystemBase {
   public DutyCycleOut shooterDutyCycle;
 
   /* Logging Variables */
-  @Logged
+  @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
 
   // Fall back to a default of no telemetry.

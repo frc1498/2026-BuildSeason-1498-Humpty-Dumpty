@@ -16,6 +16,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -74,7 +75,7 @@ public class Vision extends SubsystemBase {
     private double testTimestamp;
 
     /* Logging Variables */
-    @Logged
+    @Logged(importance = Importance.CRITICAL)
     private String currentCommand = "";
 
     private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;

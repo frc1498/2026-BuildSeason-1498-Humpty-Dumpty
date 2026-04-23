@@ -19,6 +19,7 @@ import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.IntakeConstants;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +40,7 @@ public class Intake extends SubsystemBase {
   public DutyCycleOut intakeDutyCycle;
 
   /* Logging Variables */
-  @Logged
+  @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
 
   // Fall back to a default of no telemetry.

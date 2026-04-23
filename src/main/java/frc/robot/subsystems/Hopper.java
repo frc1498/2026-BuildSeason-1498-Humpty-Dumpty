@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import dev.doglog.DogLog;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,7 +46,7 @@ public class Hopper extends SubsystemBase {
   public boolean isHopperVelocityLimitLatched = false;
 
   /* Logging Variables */
-  @Logged
+  @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
 
   // Fall back to a default of no telemetry.

@@ -15,6 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,7 +40,7 @@ public class FrontKickup extends SubsystemBase {
   private FrontKickupConfig frontKickupConfig;
   
   /* Logging Variables */
-  @Logged
+  @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
 
   // Fall back to a default of no telemetry.

@@ -41,7 +41,7 @@ public class Floor extends SubsystemBase {
   private FloorConfig floorConfig;
 
   /* Logging Variables */
-  @Logged
+  @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
 
   // Fall back to a default of no telemetry.
