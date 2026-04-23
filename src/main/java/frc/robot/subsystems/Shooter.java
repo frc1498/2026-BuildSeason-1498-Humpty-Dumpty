@@ -22,6 +22,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -66,13 +67,6 @@ public class Shooter extends SubsystemBase {
 
   private Supplier<SwerveDriveState> swerveStateSupplier;
   private SwerveDriveState swerveState;
-  private double distanceToTarget;
-  private double distanceToVirtualTarget;
-
-  private double virtualFlywheelVelocity;
-
-  private double whileMoveFlywheelVelocity;
-  private Rotation2d whileMoveAngle = new Rotation2d(0.0);
 
   private double currentShooterVelocity;
 
@@ -87,14 +81,26 @@ public class Shooter extends SubsystemBase {
   private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
 
   /* Logging Variables */
-  @Logged
+  @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
+  @Logged
+  public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
+  @Logged
+  private double distanceToTarget;
+  @Logged
+  private double distanceToVirtualTarget;
+  @Logged
+  private double virtualFlywheelVelocity;
+  @Logged
+  private double whileMoveFlywheelVelocity;
+  @Logged
+  private Rotation2d whileMoveAngle = new Rotation2d(0.0);
+
 
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
   private String allianceColor = "Blue";
-  public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
 
   private boolean requestShoot;
 
