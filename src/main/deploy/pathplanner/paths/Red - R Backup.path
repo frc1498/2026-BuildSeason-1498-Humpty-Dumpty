@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 11.179523981883388,
-        "y": 7.230850447841004
+        "x": 11.050386904761906,
+        "y": 7.43625
       },
       "isLocked": false,
       "linkedName": null
@@ -48,16 +48,16 @@
     },
     {
       "anchor": {
-        "x": 10.14337890095607,
-        "y": 5.4969790998856976
+        "x": 10.159583333333336,
+        "y": 5.633047619047619
       },
       "prevControl": {
-        "x": 9.894962412224736,
-        "y": 5.525072660115652
+        "x": 9.909597109999805,
+        "y": 5.635672146326711
       },
       "nextControl": {
-        "x": 12.40632339795246,
-        "y": 5.241061435772159
+        "x": 12.216529761904765,
+        "y": 5.6114523809523815
       },
       "isLocked": false,
       "linkedName": null
@@ -68,24 +68,24 @@
         "y": 5.633047619047619
       },
       "prevControl": {
-        "x": 13.068212084273787,
-        "y": 5.43921998821301
+        "x": 13.01466282228829,
+        "y": 5.427318009845487
       },
       "nextControl": {
-        "x": 13.66787712976387,
-        "y": 6.175352303590745
+        "x": 13.425863095238096,
+        "y": 5.827404761904762
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 13.94954761904762,
-        "y": 6.777595238095238
+        "x": 13.674208333333336,
+        "y": 6.3780833333333335
       },
       "prevControl": {
-        "x": 13.22800480783366,
-        "y": 5.535913468097007
+        "x": 13.447458333333332,
+        "y": 5.989369047619047
       },
       "nextControl": null,
       "isLocked": false,
@@ -131,6 +131,19 @@
       "constraints": {
         "maxVelocity": 3.0,
         "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 3.1798561151079268,
+      "maxWaypointRelativePos": 3.7230215827338133,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,

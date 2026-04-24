@@ -92,8 +92,8 @@ public class ShooterConstants {
     flywheelSpeedMap.put(1.5748, 33.0);
     flywheelSpeedMap.put(2.1336, 34.0);  //Was 34.8
     flywheelSpeedMap.put(2.3368, 36.8);  //Was 
-    flywheelSpeedMap.put(3.1496, 39.5);  //Was
-    flywheelSpeedMap.put(3.9370, 43.0);  //Was
+    flywheelSpeedMap.put(3.1496, 39.0);  //Was 39.5
+    flywheelSpeedMap.put(3.9370, 42.5);  //Was 43
     flywheelSpeedMap.put(4.9276, 48.0);  //Was
     flywheelSpeedMap.put(5.2324, 49.0);  //Was
     flywheelSpeedMap.put(5.5324, 49.5);  //Was
