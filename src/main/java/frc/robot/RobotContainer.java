@@ -162,7 +162,7 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> 
                 drive.withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-driver.getRightX() * MaxAngularRate * precisionDampenerRotation) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-Math.pow(driver.getRightX() * precisionDampenerRotation, 3) * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
