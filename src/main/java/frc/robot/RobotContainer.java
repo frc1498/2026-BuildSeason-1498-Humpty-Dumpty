@@ -240,7 +240,7 @@ public class RobotContainer {
                         //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
                         .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))), 
                         drivetrain.applyRequest(() -> this.brake), 
-                        this.hubOnlyBrake)
+                        this.atRotation.and(drivetrain.aimAtHub).and(this.joystickMovement.negate()))
                 )).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
             .onFalse(Commands.sequence(move.stopShoot()));
@@ -420,7 +420,7 @@ public class RobotContainer {
     public Trigger getDSLatch = new Trigger(() -> {return this.DSLatch;});
     public Trigger alliancePresent = new Trigger(() -> {return DriverStation.getAlliance().isPresent();});
 
-    public Trigger hubOnlyBrake = new Trigger(() -> {return true;});/*(drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + 5.0) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - 5.0);}).and(drivetrain.aimAtHub);*/
+    public Trigger atRotation = new Trigger(() -> {return true;});/*(drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + this.shooterAngleOffset) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - this.shooterAngleOffset);});*/
 
     public Trigger joystickMovement = 
         driver.axisMagnitudeGreaterThan(0, 0.1)
