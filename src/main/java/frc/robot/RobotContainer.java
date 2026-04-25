@@ -233,15 +233,11 @@ public class RobotContainer {
                     move.startWhileMoveShoot(),
                     Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                     Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper()),
-                    Commands.either(
-                        // Apply the brake if the robot is aimed at the hub (only the hub) and the driver is not touching the joysticks.
-                        drivetrain.applyRequest(() -> this.brake),
                         drivetrain.applyRequest(() -> driveFacingAngle
                         .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                         //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))),  
-                        this.atRotation.and(drivetrain.aimAtHub).and(this.joystickMovement.negate())).repeatedly()
+                        .withTargetDirection(shooter.robotTarget().get()))
                 )).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
             .onFalse(Commands.sequence(move.stopShoot()));
@@ -250,26 +246,28 @@ public class RobotContainer {
 
         driver.leftTrigger(0.1).and(driver.a().negate()).whileFalse(Commands.sequence(move.stopShoot()).withName("Stop Shooting"));
         
-        //Driver x: 
-        driver.x().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
+        //Driver back: 
+        driver.back().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
         driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()).withName("Zero Gyro and IMU Mode 1"));
  
-        //driver.a()
-        driver.a().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())).withName("Static Shot"))
+        //driver.X()
+        driver.x().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())).withName("Static Shot"))
         .onFalse(Commands.sequence(move.stopShoot(),move.hopperExtend()).withName("Stop Shooting and Extend Hopper"));
 
-        // driver.leftBumper
+        // driver.a()
         // I'm trying out different ways to make the command composition more readable.
-        driver.leftBumper().onTrue(
+        driver.a().onTrue(
             Commands.parallel(
-                Commands.repeatingSequence(drivetrain.applyRequest(() -> brake).unless(this.joystickMovement).until(this.joystickMovement)),
                 move.startDistanceBasedShot(),
                 Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                 Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
             ).withName("Distance Based Shot"))
         .onFalse(Commands.sequence(move.stopShoot(), move.hopperExtend()).withName("Stop Distance Based Shot and Extend Hopper"));
+
+        // Left Bumper - Apply the Brakes
+        driver.leftBumper().whileTrue(drivetrain.applyRequest(() -> this.brake));
 
         /*
         driver.a().whileTrue(Commands.sequence(move.setTargetToAllianceCornerRight(),
