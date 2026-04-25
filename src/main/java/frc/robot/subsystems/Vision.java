@@ -398,7 +398,7 @@ public class Vision extends SubsystemBase {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (var result : photonResults) {
             // Check if the pose is valid, and ignore everything if it isn't.
-            if (this.isPhotonvisionResultValid(photonEstimator, result, 1)) {
+            if (this.isPhotonvisionResultValid(photonEstimator, result, photonvision.kEstimateTagCount)) {
                 visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
                 if (visionEst.isEmpty()) {
                     visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
@@ -634,8 +634,8 @@ public class Vision extends SubsystemBase {
         // Only check the number of tags and validity of the pose if the megatag is valid.
         // Only update the megaTag if the most recent megaTag is valid.
         if (this.cachedMegaTagValid) {
-            this.cachedAreMegaTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag, 2);
-            this.cachedIsMegaTagPoseValid = this.isLimelightPoseValid(this.cachedMegaTag, 80);
+            this.cachedAreMegaTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag, limelight.kMegaTagCount);
+            this.cachedIsMegaTagPoseValid = this.isLimelightPoseValid(this.cachedMegaTag, limelight.kMegaTagCount);
             this.megaTag = this.cachedMegaTag;
         } else {
             // If the megaTag isn't valid, obviously no tags can be seen and the pose isn't valid.
@@ -646,8 +646,8 @@ public class Vision extends SubsystemBase {
         // Only check the number of tags and validity of the pose if the megatag2 is valid.
         // Only update the megaTag2 if the most recent megaTag2 is valid.
         if (this.cachedMegaTag2Valid) {
-            this.cachedAreMegaTag2Seen = this.areLimelightTagsSeen(this.cachedMegaTag2, 1);
-            this.cachedIsMegaTag2PoseValid = this.isLimelightPoseValid(this.cachedMegaTag2, 1);
+            this.cachedAreMegaTag2Seen = this.areLimelightTagsSeen(this.cachedMegaTag2, limelight.kMegaTag2Count);
+            this.cachedIsMegaTag2PoseValid = this.isLimelightPoseValid(this.cachedMegaTag2, limelight.kMegaTagCount);
             this.megaTag2 = this.cachedMegaTag2;
             this.log(LogLevel.NONE);
         } else {
