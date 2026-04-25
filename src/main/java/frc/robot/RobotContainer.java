@@ -233,11 +233,14 @@ public class RobotContainer {
                     move.startWhileMoveShoot(),
                     Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                     Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper()),
-                    drivetrain.applyRequest(() -> driveFacingAngle
+                    Commands.either(
+                        drivetrain.applyRequest(() -> driveFacingAngle
                         .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                         //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset))))
+                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))), 
+                        drivetrain.applyRequest(() -> this.brake), 
+                        this.hubOnlyBrake)
                 )).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
             .onFalse(Commands.sequence(move.stopShoot()));
@@ -416,6 +419,8 @@ public class RobotContainer {
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);
     public Trigger getDSLatch = new Trigger(() -> {return this.DSLatch;});
     public Trigger alliancePresent = new Trigger(() -> {return DriverStation.getAlliance().isPresent();});
+
+    public Trigger hubOnlyBrake = new Trigger(() -> {return true;});/*(drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + 5.0) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - 5.0);}).and(drivetrain.aimAtHub);*/
 
     public Trigger joystickMovement = 
         driver.axisMagnitudeGreaterThan(0, 0.1)
