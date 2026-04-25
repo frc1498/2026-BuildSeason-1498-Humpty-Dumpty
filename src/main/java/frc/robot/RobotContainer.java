@@ -234,12 +234,13 @@ public class RobotContainer {
                     Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                     Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper()),
                     Commands.either(
+                        // Apply the brake if the robot is aimed at the hub (only the hub) and the driver is not touching the joysticks.
+                        drivetrain.applyRequest(() -> this.brake),
                         drivetrain.applyRequest(() -> driveFacingAngle
                         .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                         //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))), 
-                        drivetrain.applyRequest(() -> this.brake), 
+                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))),  
                         this.atRotation.and(drivetrain.aimAtHub).and(this.joystickMovement.negate()))
                 )).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
@@ -264,6 +265,7 @@ public class RobotContainer {
         driver.leftBumper().onTrue(
             Commands.parallel(
                 Commands.either(
+                    // Apply the brake, unless the driver is touching the joysticks.
                     Commands.none(),
                     drivetrain.applyRequest(() -> this.brake),
                     this.joystickMovement
