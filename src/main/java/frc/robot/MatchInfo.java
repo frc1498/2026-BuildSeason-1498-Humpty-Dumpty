@@ -14,6 +14,8 @@ public class MatchInfo {
     // Default to the blue hub.
     private Pose2d targetLocation = ShooterConstants.kBlueHubCenter;
 
+    private Rotation2d targetOffset = Rotation2d.fromDegrees(0.0);
+
     /**
      * Return the instance of this class.
      * @return
@@ -214,5 +216,21 @@ public class MatchInfo {
 
     public void setTargetAllianceHub() {
         this.targetLocation = this.getTargetAllianceHub();
+    }
+
+    public Rotation2d getTargetOffset() {
+        return this.targetOffset;
+    }
+
+    public void setAllianceHubOffset() {
+        this.targetOffset = Rotation2d.fromDegrees(5.0);
+    }
+
+    public void setAllianceCornerLeftOffset() {
+        this.targetOffset = Rotation2d.fromDegrees(0.0);
+    }
+
+    public void setAllianceCornerRightOffset() {
+        this.targetOffset = Rotation2d.fromDegrees(0.0);
     }
 }
