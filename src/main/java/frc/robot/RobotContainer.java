@@ -232,12 +232,12 @@ public class RobotContainer {
                 Commands.parallel(
                     move.startWhileMoveShoot(),
                     Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
+                    Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper()),
                     drivetrain.applyRequest(() -> driveFacingAngle
                         .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                         //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))), 
-                        Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper())
+                        .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset))))
                 )).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
             .onFalse(Commands.sequence(move.stopShoot()));
@@ -260,6 +260,7 @@ public class RobotContainer {
         // I'm trying out different ways to make the command composition more readable.
         driver.leftBumper().onTrue(
             Commands.parallel(
+                drivetrain.applyRequest(() -> this.brake),
                 move.startDistanceBasedShot(),
                 Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                 Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
@@ -415,4 +416,10 @@ public class RobotContainer {
     public Trigger DSAttached = new Trigger(DriverStation::isDSAttached);
     public Trigger getDSLatch = new Trigger(() -> {return this.DSLatch;});
     public Trigger alliancePresent = new Trigger(() -> {return DriverStation.getAlliance().isPresent();});
+
+    public Trigger joystickMovement = 
+        driver.axisMagnitudeGreaterThan(0, 0.1)
+        .or(driver.axisMagnitudeGreaterThan(1, 0.1))
+        .or(driver.axisMagnitudeGreaterThan(4, 0.1))
+        .or(driver.axisMagnitudeGreaterThan(5, 0.1));
 }
