@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -149,6 +150,32 @@ public class Vision extends SubsystemBase {
      */
     private void setPhotonvisionPipeline(PhotonCamera camera, int pipelineIndex) {
         camera.setPipelineIndex(pipelineIndex);
+    }
+
+    /**
+     * Retrieve the limelight standard deviations from NetworkTables.
+     * @return An array containing standard deviations for the megaTag and megaTag2 pose estimates.
+     */
+    private double[] getLimelightStdDevs() {
+        return NetworkTableInstance.getDefault().getTable(limelight.kName).getEntry("stddevs").getDoubleArray(new double[12]);
+    }
+
+    /**
+     * Separate the megaTag standard deviations from the whole standard deviation array and add them into a matrix.
+     * @return A 3x1 matrix of standard deviations for the megaTag pose estimate.
+     */
+    private Matrix<N3, N1> getMegaTagStdDevs() {
+        var stdDevs = this.getLimelightStdDevs();
+        return VecBuilder.fill(stdDevs[0], stdDevs[1], stdDevs[5]);
+    }
+
+    /**
+     * Separate the megaTag2 standard deviations from the whole standard deviation array and add them into a matrix.
+     * @return A 3x1 matrix of standard deviations for the megaTag2 pose estimate.
+     */
+    private Matrix<N3, N1> getMegaTag2StdDevs() {
+        var stdDevs = this.getLimelightStdDevs();
+        return VecBuilder.fill(stdDevs[6], stdDevs[7], stdDevs[11]);
     }
 
     /**

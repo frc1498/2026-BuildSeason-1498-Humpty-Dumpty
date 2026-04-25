@@ -220,7 +220,9 @@ public class RobotContainer {
         driver.leftTrigger(0.1)
             //.onTrue(/*Commands.runOnce(() -> {drivetrain.setDriveCurrentLimits();}).withName("setDriveCurrentLimits")*/)
             .whileTrue(Commands.sequence(this.setShootOnMoveSpeed(),
-                Commands.parallel(move.startWhileMoveShoot(),
+                Commands.parallel(
+                    move.startWhileMoveShoot(),
+                    Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                     drivetrain.applyRequest(() -> driveFacingAngle
                         .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
@@ -250,6 +252,7 @@ public class RobotContainer {
         driver.leftBumper().onTrue(
             Commands.parallel(
                 move.startDistanceBasedShot(),
+                Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                 Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
             ).withName("Distance Based Shot"))
         .onFalse(Commands.sequence(move.stopShoot(), move.hopperExtend()).withName("Stop Distance Based Shot and Extend Hopper"));
