@@ -34,6 +34,9 @@ public class VisionConstants {
         public static final int kCompPipelineIndex = 0;         // Treat index '0' as the competition index.
         public static final int kPracticePipelineIndex = 1;     // Treat index '1' as the practice index.
 
+        public static final int kMegaTagCount = 2;
+        public static final int kMegaTag2Count = 1;
+
         public static final Matrix<N3, N1> kMegaTagStdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
         public static final Matrix<N3, N1> kMegaTag2StdDevs = VecBuilder.fill(0.5, 0.5, 9999999);   // The standard deviations suggested by Limelight.
     }
@@ -75,6 +78,8 @@ public class VisionConstants {
         public static final double kAmbiguityThreshold = 0.10;
         public static final int kCompPipelineIndex = 0;         // Treat index '0' as the competition index.
         public static final int kPracticePipelineIndex = 1;     // Treat index '1' as the pipeline index.
+
+        public static final int kEstimateTagCount = 1;
 
         public static enum Camera {
             SWERVE_RIGHT_CAMERA,
