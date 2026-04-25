@@ -241,7 +241,7 @@ public class RobotContainer {
                         .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
                         //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
                         .withTargetDirection(shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset)))),  
-                        this.atRotation.and(drivetrain.aimAtHub).and(this.joystickMovement.negate()))
+                        this.atRotation.and(drivetrain.aimAtHub).and(this.joystickMovement.negate())).repeatedly()
                 )).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
             .onFalse(Commands.sequence(move.stopShoot()));
@@ -264,12 +264,7 @@ public class RobotContainer {
         // I'm trying out different ways to make the command composition more readable.
         driver.leftBumper().onTrue(
             Commands.parallel(
-                Commands.either(
-                    // Apply the brake, unless the driver is touching the joysticks.
-                    Commands.none(),
-                    drivetrain.applyRequest(() -> this.brake),
-                    this.joystickMovement
-                ),
+                Commands.repeatingSequence(drivetrain.applyRequest(() -> brake).unless(this.joystickMovement).until(this.joystickMovement)),
                 move.startDistanceBasedShot(),
                 Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                 Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
@@ -426,8 +421,10 @@ public class RobotContainer {
     public Trigger getDSLatch = new Trigger(() -> {return this.DSLatch;});
     public Trigger alliancePresent = new Trigger(() -> {return DriverStation.getAlliance().isPresent();});
 
-    public Trigger atRotation = new Trigger(() -> {return true;});/*(drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + this.shooterAngleOffset) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - this.shooterAngleOffset);});*/
+    @Logged
+    public Trigger atRotation = new Trigger(() -> {return (drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + this.shooterAngleOffset) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - this.shooterAngleOffset);});
 
+    @Logged
     public Trigger joystickMovement = 
         driver.axisMagnitudeGreaterThan(0, 0.1)
         .or(driver.axisMagnitudeGreaterThan(1, 0.1))
