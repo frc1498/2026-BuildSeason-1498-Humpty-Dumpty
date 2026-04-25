@@ -202,17 +202,26 @@ public class Move {
     }
 
     public Command setTargetToAllianceCornerRight() {
-        return Commands.runOnce(() -> {MatchInfo.getInstance().setTargetAllianceCornerRight();}).withName("setTargetToAllianceCornerRight");
+        return Commands.runOnce(() -> {
+            MatchInfo.getInstance().setTargetAllianceCornerRight();
+            MatchInfo.getInstance().setAllianceCornerRightOffset();
+        }).withName("setTargetToAllianceCornerRight");
         // return shooter.setTargetToAllianceCornerRight();
     }
 
     public Command setTargetToAllianceCornerLeft() {
-        return Commands.runOnce(() -> {MatchInfo.getInstance().setTargetAllianceCornerLeft();}).withName("setTargetToAllianceCornerLeft");
+        return Commands.runOnce(() -> {
+            MatchInfo.getInstance().setTargetAllianceCornerLeft();
+            MatchInfo.getInstance().setAllianceCornerLeftOffset();
+        }).withName("setTargetToAllianceCornerLeft");
         // return shooter.setTargetToAllianceCornerLeft();
     }
 
     public Command setTargetToAllianceHub() {
-        return Commands.runOnce(() -> {MatchInfo.getInstance().setTargetAllianceHub();}).withName("setTargetToAllianceHub");
+        return Commands.runOnce(() -> {
+            MatchInfo.getInstance().setTargetAllianceHub();
+            MatchInfo.getInstance().setAllianceHubOffset();
+        }).withName("setTargetToAllianceHub");
         // return shooter.setTargetToAllianceHub();
     }
 
