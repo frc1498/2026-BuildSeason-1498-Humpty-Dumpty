@@ -263,7 +263,11 @@ public class RobotContainer {
         // I'm trying out different ways to make the command composition more readable.
         driver.leftBumper().onTrue(
             Commands.parallel(
-                drivetrain.applyRequest(() -> this.brake),
+                Commands.either(
+                    Commands.none(),
+                    drivetrain.applyRequest(() -> this.brake),
+                    this.joystickMovement
+                ),
                 move.startDistanceBasedShot(),
                 Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
                 Commands.sequence(Commands.waitSeconds(0.65), move.slowHopperRetract())
