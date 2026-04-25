@@ -97,6 +97,8 @@ public class Shooter extends SubsystemBase {
   private double whileMoveFlywheelVelocity;
   @Logged
   private Rotation2d whileMoveAngle = new Rotation2d(0.0);
+  @Logged
+  private Rotation2d targetOffset = new Rotation2d(0.0);
 
   /* Subsystem Alerts */
   Alert shooterTopLeftMotorDisconnected = new Alert("Shooter Top Left Motor Disconnected", AlertType.kError);
@@ -428,7 +430,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Supplier<Rotation2d> robotTarget() {
-    return () -> {return this.whileMoveAngle;};
+    return () -> {return this.whileMoveAngle.plus(this.targetOffset);};
   }
 
   //======================Triggers=========================
@@ -472,6 +474,7 @@ public class Shooter extends SubsystemBase {
     
     // Since the shooter command doesn't set it now, I should get the target location continuously in the shooter periodic() method.
     this.targetLocation = MatchInfo.getInstance().getCurrentTarget();
+    this.targetOffset = MatchInfo.getInstance().getTargetOffset();
 
     if (DriverStation.isAutonomousEnabled()) {
       if (allianceColor == "Red") {
