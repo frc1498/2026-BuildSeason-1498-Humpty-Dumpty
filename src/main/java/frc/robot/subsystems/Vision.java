@@ -15,7 +15,8 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import dev.doglog.DogLog;
-
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,6 +25,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -72,7 +75,17 @@ public class Vision extends SubsystemBase {
     private boolean cachedIsMegaTag2PoseValid = false;
     private boolean cachedIsLeftPhotonPoseValid = false;
     private boolean cachedIsRightPhotonPoseValid = false;
+    private double cachedLimelightHeartbeat = 0.0;
     private double testTimestamp;
+
+    /* Logging Variables */
+    @Logged(importance = Importance.CRITICAL)
+    private String currentCommand = "";
+
+    /* Subsystem Alerts */
+    Alert limelightDisconnected = new Alert("Limelight Disconnected", AlertType.kError);
+    Alert photonLeftDisconnected = new Alert("Photonvision Left Disconnected", AlertType.kError);
+    Alert photonRightDisconnected = new Alert("Photonvision Right Disconnected", AlertType.kError);
 
     private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
@@ -597,6 +610,10 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run.
+        this.currentCommand = this.getCurrentCommandName();
+        this.limelightDisconnected.set(LimelightHelpers.getHeartbeat(limelight.kName) != this.cachedLimelightHeartbeat);
+        this.photonLeftDisconnected.set(this.leftCamera.isConnected());
+        this.photonRightDisconnected.set(this.rightCamera.isConnected());
      
         // Start by caching important values.
         // By caching these values, any other code that requires them will use the same values for the current 20 ms loop.
@@ -649,6 +666,8 @@ public class Vision extends SubsystemBase {
 
         this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
         this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
+
+        this.cachedLimelightHeartbeat = LimelightHelpers.getHeartbeat(limelight.kName);
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         switch (this.telemetryLevel) {

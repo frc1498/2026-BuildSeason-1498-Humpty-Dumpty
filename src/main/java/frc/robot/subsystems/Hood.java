@@ -17,9 +17,14 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -64,6 +69,13 @@ public class Hood extends SubsystemBase {
   private double currentHoodRotations;
   
   public DutyCycleOut shooterDutyCycle;
+
+  /* Logging Variables */
+  @Logged(importance = Importance.CRITICAL)
+  private String currentCommand = "";
+
+  /* Subsystem Alerts */
+  Alert hoodMotorDisconnected = new Alert("Hood Motor Disconnected", AlertType.kError);
 
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -331,6 +343,8 @@ public class Hood extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    this.currentCommand = this.getCurrentCommandName();
+    this.hoodMotorDisconnected.set(this.hoodMotor.isConnected());
 
     this.swerveState = this.swerveStateSupplier.get();
 

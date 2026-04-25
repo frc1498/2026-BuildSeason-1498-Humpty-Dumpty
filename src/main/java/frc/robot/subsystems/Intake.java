@@ -18,7 +18,11 @@ import frc.robot.config.IntakeConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
 import frc.robot.constants.IntakeConstants;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,6 +40,14 @@ public class Intake extends SubsystemBase {
   public String intakeState = "stopped";
 
   public DutyCycleOut intakeDutyCycle;
+
+  /* Logging Variables */
+  @Logged(importance = Importance.CRITICAL)
+  private String currentCommand = "";
+
+  /* Subsystem Alerts */
+  Alert intakeLeftMotorDisconnected = new Alert("Intake Left Motor Disconnected", AlertType.kError);
+  Alert intakeRightMotorDisconnected = new Alert("Intake Right Motor Disconnected", AlertType.kError);  
 
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -221,8 +233,11 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    this.currentCommand = this.getCurrentCommandName();
+    this.intakeLeftMotorDisconnected.set(this.intakeLeftMotor.isConnected());
+    this.intakeRightMotorDisconnected.set(this.intakeRightMotor.isConnected());
     this.log(LogLevel.NONE);
-    }
+  }
 
   @Override
   public void simulationPeriodic() {

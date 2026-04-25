@@ -20,10 +20,15 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -64,13 +69,6 @@ public class Shooter extends SubsystemBase {
 
   private Supplier<SwerveDriveState> swerveStateSupplier;
   private SwerveDriveState swerveState;
-  private double distanceToTarget;
-  private double distanceToVirtualTarget;
-
-  private double virtualFlywheelVelocity;
-
-  private double whileMoveFlywheelVelocity;
-  private Rotation2d whileMoveAngle = new Rotation2d(0.0);
 
   private double currentShooterVelocity;
 
@@ -84,11 +82,32 @@ public class Shooter extends SubsystemBase {
 
   private LinearFilter velocityFilter = LinearFilter.movingAverage(3);
 
+  /* Logging Variables */
+  @Logged(importance = Importance.CRITICAL)
+  private String currentCommand = "";
+  @Logged
+  public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
+  @Logged
+  private double distanceToTarget;
+  @Logged
+  private double distanceToVirtualTarget;
+  @Logged
+  private double virtualFlywheelVelocity;
+  @Logged
+  private double whileMoveFlywheelVelocity;
+  @Logged
+  private Rotation2d whileMoveAngle = new Rotation2d(0.0);
+
+  /* Subsystem Alerts */
+  Alert shooterTopLeftMotorDisconnected = new Alert("Shooter Top Left Motor Disconnected", AlertType.kError);
+  Alert shooterBottomLeftMotorDisconnected = new Alert("Shooter Bottom Left Motor Disconnected", AlertType.kError);
+  Alert shooterTopRightMotorDisconnected = new Alert("Shooter Top Right Motor Disconnected", AlertType.kError);
+  Alert shooterBottomRightMotorDisconnected = new Alert("Shooter Bottom Right Motor Disconnected", AlertType.kError);  
+
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
 
   private String allianceColor = "Blue";
-  public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
 
   private boolean requestShoot;
 
@@ -436,6 +455,11 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    this.currentCommand = this.getCurrentCommandName();
+    this.shooterTopLeftMotorDisconnected.set(this.shooterTopLeftMotor.isConnected());
+    this.shooterBottomLeftMotorDisconnected.set(this.shooterBottomLeftMotor.isConnected());
+    this.shooterTopRightMotorDisconnected.set(this.shooterTopRightMotor.isConnected());
+    this.shooterBottomRightMotorDisconnected.set(this.shooterBottomRightMotor.isConnected());
 
     this.swerveState = this.swerveStateSupplier.get();
 
