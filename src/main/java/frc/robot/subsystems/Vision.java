@@ -619,9 +619,9 @@ public class Vision extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run.
         this.currentCommand = this.getCurrentCommandName();
-        this.limelightDisconnected.set(LimelightHelpers.getHeartbeat(limelight.kName) != this.cachedLimelightHeartbeat);
-        this.photonLeftDisconnected.set(this.leftCamera.isConnected());
-        this.photonRightDisconnected.set(this.rightCamera.isConnected());
+        this.limelightDisconnected.set(LimelightHelpers.getHeartbeat(limelight.kName) == this.cachedLimelightHeartbeat);
+        this.photonLeftDisconnected.set(!this.leftCamera.isConnected());
+        this.photonRightDisconnected.set(!this.rightCamera.isConnected());
      
         // Start by caching important values.
         // By caching these values, any other code that requires them will use the same values for the current 20 ms loop.

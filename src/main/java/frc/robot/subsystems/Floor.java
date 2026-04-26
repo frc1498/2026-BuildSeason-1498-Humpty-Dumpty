@@ -274,7 +274,7 @@ public class Floor extends SubsystemBase {
   @Override
   public void periodic() {
     this.currentCommand = this.getCurrentCommandName();
-    this.floorMotorDisconnected.set(this.floorMotor.isConnected());
+    this.floorMotorDisconnected.set(!this.floorMotor.isConnected());
     this.log(LogLevel.NONE);
   }
 

@@ -234,8 +234,8 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     this.currentCommand = this.getCurrentCommandName();
-    this.intakeLeftMotorDisconnected.set(this.intakeLeftMotor.isConnected());
-    this.intakeRightMotorDisconnected.set(this.intakeRightMotor.isConnected());
+    this.intakeLeftMotorDisconnected.set(!this.intakeLeftMotor.isConnected());
+    this.intakeRightMotorDisconnected.set(!this.intakeRightMotor.isConnected());
     this.log(LogLevel.NONE);
   }
 

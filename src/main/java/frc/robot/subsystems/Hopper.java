@@ -350,7 +350,7 @@ public class Hopper extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     this.currentCommand = this.getCurrentCommandName();
-    this.hopperMotorDisconnected.set(this.hopperMotor.isConnected());
+    this.hopperMotorDisconnected.set(!this.hopperMotor.isConnected());
     this.log(LogLevel.NONE);
   }
 

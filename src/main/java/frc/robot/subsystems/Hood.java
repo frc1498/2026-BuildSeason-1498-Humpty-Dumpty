@@ -346,7 +346,7 @@ public class Hood extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     this.currentCommand = this.getCurrentCommandName();
-    this.hoodMotorDisconnected.set(this.hoodMotor.isConnected());
+    this.hoodMotorDisconnected.set(!this.hoodMotor.isConnected());
 
     this.swerveState = this.swerveStateSupplier.get();
 

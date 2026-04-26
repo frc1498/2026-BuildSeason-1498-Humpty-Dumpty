@@ -265,7 +265,7 @@ public class RearKickup extends SubsystemBase {
   @Override
   public void periodic() {
     this.currentCommand = this.getCurrentCommandName();
-    this.rearKickupMotorDisconnected.set(this.rearKickupMotor.isConnected());
+    this.rearKickupMotorDisconnected.set(!this.rearKickupMotor.isConnected());
     this.log(LogLevel.NONE);
   }
 

@@ -252,7 +252,7 @@ public class FrontKickup extends SubsystemBase {
   @Override
   public void periodic() {
     this.currentCommand = this.getCurrentCommandName();
-    this.frontKickupMotorDisconnected.set(this.frontKickupMotor.isConnected());
+    this.frontKickupMotorDisconnected.set(!this.frontKickupMotor.isConnected());
     this.log(LogLevel.NONE);
   }
 
