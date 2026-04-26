@@ -419,10 +419,9 @@ public class RobotContainer {
     public Trigger getDSLatch = new Trigger(() -> {return this.DSLatch;});
     public Trigger alliancePresent = new Trigger(() -> {return DriverStation.getAlliance().isPresent();});
 
-    @Logged
-    public Trigger atRotation = new Trigger(() -> {return (drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + this.shooterAngleOffset) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - this.shooterAngleOffset);});
+    // This trigger doesn't work
+    //public Trigger atRotation = new Trigger(() -> {return (drivetrain.getStateCopy().Pose.getRotation().getDegrees() <= shooter.robotTarget().get().getDegrees() + this.shooterAngleOffset) && (drivetrain.getStateCopy().Pose.getRotation().getDegrees() >= shooter.robotTarget().get().getDegrees() - this.shooterAngleOffset);});
 
-    @Logged
     public Trigger joystickMovement = 
         driver.axisMagnitudeGreaterThan(0, 0.1)
         .or(driver.axisMagnitudeGreaterThan(1, 0.1))
