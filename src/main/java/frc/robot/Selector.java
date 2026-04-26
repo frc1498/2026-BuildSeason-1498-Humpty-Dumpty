@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,9 +17,14 @@ import frc.robot.constants.MotorEnableConstants;
 public class Selector extends SubsystemBase {
 
     private int currentSelection;
-    private String currentSelectionName;
     private ArrayList<String> selections;
     private String filterCriteria = "";
+
+    /* Logging Variables */
+    @Logged(importance = Importance.CRITICAL)
+    private String currentCommand = "";
+    @Logged
+    private String currentSelectionName;
 
     // Fall back to a default of no telemetry.
     private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
@@ -172,12 +179,13 @@ public class Selector extends SubsystemBase {
     }
 
     private String getCurrentCommandName() {
-        if (this.getCurrentCommand() == null) {
+        /*if (this.getCurrentCommand() == null) {
             return "No Command";
         }
         else {
             return this.getCurrentCommand().getName();
-        }
+        }*/
+        return (this.getCurrentCommand() == null) ? "No Command" : this.getCurrentCommand().getName();
     }
 
     //For debugging only.
@@ -220,6 +228,12 @@ public class Selector extends SubsystemBase {
 
     public Supplier<Integer> currentIndex() {
         return this::getCurrentIndex;
+    }
+
+    @Override
+    public void periodic() {
+        this.currentCommand = this.getCurrentCommandName();
+        // I could periodically cache the current selection name, but I don't think I need to.
     }
 
     public void initSendable(SendableBuilder builder) {

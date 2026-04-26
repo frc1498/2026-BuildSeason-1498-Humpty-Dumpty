@@ -86,6 +86,7 @@ public class RobotContainer {
     public Floor floor = new Floor(floorConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
+    @Logged
     public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public PathPlannerAuto selectedAuton;
     public ArrayList<PathPlannerAuto> autonCommands = new ArrayList<PathPlannerAuto>();
@@ -125,11 +126,11 @@ public class RobotContainer {
 
     public ShooterConfig shooterConfig = new ShooterConfig();
     @Logged
-    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.FULL);
+    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public HoodConfig hoodConfig = new HoodConfig();
     @Logged
-    public Hood hood = new Hood(hoodConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.FULL);
+    public Hood hood = new Hood(hoodConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
 
     public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, hood, driveFacingAngle);
 
