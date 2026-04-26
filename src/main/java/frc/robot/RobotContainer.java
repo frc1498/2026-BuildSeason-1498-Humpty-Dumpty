@@ -117,6 +117,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    @Logged
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     @Logged
