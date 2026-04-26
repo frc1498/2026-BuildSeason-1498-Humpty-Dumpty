@@ -58,12 +58,6 @@ public class Hood extends SubsystemBase {
 
   private Supplier<SwerveDriveState> swerveStateSupplier;
   private SwerveDriveState swerveState;
-  private double distanceToTarget;
-  private double distanceToVirtualTarget;
-
-  private double virtualHoodAngle;
-
-  private double whileMoveHoodAngle;
 
   private double currentHoodAngle;
   private double currentHoodRotations;
@@ -73,14 +67,22 @@ public class Hood extends SubsystemBase {
   /* Logging Variables */
   @Logged(importance = Importance.CRITICAL)
   private String currentCommand = "";
+  @Logged
+  public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
+  @Logged
+  private double distanceToTarget;
+  @Logged
+  private double distanceToVirtualTarget;
+  @Logged
+  private double virtualHoodAngle;
+  @Logged
+  private double whileMoveHoodAngle;
 
   /* Subsystem Alerts */
   Alert hoodMotorDisconnected = new Alert("Hood Motor Disconnected", AlertType.kError);
 
   // Fall back to a default of no telemetry.
   private MotorEnableConstants.TelemetryLevel telemetryLevel = MotorEnableConstants.TelemetryLevel.NONE;
-
-  public Pose2d targetLocation = new Pose2d(11.912, 4.028, Rotation2d.fromDegrees(0)); //Default it to blue
 
   private boolean requestShoot;
 
