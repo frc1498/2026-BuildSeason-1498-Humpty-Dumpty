@@ -458,10 +458,10 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     this.currentCommand = this.getCurrentCommandName();
-    this.shooterTopLeftMotorDisconnected.set(this.shooterTopLeftMotor.isConnected());
-    this.shooterBottomLeftMotorDisconnected.set(this.shooterBottomLeftMotor.isConnected());
-    this.shooterTopRightMotorDisconnected.set(this.shooterTopRightMotor.isConnected());
-    this.shooterBottomRightMotorDisconnected.set(this.shooterBottomRightMotor.isConnected());
+    this.shooterTopLeftMotorDisconnected.set(!this.shooterTopLeftMotor.isConnected());
+    this.shooterBottomLeftMotorDisconnected.set(!this.shooterBottomLeftMotor.isConnected());
+    this.shooterTopRightMotorDisconnected.set(!this.shooterTopRightMotor.isConnected());
+    this.shooterBottomRightMotorDisconnected.set(!this.shooterBottomRightMotor.isConnected());
 
     this.swerveState = this.swerveStateSupplier.get();
 
