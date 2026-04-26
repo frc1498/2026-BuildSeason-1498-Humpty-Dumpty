@@ -81,6 +81,14 @@ public class Vision extends SubsystemBase {
     /* Logging Variables */
     @Logged(importance = Importance.CRITICAL)
     private String currentCommand = "";
+    @Logged
+    private Pose2d cachedMegaTagPose;
+    @Logged
+    private Pose2d cachedMegaTag2Pose;
+    @Logged
+    private Pose2d cachedLeftPhotonPose;
+    @Logged
+    private Pose2d cachedRightPhotonPose;
 
     /* Subsystem Alerts */
     Alert limelightDisconnected = new Alert("Limelight Disconnected", AlertType.kError);
@@ -668,6 +676,11 @@ public class Vision extends SubsystemBase {
         this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
 
         this.cachedLimelightHeartbeat = LimelightHelpers.getHeartbeat(limelight.kName);
+
+        this.cachedMegaTagPose = this.getCurrentMegaTagPose();
+        this.cachedMegaTag2Pose = this.getCurrentMegaTag2Pose();
+        this.cachedLeftPhotonPose = this.getCurrentLeftPhotonPose();
+        this.cachedRightPhotonPose = this.getCurrentRightPhotonPose();
 
         // Every loop, update the odometry with the current pose estimated by the limelight.
         switch (this.telemetryLevel) {
