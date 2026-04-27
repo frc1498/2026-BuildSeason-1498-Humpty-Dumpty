@@ -11,6 +11,7 @@ import com.pathplanner.lib.commands.PathfindingCommand;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.net.PortForwarder;
@@ -37,7 +38,7 @@ public class Robot extends TimedRobot {
   private Command m_limelightCommand;
 
   private StringLogEntry buildInformation;
-
+  @Logged(importance = Importance.CRITICAL)
   private final RobotContainer m_robotContainer;
 
   /* log and replay timestamp and joystick data */
@@ -58,7 +59,7 @@ public class Robot extends TimedRobot {
         new HootEpilogueBackend(),
         new NTEpilogueBackend(NetworkTableInstance.getDefault())
       );
-      config.minimumImportance = Logged.Importance.DEBUG;
+      config.minimumImportance = Logged.Importance.CRITICAL;
     });
 
     Epilogue.bind(this);
