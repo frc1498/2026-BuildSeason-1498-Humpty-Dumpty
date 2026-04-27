@@ -39,6 +39,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -66,28 +67,28 @@ public class RobotContainer {
     //======================================================================= 
 
     public HopperConfig hopperConfig = new HopperConfig();
-    @Logged
-    public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public Hopper hopper = new Hopper(hopperConfig, MotorEnableConstants.TelemetryLevel.NONE);
 
     public IntakeConfig intakeConfig = new IntakeConfig();
-    @Logged
-    public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public Intake intake = new Intake(intakeConfig, MotorEnableConstants.TelemetryLevel.NONE);
 
     public FrontKickupConfig frontKickupConfig = new FrontKickupConfig();
-    @Logged
-    public FrontKickup frontKickup = new FrontKickup(frontKickupConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public FrontKickup frontKickup = new FrontKickup(frontKickupConfig, MotorEnableConstants.TelemetryLevel.NONE);
 
     public RearKickupConfig rearKickupConfig = new RearKickupConfig();
-    @Logged
-    public RearKickup rearKickup = new RearKickup(rearKickupConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public RearKickup rearKickup = new RearKickup(rearKickupConfig, MotorEnableConstants.TelemetryLevel.NONE);
 
     public FloorConfig floorConfig = new FloorConfig();
-    @Logged
-    public Floor floor = new Floor(floorConfig, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public Floor floor = new Floor(floorConfig, MotorEnableConstants.TelemetryLevel.NONE);
 
     public File autonFolder = new File(Filesystem.getDeployDirectory() + "/pathplanner/autos");
-    @Logged
-    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.NONE);
     public PathPlannerAuto selectedAuton;
     public ArrayList<PathPlannerAuto> autonCommands = new ArrayList<PathPlannerAuto>();
 
@@ -118,19 +119,19 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
-    @Logged
+    @Logged(importance = Importance.CRITICAL)
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    @Logged
-    public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public final Vision vision = new Vision(drivetrain, drivetrain::getStateCopy, drivetrain::addVisionMeasurement, MotorEnableConstants.TelemetryLevel.NONE);
 
     public ShooterConfig shooterConfig = new ShooterConfig();
-    @Logged
-    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public Shooter shooter = new Shooter(shooterConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.NONE);
 
     public HoodConfig hoodConfig = new HoodConfig();
-    @Logged
-    public Hood hood = new Hood(hoodConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.LIMITED);
+    @Logged(importance = Importance.CRITICAL)
+    public Hood hood = new Hood(hoodConfig, drivetrain::getStateCopy, MotorEnableConstants.TelemetryLevel.NONE);
 
     public final Move move = new Move(hopper, intake, shooter, drivetrain, frontKickup, rearKickup, floor, hood, driveFacingAngle);
 
