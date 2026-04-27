@@ -234,17 +234,21 @@ public class RobotContainer {
                 Commands.parallel(
                     move.startWhileMoveShoot(),
                     Commands.repeatingSequence(vision.allSnapshot(), Commands.waitSeconds(1.0)),
-                    Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper()),
-                        drivetrain.applyRequest(() -> driveFacingAngle
-                        .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
-                        .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
-                        //.withTargetDirection(shooter.robotTarget().get())), Commands.sequence(Commands.waitSeconds(0.65),
-                        .withTargetDirection(shooter.robotTarget().get()))
-                )).withName("Shoot On The Move"))
+                    Commands.sequence(Commands.waitSeconds(0.65), move.intake(),move.agitateHopper())
+                )
+            ).withName("Shoot On The Move"))
             //.onFalse(Commands.parallel(move.stopShoot(),move.stopIntake(),move.hopperExtend(),setNormalMoveSpeed()).withName("Stop Shooting"));
             .onFalse(Commands.sequence(move.stopShoot()));
             /*Commands.runOnce(() -> {drivetrain.clearDriveCurrentLimits();})*/ 
             //shooter.robotTarget().get().plus(Rotation2d.fromDegrees(shooterAngleOffset))
+
+        // By running the drive command with the same conditions as the Shoot On The Move command, they will run at the same time, but applying the drivetrain brake won't interfere with the other subsystems.
+        driver.leftTrigger(0.1).whileTrue(drivetrain.applyRequest(() -> driveFacingAngle
+            .withVelocityX(-(Math.pow(driver.getLeftY() * precisionDampenerTranslation,3)) * MaxSpeed)
+            .withVelocityY(-(Math.pow(driver.getLeftX() * precisionDampenerTranslation,3)) * MaxSpeed)
+            .withTargetDirection(shooter.robotTarget().get()))
+        );
+
 
         driver.leftTrigger(0.1).and(driver.a().negate()).whileFalse(Commands.sequence(move.stopShoot()).withName("Stop Shooting"));
         
