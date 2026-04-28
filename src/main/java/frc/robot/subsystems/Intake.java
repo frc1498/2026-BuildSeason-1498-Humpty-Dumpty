@@ -17,6 +17,7 @@ import dev.doglog.DogLog;
 import frc.robot.config.IntakeConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.IntakeConstants;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
@@ -70,7 +71,13 @@ public class Intake extends SubsystemBase {
     this.intakeDutyCycle = new DutyCycleOut(0);
     this.intakeVelocityVoltage = new VelocityVoltage(0);
 
-    SmartDashboard.putData("Intake", this);
+    // Publish subsystem data to SmartDashboard.
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Intake", this);
+    }     
   }
 
   /**

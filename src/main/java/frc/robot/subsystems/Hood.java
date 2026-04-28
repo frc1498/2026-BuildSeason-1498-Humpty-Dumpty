@@ -36,6 +36,7 @@ import frc.robot.config.HoodConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 
 /**
  * The hood subsystem.  Contains the hood adjustment.
@@ -105,7 +106,12 @@ public class Hood extends SubsystemBase {
     this.configureMechanism(this.hoodMotor, this.hoodConfig.hoodMotorConfig);
 
     // Publish subsystem data to SmartDashboard.
-    SmartDashboard.putData("Hood", this);
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Hood", this);
+    }
 
     this.requestShoot = false;
 

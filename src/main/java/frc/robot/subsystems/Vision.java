@@ -36,6 +36,7 @@ import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.VisionConstants;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
@@ -122,8 +123,14 @@ public class Vision extends SubsystemBase {
         this.setPhotonvisionPipeline(leftCamera, photonvision.kCompPipelineIndex);
         this.setPhotonvisionPipeline(rightCamera, photonvision.kCompPipelineIndex);
 
-        SmartDashboard.putData("Vision", this);
-        SmartDashboard.putData("Vision/Pose", this.visionField);
+        // Publish subsystem data to SmartDashboard.
+        // Only publish if the telemetry level is above NONE.
+        if (this.telemetryLevel == TelemetryLevel.NONE) {
+            // Do Nothing.
+        } else {
+            SmartDashboard.putData("Vision", this);
+            SmartDashboard.putData("Vision/Pose", this.visionField);
+        } 
     }
 
     /**

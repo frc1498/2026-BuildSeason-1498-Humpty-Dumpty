@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.config.HopperConfig;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.HopperConstants;
 //import dev.doglog.DogLog;
 
@@ -77,7 +78,13 @@ public class Hopper extends SubsystemBase {
     
     this.hopperMotor.setPosition(0);
 
-    SmartDashboard.putData("Hopper", this);
+    // Publish subsystem data to SmartDashboard.
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Hopper", this);
+    }    
   }
 
   /**

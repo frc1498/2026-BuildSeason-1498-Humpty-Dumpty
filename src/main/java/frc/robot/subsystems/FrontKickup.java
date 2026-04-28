@@ -26,6 +26,7 @@ import frc.robot.config.FrontKickupConfig;
 import frc.robot.constants.FrontKickupConstants;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 
 /**
  * The front kickup subsystem.  Contains the front kickup motor.
@@ -66,7 +67,12 @@ public class FrontKickup extends SubsystemBase {
     this.configureMechanism(this.frontKickupMotor, this.frontKickupConfig.frontKickupMotorConfig);
 
     // Publish subsystem data to SmartDashboard.
-    SmartDashboard.putData("Front Kickup", this);
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Front Kickup", this);
+    }
   }
 
   /**

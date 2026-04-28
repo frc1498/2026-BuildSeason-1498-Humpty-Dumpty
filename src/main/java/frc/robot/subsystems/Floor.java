@@ -27,6 +27,7 @@ import frc.robot.constants.MotorEnableConstants;
 import frc.robot.config.FloorConfig;
 import frc.robot.constants.FloorConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 
 /**
  * The floor subsystem.  Contains the flywheel, turret, hood adjustment, floor, and ball kickup.
@@ -59,17 +60,22 @@ public class Floor extends SubsystemBase {
    */
   public Floor(FloorConfig config, MotorEnableConstants.TelemetryLevel telemetryLevel) {
 
-  this.telemetryLevel = telemetryLevel;
-  this.floorConfig = config;
+    this.telemetryLevel = telemetryLevel;
+    this.floorConfig = config;
 
-  this.floorMotor = new TalonFX(FloorConfig.kFloorMotorCANID, MotorEnableConstants.canivore);  // Create the floor motor.
-  this.floorMotorMode = new VelocityVoltage(0);                                      // Set the control mode for the floor motor.
-  this.floorDutyCycle = new DutyCycleOut(0.0);
-  this.configureMechanism(this.floorMotor, this.floorConfig.floorMotorConfig);
+    this.floorMotor = new TalonFX(FloorConfig.kFloorMotorCANID, MotorEnableConstants.canivore);  // Create the floor motor.
+    this.floorMotorMode = new VelocityVoltage(0);                                      // Set the control mode for the floor motor.
+    this.floorDutyCycle = new DutyCycleOut(0.0);
+    this.configureMechanism(this.floorMotor, this.floorConfig.floorMotorConfig);
 
 
-  // Publish subsystem data to SmartDashboard.
-  SmartDashboard.putData("Floor", this);
+    // Publish subsystem data to SmartDashboard.
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Floor", this);
+    }
   }
 
   /**

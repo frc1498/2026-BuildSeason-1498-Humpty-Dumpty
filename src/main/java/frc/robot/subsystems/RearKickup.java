@@ -28,6 +28,7 @@ import frc.robot.config.RearKickupConfig;
 
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 import frc.robot.constants.RearKickupConstants;
 
 /**
@@ -74,8 +75,13 @@ public class RearKickup extends SubsystemBase {
     this.configureMechanism(this.rearKickupMotor, this.rearKickupConfig.rearKickupMotorConfig);
 
     // Publish subsystem data to SmartDashboard.
-    SmartDashboard.putData("Rear Kickup", this);
-
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Rear Kickup", this);
+    } 
+    
     this.rearKickupDutyCycle = new DutyCycleOut(0.0);
   }
 

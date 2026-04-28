@@ -42,6 +42,7 @@ import frc.robot.sim.ShooterSim;
 import frc.robot.constants.MotorEnableConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.MotorEnableConstants.LogLevel;
+import frc.robot.constants.MotorEnableConstants.TelemetryLevel;
 
 /**
  * The shooter subsystem.  Contains the flywheel, turret, hood adjustment, spindexer, and ball kickup.
@@ -151,9 +152,14 @@ public class Shooter extends SubsystemBase {
     );
 
     // Publish subsystem data to SmartDashboard.
-    SmartDashboard.putData("Shooter", this);
-    //SmartDashboard.putData("Shooter/Pose", this.targetingField);
-    //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
+    // Only publish if the telemetry level is above NONE.
+    if (this.telemetryLevel == TelemetryLevel.NONE) {
+      // Do Nothing.
+    } else {
+      SmartDashboard.putData("Shooter", this);
+      //SmartDashboard.putData("Shooter/Pose", this.targetingField);
+      //SmartDashboard.putData("Shooter/Sim", this.sim.getVis());
+    } 
 
     this.shooterDutyCycle = new DutyCycleOut(0.0);
 
