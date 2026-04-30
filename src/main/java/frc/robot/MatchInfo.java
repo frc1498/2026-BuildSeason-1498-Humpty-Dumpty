@@ -223,7 +223,7 @@ public class MatchInfo {
     }
 
     public void setAllianceHubOffset() {
-        this.targetOffset = Rotation2d.fromDegrees(5.0);
+        this.targetOffset = Rotation2d.fromDegrees(0.0);
     }
 
     public void setAllianceCornerLeftOffset() {
