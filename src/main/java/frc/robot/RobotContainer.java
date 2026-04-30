@@ -102,7 +102,7 @@ public class RobotContainer {
     private boolean DSLatch = false;
     private double precisionDampenerTranslation = 1; //Translation Speed Limiter
     private double precisionDampenerRotation = 1; //Rotation Speed Limiter
-    private double shooterAngleOffset = 5.0; //Offset in degrees.  Positive is counter clockwise.
+    private double shooterAngleOffset = 0.0; //Offset in degrees.  Positive is counter clockwise.
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
