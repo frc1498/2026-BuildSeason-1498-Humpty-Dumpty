@@ -655,7 +655,7 @@ public class Vision extends SubsystemBase {
         // Only update the megaTag2 if the most recent megaTag2 is valid.
         if (this.cachedMegaTag2Valid) {
             this.cachedAreMegaTag2Seen = this.areLimelightTagsSeen(this.cachedMegaTag2, limelight.kMegaTag2Count);
-            this.cachedIsMegaTag2PoseValid = this.isLimelightPoseValid(this.cachedMegaTag2, limelight.kMegaTagCount);
+            this.cachedIsMegaTag2PoseValid = this.isLimelightPoseValid(this.cachedMegaTag2, limelight.kMegaTag2Count);
             this.megaTag2 = this.cachedMegaTag2;
             this.log(LogLevel.NONE);
         } else {
