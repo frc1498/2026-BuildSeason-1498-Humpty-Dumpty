@@ -113,7 +113,7 @@
       "minWaypointRelativePos": 2.3309352517985626,
       "maxWaypointRelativePos": 3.9251798561151015,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 2.5,
         "maxAcceleration": 4.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -129,7 +129,7 @@
         "y": 4.028
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 3.938461538461539,
+      "minWaypointRelativePos": 3.9021582733812923,
       "maxWaypointRelativePos": 4.0,
       "name": "Point Towards Zone"
     }
