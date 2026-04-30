@@ -35,7 +35,7 @@ public class RearKickupConfig {
         rearKickup.CurrentLimits.SupplyCurrentLimit = 15;    //Set 2-17-26
         rearKickup.CurrentLimits.SupplyCurrentLimitEnable = true;
         rearKickup.CurrentLimits.SupplyCurrentLowerLimit = 60.0;  //Was 80.  Turned down for current consumption issues.
-        rearKickup.CurrentLimits.SupplyCurrentLowerTime = 2;
+        rearKickup.CurrentLimits.SupplyCurrentLowerTime = 1;
 
         //Slot 0 Configs
         rearKickup.Slot0.kP = 0.5;  // An error of 1 rotation per second results in 2V output
