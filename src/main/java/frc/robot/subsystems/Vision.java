@@ -613,6 +613,12 @@ public class Vision extends SubsystemBase {
     public Command setCompPipeline() {return this.setPipeline(limelight.kCompPipelineIndex, photonvision.kCompPipelineIndex).withName("setCompPipeline");}
     public Command setPracticePipeline() {return this.setPipeline(limelight.kPracticePipelineIndex, photonvision.kPracticePipelineIndex).withName("setPracticePipeline");}
 
+    public Command setLimelightPosition() {
+        return runOnce(() -> {
+            this.setLimelightRobotPosition();
+        }).ignoringDisable(true).withName("setLimelightPosition");
+    }
+
     @Override
     public void initSendable(SendableBuilder builder) {
         // I want to use a quirk of switch statements.  If a case doesn't have a break statement, the code below it will continue to run.
