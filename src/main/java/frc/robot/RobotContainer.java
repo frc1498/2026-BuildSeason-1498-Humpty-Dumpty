@@ -252,7 +252,7 @@ public class RobotContainer {
         driver.back().and(RobotModeTriggers.disabled()).onTrue(move.coastAllMotors()).onFalse(move.resetAllMotorsNeutral());
 
         //Driver start: zero gyro & switch the limelight IMU mode to the external seed.
-        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightIMUExternalSeed()).withName("Zero Gyro and IMU Mode 1"));
+        driver.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).andThen(vision.setLimelightPosition()).andThen(vision.setLimelightIMUExternalSeed()).withName("Zero Gyro, set Limelight Position, IMU Mode 1"));
  
         //driver.X()
         driver.x().onTrue(Commands.parallel(move.startShootStatic(),Commands.sequence(Commands.waitSeconds(0.65),move.slowHopperRetract())).withName("Static Shot"))
