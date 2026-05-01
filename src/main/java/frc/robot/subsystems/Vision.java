@@ -233,11 +233,26 @@ public class Vision extends SubsystemBase {
     private boolean isResultAmbiguityBelowThreshold(List<PhotonTrackedTarget> targets, double ambiguityThreshold) {
         double highestAmbiguity = 0;
         for (var tgt : targets) {
-            if (tgt.getPoseAmbiguity() >= highestAmbiguity) {
+            // For now, the ambiguity is -1 if the target is in a multi-pose estimate.
+            // In that case, treat the target as 0 ambiguity.
+            // A -1 would still work with the existing logic, but this is future-proofing.
+            if (this.isResultAmbiguityInvalid(tgt)) {
+                highestAmbiguity = 0;
+            }
+            else if (tgt.getPoseAmbiguity() >= highestAmbiguity) {
                 highestAmbiguity = tgt.getPoseAmbiguity();
             }
         }
         return highestAmbiguity <= ambiguityThreshold;
+    }
+
+    /**
+     * Check if the current pose ambiguity from the target is invalid.  A value of -1 is invalid.
+     * @param target
+     * @return True if the pose ambiguity is -1.
+     */
+    private boolean isResultAmbiguityInvalid(PhotonTrackedTarget target) {
+        return target.getPoseAmbiguity() == -1;
     }
 
     /**
@@ -409,11 +424,13 @@ public class Vision extends SubsystemBase {
             if (this.isPhotonvisionResultValid(photonEstimator, result, photonvision.kEstimateTagCount)) {
                 visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
                 if (visionEst.isEmpty()) {
-                    visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
+                    // If there's no estimate from the MultiTagPose, do nothing.
+                    // Leave the option to return to using the lowest estimate ambiguity.
+                    //visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
                 }
                 this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
 
-                //Don't bother if the ambiguity is above a threshold.
+                // Only accept the vision estimate if there is one.
                 visionEst.ifPresent( est -> {
                     var stddev = getEstimationStdDevs();
                     poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
