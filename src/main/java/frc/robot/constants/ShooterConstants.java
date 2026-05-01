@@ -55,7 +55,7 @@ public class ShooterConstants {
   public static final Pose2d kBlueLeft = new Pose2d(2.2, 5.5, Rotation2d.fromDegrees(180.0));
   public static final Pose2d kBlueRight = new Pose2d(2.2, 2.5, Rotation2d.fromDegrees(180.0));
 
-  public static final Transform2d kRobotToShooter = new Transform2d(new Translation2d(0.1143, -0.1381), Rotation2d.fromDegrees(0.0));
+  public static final Transform2d kRobotToShooter = new Transform2d(new Translation2d(0.18415, 0.0), Rotation2d.fromDegrees(0.0));
   // 0.138112776225552 m X from center of robot.
   // -0.114300228600457 m Y from centrer of robot.
 
