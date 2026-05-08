@@ -6,6 +6,7 @@ package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
 import com.ctre.phoenix6.HootEpilogueBackend;
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.epilogue.Epilogue;
@@ -65,9 +66,6 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
 
-    // Use this to record the build constants to the data log.
-    buildInformation = new StringLogEntry(DataLogManager.getLog(), "/BuildConstants/");
-
     m_robotContainer = new RobotContainer();
   }
 
@@ -82,16 +80,16 @@ public class Robot extends TimedRobot {
     //WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // Record all of the code build constants to the data log to correlate log data to a specific branch and commit of code.
-    buildInformation.append("MAVEN_GROUP/" + BuildConstants.MAVEN_GROUP);
-    buildInformation.append("MAVEN_NAME/" + BuildConstants.MAVEN_NAME);
-    buildInformation.append("VERSION/" + BuildConstants.VERSION);
-    buildInformation.append("GIT_REVISION/" + BuildConstants.GIT_REVISION);
-    buildInformation.append("GIT_SHA/" + BuildConstants.GIT_SHA);
-    buildInformation.append("GIT_DATE/" + BuildConstants.GIT_DATE);
-    buildInformation.append("GIT_BRANCH/" + BuildConstants.GIT_BRANCH);
-    buildInformation.append("BUILD_DATE/" + BuildConstants.BUILD_DATE);
-    buildInformation.append("BUILD_UNIX_TIME/" + BuildConstants.BUILD_UNIX_TIME);
-    buildInformation.append("DIRTY/" + BuildConstants.DIRTY);
+    SignalLogger.writeString("BuildConstants/MAVEN_GROUP", BuildConstants.MAVEN_GROUP);
+    SignalLogger.writeString("BuildConstants/MAVEN_NAME", BuildConstants.MAVEN_NAME);
+    SignalLogger.writeString("BuildConstants/VERSION", BuildConstants.VERSION);
+    SignalLogger.writeInteger("BuildConstants/GIT_REVISION", BuildConstants.GIT_REVISION);
+    SignalLogger.writeString("BuildConstants/GIT_SHA", BuildConstants.GIT_SHA);
+    SignalLogger.writeString("BuildConstants/GIT_DATE", BuildConstants.GIT_DATE);
+    SignalLogger.writeString("BuildConstants/GIT_BRANCH", BuildConstants.GIT_BRANCH);
+    SignalLogger.writeString("BuildConstants/BUILD_DATE", BuildConstants.BUILD_DATE);
+    SignalLogger.writeInteger("BuildConstants/BUILD_UNIX_TIME", BuildConstants.BUILD_UNIX_TIME);
+    SignalLogger.writeInteger("BuildConstants/DIRTY", BuildConstants.DIRTY);
 
     // Set the RoboRIO2 custom brownout voltage.
     RobotController.setBrownoutVoltage(4.5);
