@@ -12,4 +12,20 @@ public interface Zone {
     default Trigger contains(Supplier<Translation2d> translation) {
             return new Trigger(() -> containsPoint(translation.get())); 
         }
+
+    default Zone union(Zone other) {
+        return null;
+    }
+
+    default Zone intersection(Zone other) {
+        return null;
+    }
+
+    default Zone difference(Zone other) {
+        return null;
+    }
+
+    default Zone complement(Zone other) {
+        return null;
+    }
 }
