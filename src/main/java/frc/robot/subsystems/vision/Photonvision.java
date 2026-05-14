@@ -71,10 +71,18 @@ public class Photonvision extends SubsystemBase implements Camera {
 
     private EstimatedRobotPose calculateEstimate(List<PhotonPipelineResult> results, PhotonPoseEstimator estimator) {
         for (var result : results) {
-            result.
+            // If any of these checks aren't true, don't bother using the result.
+            if (!this.areTagsSeen(result, 1) || !this.resultAmbiguityLimit(result, 0.1) || !this.targetArea(result, 15.0)) {
+                continue;
+            }
             if (result.multitagResult.isPresent()) {
-                var wacky = this.processSingleResult(result, estimator);
-
+                var est = estimator.estimateCoprocMultiTagPose(result);
+                if (est.isPresent()) {
+                    return est.get();
+                }
+            } else {
+                var est = estimator.estimateLowestAmbiguityPose(result);
+                return est.get();
             }
         }
     }
@@ -83,6 +91,21 @@ public class Photonvision extends SubsystemBase implements Camera {
         return this.poseEstimator.getFieldTags().getTagPose(target.getFiducialId()).get().toPose2d().getTranslation().getDistance()
     }
 
+    private boolean areTagsSeen(PhotonPipelineResult result, int tagLimit) {
+        return this.isConnected() && result.hasTargets() && (result.getTargets().size() >= tagLimit);
+    }
+
+    private boolean resultAmbiguityLimit(PhotonPipelineResult result, double ambiguityThreshold) {
+        return this.isConnected() && (result.getBestTarget().getPoseAmbiguity() <= ambiguityThreshold);
+    }
+
+    private boolean targetArea(PhotonPipelineResult result, double tagSizeThreshold) {
+        return this.isConnected() && (result.getBestTarget().getArea() >= tagSizeThreshold);
+    }
+
+    private boolean targetSkew(PhotonPipelineResult result, double skewThreshold) {
+        return this.isConnected() && (result.getBestTarget().getSkew() <= skewThreshold);
+    }
     
     /**
      * Process the latest camera results from the photon camera.
