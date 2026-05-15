@@ -81,6 +81,8 @@ public class VisionConstants {
 
         public static final int kEstimateTagCount = 2;
 
+        public static final double kHeightLimit = 1.0;  // One meter off the ground.
+
         public static enum Camera {
             SWERVE_RIGHT_CAMERA,
             SWERVE_LEFT_CAMERA
