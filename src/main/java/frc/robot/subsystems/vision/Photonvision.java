@@ -17,10 +17,9 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.VisionConstants.photonvision;
 
-public class Photonvision extends SubsystemBase implements Camera {
+public class Photonvision implements Camera {
 
     private String name;
-    private poseEstimateConsumer consumer;
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
     private AprilTagFieldLayout fieldLayout;
@@ -28,9 +27,8 @@ public class Photonvision extends SubsystemBase implements Camera {
     private List<poseEstimate> poseEstimates;
     private Alert cameraDisconnected;
 
-    public Photonvision(String name, poseEstimateConsumer consumer, AprilTagFieldLayout fieldLayout, Transform3d cameraTransform) {
+    public Photonvision(String name, AprilTagFieldLayout fieldLayout, Transform3d cameraTransform) {
         this.setName(name);
-        this.consumer = consumer;
         this.fieldLayout = fieldLayout;
         this.setCameraTransform(cameraTransform);
 
@@ -70,7 +68,7 @@ public class Photonvision extends SubsystemBase implements Camera {
         return this.poseEstimates;
     }
 
-    public void calculateEstimate(int resultLimit, PhotonPoseEstimator estimator) {
+    public void calculateEstimate(int resultLimit) {
         this.poseEstimates = new LinkedList<poseEstimate>();
         for (var result : this.getResults(resultLimit)) {
             // If any of these checks aren't true, don't bother using the result.
@@ -78,7 +76,7 @@ public class Photonvision extends SubsystemBase implements Camera {
                 continue;
             }
             if (result.multitagResult.isPresent()) {
-                var est = estimator.estimateCoprocMultiTagPose(result);
+                var est = this.poseEstimator.estimateCoprocMultiTagPose(result);
                 if (est.isPresent()) {
                     this.poseEstimates.add(new poseEstimate(
                         est.get().estimatedPose,
@@ -90,7 +88,7 @@ public class Photonvision extends SubsystemBase implements Camera {
                     );
                 }
             } else {
-                var est = estimator.estimateLowestAmbiguityPose(result);
+                var est = this.poseEstimator.estimateLowestAmbiguityPose(result);
                 if (est.isPresent()) {
                     this.poseEstimates.add(new poseEstimate(
                         est.get().estimatedPose,
