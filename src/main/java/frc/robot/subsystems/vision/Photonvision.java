@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,7 @@ public class Photonvision extends SubsystemBase implements Camera {
     private PhotonPoseEstimator poseEstimator;
     private AprilTagFieldLayout fieldLayout;
     private Transform3d cameraTransform;
+    private List<poseEstimate> poseEstimates;
     private Alert cameraDisconnected;
 
     public Photonvision(String name, poseEstimateConsumer consumer, AprilTagFieldLayout fieldLayout, Transform3d cameraTransform) {
@@ -59,18 +61,18 @@ public class Photonvision extends SubsystemBase implements Camera {
         return camera.isConnected();
     }
 
-
-    private Optional<EstimatedRobotPose> processSingleResult(PhotonPipelineResult result, PhotonPoseEstimator estimator) {
-        return estimator.estimateCoprocMultiTagPose(result);
-    }
-
     private List<PhotonPipelineResult> getResults(int resultLimit) {
         List<PhotonPipelineResult> results = this.camera.getAllUnreadResults();
         return results.subList(0, Math.min(resultLimit, results.size()));
     }
 
-    private EstimatedRobotPose calculateEstimate(List<PhotonPipelineResult> results, PhotonPoseEstimator estimator) {
-        for (var result : results) {
+    public List<poseEstimate> getLatestEstimates() {
+        return this.poseEstimates;
+    }
+
+    public void calculateEstimate(int resultLimit, PhotonPoseEstimator estimator) {
+        this.poseEstimates = new LinkedList<poseEstimate>();
+        for (var result : this.getResults(resultLimit)) {
             // If any of these checks aren't true, don't bother using the result.
             if (!this.areTagsSeen(result, 1) || !this.resultAmbiguityLimit(result, 0.1) || !this.targetArea(result, 15.0)) {
                 continue;
@@ -78,17 +80,29 @@ public class Photonvision extends SubsystemBase implements Camera {
             if (result.multitagResult.isPresent()) {
                 var est = estimator.estimateCoprocMultiTagPose(result);
                 if (est.isPresent()) {
-                    return est.get();
+                    this.poseEstimates.add(new poseEstimate(
+                        est.get().estimatedPose,
+                        est.get().timestampSeconds,
+                        result.multitagResult.get().estimatedPose.ambiguity,
+                        result.getTargets().get(0).bestCameraToTarget.getTranslation().getNorm(),
+                        result.getTargets().size(),
+                        estimateType.PHOTONVISION_MULTITAG)
+                    );
                 }
             } else {
                 var est = estimator.estimateLowestAmbiguityPose(result);
-                return est.get();
+                if (est.isPresent()) {
+                    this.poseEstimates.add(new poseEstimate(
+                        est.get().estimatedPose,
+                        est.get().timestampSeconds,
+                        result.getBestTarget().poseAmbiguity,
+                        result.getBestTarget().bestCameraToTarget.getTranslation().getNorm(),
+                        1,
+                        estimateType.PHOTONVISION_SINGLETAG)
+                    );
+                }
             }
         }
-    }
-
-    private double distanceToTarget(PhotonTrackedTarget target) {
-        return this.poseEstimator.getFieldTags().getTagPose(target.getFiducialId()).get().toPose2d().getTranslation().getDistance()
     }
 
     private boolean areTagsSeen(PhotonPipelineResult result, int tagLimit) {
@@ -105,36 +119,5 @@ public class Photonvision extends SubsystemBase implements Camera {
 
     private boolean targetSkew(PhotonPipelineResult result, double skewThreshold) {
         return this.isConnected() && (result.getBestTarget().getSkew() <= skewThreshold);
-    }
-    
-    /**
-     * Process the latest camera results from the photon camera.
-     * We still need to determine the return type of this method, and how it passes the estimate back into the periodic method.
-     * @param photonResults
-     * @param photonEstimator
-     */
-    private EstimatedRobotPose processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator, photonvision.Camera photonCamera) {
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var result : photonResults) {
-            // Check if the pose is valid, and ignore everything if it isn't.
-            if (this.isPhotonvisionResultValid(photonEstimator, result, photonvision.kEstimateTagCount)) {
-                visionEst = this.processSingleResult(result, photonEstimator);
-                if (visionEst.isEmpty()) {
-                    // If there's no estimate from the MultiTagPose, do nothing.
-                    // Leave the option to return to using the lowest estimate ambiguity.
-                    //visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
-                }
-                this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
-
-                // Only accept the vision estimate if there is one.
-                visionEst.ifPresent( est -> {
-                    var stddev = getEstimationStdDevs();
-                    poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
-  
-                }
-                });
-            }
-            // this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
-        } 
     }
 }
