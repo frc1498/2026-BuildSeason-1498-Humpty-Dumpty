@@ -11,6 +11,8 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -19,12 +21,15 @@ import frc.robot.constants.VisionConstants.photonvision;
 
 public class Photonvision implements Camera {
 
+    @Logged
     private String name;
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
     private AprilTagFieldLayout fieldLayout;
     private Transform3d cameraTransform;
     private List<poseEstimate> poseEstimates;
+    @Logged
+    private Pose3d logTest = new Pose3d();
     private Alert cameraDisconnected;
 
     /**
@@ -168,6 +173,7 @@ public class Photonvision implements Camera {
                 var est = this.poseEstimator.estimateCoprocMultiTagPose(result);
                 // Redundancy check - Confirm that an estimate was created from the result.
                 if (est.isPresent()) {
+                    this.logTest = est.get().estimatedPose;
                     // Start filling out the pose estimate.
                     this.poseEstimates.add(new poseEstimate(
                         est.get().estimatedPose,    // Keep this as the 3d pose estimate.
@@ -185,6 +191,7 @@ public class Photonvision implements Camera {
                 var est = this.poseEstimator.estimateLowestAmbiguityPose(result);
                 // Redundancy check - Confirm that an estimate was created from the result.
                 if (est.isPresent()) {
+                    this.logTest = est.get().estimatedPose;
                     this.poseEstimates.add(new poseEstimate(
                         est.get().estimatedPose,    // Keep this as the 3d pose estimate.
                         est.get().timestampSeconds,
