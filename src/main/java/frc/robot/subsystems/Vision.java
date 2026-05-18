@@ -49,7 +49,9 @@ import frc.robot.subsystems.vision.Camera.poseEstimate;
 
 public class Vision extends SubsystemBase {
     
+    @Logged
     private Photonvision leftCamera;
+    @Logged
     private Photonvision rightCamera;
 
     private List<poseEstimate> poseEstimates;
