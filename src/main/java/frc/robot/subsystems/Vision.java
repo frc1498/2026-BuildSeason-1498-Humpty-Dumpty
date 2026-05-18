@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -27,6 +29,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,6 +44,7 @@ import frc.robot.constants.VisionConstants;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
 import frc.robot.subsystems.vision.Photonvision;
+import frc.robot.subsystems.vision.PhotonvisionSim;
 import frc.robot.subsystems.vision.Camera.poseEstimate;
 
 public class Vision extends SubsystemBase {
@@ -58,6 +62,9 @@ public class Vision extends SubsystemBase {
     private LimelightHelpers.PoseEstimate megaTag = new PoseEstimate();
 
     public Field2d visionField = new Field2d();
+
+    private VisionSystemSim visionSim;
+    private SimCameraProperties cameraProperties = new SimCameraProperties();
 
     public Matrix<N3, N1> currentStdDevs = limelight.kMegaTag2StdDevs;
     
@@ -126,6 +133,15 @@ public class Vision extends SubsystemBase {
 
         SmartDashboard.putData("Vision", this);
         SmartDashboard.putData("Vision/Pose", this.visionField);
+
+        if (RobotBase.isSimulation()) {
+            this.visionSim = new VisionSystemSim("vision");
+            this.visionSim.addAprilTags(photonvision.kTagLayout);
+            PhotonvisionSim leftCameraSim = new PhotonvisionSim(this.leftCamera);
+            PhotonvisionSim rightCameraSim = new PhotonvisionSim(this.rightCamera);
+            this.visionSim.addCamera(leftCameraSim.getCameraSim(), photonvision.kRobotToLeftCamera);
+            this.visionSim.addCamera(rightCameraSim.getCameraSim(), photonvision.kRobotToRightCamera);
+        }
     }
 
     /**
@@ -283,16 +299,6 @@ public class Vision extends SubsystemBase {
     }
 
     /**
-     * Take a snapshot with the photonvision camera.
-     * This takes a picture of the camera input, and the processed output.
-     * @param camera - The photonvision camera to take a picture with.
-     */
-    private void takePhotonvisionSnapshot(PhotonCamera camera) {
-        camera.takeInputSnapshot();
-        camera.takeOutputSnapshot();
-    }
-
-    /**
      * Setup a limelight rewind capture.
      * @param duration - The amount of time, in seconds, to capture a recording for.  The maximum is 165 seconds.
      */
@@ -445,8 +451,8 @@ public class Vision extends SubsystemBase {
         return runOnce(() -> {this.takeLimelightSnapshot();}).ignoringDisable(true).withName("limelightSnapshot");
     }
 
-    private Command photonvisionSnapshot(PhotonCamera camera) {
-        return runOnce(() -> {this.takePhotonvisionSnapshot(camera);}).ignoringDisable(true).withName("photonvisionSnapshot");
+    private Command photonvisionSnapshot(Photonvision camera) {
+        return runOnce(() -> {camera.takeSnapshot();}).ignoringDisable(true).withName("photonvisionSnapshot");
     }
 
     public Command leftPhotonSnapshot() {return this.photonvisionSnapshot(this.leftCamera).withName("leftPhotonSnapshot");};
@@ -621,6 +627,8 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
+
+        this.visionSim.update(this.swerveStateSupplier.get().Pose);
         // This method will be called once per scheduler run during simulation.
 
         // Update the odometry to the test pose, for test purposes.
