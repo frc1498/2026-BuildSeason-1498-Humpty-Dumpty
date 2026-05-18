@@ -44,6 +44,13 @@ public class Photonvision implements Camera {
     }
 
     /**
+     * Return the camera initialized by this class.
+     * Mainly used to initialize the simulation camera.
+     * @return The PhotonCamera object used in this class.
+     */
+    public PhotonCamera getCamera() {return this.camera;}
+
+    /**
     * Sets the name of the camera.
     * @param cameraName The name of the camera, as set on the co-processor.
     */
@@ -63,7 +70,7 @@ public class Photonvision implements Camera {
     * @param index The index of the pipeline on the co-processor to switch to.
     */
     public void setPipeline(int index) {
-        camera.setPipelineIndex(index);
+        this.camera.setPipelineIndex(index);
     }
 
     /**
@@ -71,7 +78,7 @@ public class Photonvision implements Camera {
     * The pipeline index begins at 0.
     * @return The index of the active vision pipeline.
     */
-    public int getPipeline() {return camera.getPipelineIndex();}
+    public int getPipeline() {return this.camera.getPipelineIndex();}
 
     /**
     * Sets the 3d camera-to-robot transform used for pose estimation.
@@ -91,12 +98,27 @@ public class Photonvision implements Camera {
     public Transform3d getCameraTransform() {return this.cameraTransform;}
 
     /**
+     * Return the AprilTag field layout used by this camera.
+     * @return
+     */
+    public AprilTagFieldLayout getFieldLayout() {return this.fieldLayout;}
+
+    /**
     * Check if the camera is connected.
     * If false, the camera is not sending any new data.
     * @return True if the camera is sending new data via NetworkTables.
     */
     public Boolean isConnected() {
         return camera.isConnected();
+    }
+
+    /**
+     * Take a snapshot with the camera.
+     * This takes a picture of the camera input, and the processed output.
+     */
+    public void takeSnapshot() {
+        this.camera.takeInputSnapshot();
+        this.camera.takeOutputSnapshot();
     }
 
     /**
