@@ -14,6 +14,7 @@ public class PhotonvisionSim {
     public PhotonvisionSim(Photonvision camera) {
         this.cameraProperties = new SimCameraProperties();
         this.cameraSim = new PhotonCameraSim(camera.getCamera(), this.cameraProperties, camera.getFieldLayout());
+        this.cameraSim.enableDrawWireframe(true);
     }
 
     /**
