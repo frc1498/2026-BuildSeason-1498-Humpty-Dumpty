@@ -1,5 +1,10 @@
 package frc.robot.subsystems.vision;
 
+import java.util.List;
+
+import edu.wpi.first.epilogue.CustomLoggerFor;
+import edu.wpi.first.epilogue.logging.ClassSpecificLogger;
+import edu.wpi.first.epilogue.logging.EpilogueBackend;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -19,6 +24,15 @@ public interface Camera {
     // setName
     // getName
 
+
+    default List<poseEstimate> getLatestEstimates() {
+        return null;
+    }
+
+    default String getName() {
+        return "";
+    }
+
     // A record with commonalities between camera pose estimates.
     // Use so a pose estimate, from a limelight or photonvision, is treated the same by the vision subsystem.
     public static record poseEstimate (
@@ -37,6 +51,27 @@ public interface Camera {
         LIMELIGHT_MEGATAG_2,
         PHOTONVISION_MULTITAG,
         PHOTONVISION_SINGLETAG
+    }
+
+    @CustomLoggerFor(Camera.class)
+    public class customCameraLogger extends ClassSpecificLogger<Camera> {
+        public customCameraLogger() {
+            super(Camera.class);
+        }
+
+        @Override
+        public void update(EpilogueBackend backend, Camera camera) {
+            backend.log("Camera", camera.getName());
+            for (var est : camera.getLatestEstimates()) {
+                backend.log("Pose", est.pose(), Pose3d.struct);
+                backend.log("Timestamp", est.timestamp());
+                backend.log("Ambiguity", est.ambiguity());
+                backend.log("Average Tag Distance", est.averageTagDistance());
+                backend.log("Tag Count", est.tagCount());
+                backend.log("Type", est.type());
+            }
+
+        }
     }
 
     @FunctionalInterface
