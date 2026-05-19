@@ -1,20 +1,20 @@
 package frc.robot.subsystems;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.simulation.SimCameraProperties;
+import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
-import dev.doglog.DogLog;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.Matrix;
@@ -23,72 +23,54 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.constants.MotorEnableConstants;
-import frc.robot.constants.MotorEnableConstants.LogLevel;
-import frc.robot.constants.VisionConstants;
 import frc.robot.constants.VisionConstants.limelight;
 import frc.robot.constants.VisionConstants.photonvision;
+import frc.robot.subsystems.vision.Photonvision;
+import frc.robot.subsystems.vision.PhotonvisionSim;
+import frc.robot.subsystems.vision.Camera.poseEstimate;
+import frc.robot.subsystems.vision.Limelight;
 
 public class Vision extends SubsystemBase {
     
+    @Logged(importance = Importance.CRITICAL)
+    private Photonvision leftCamera;
+    @Logged(importance = Importance.CRITICAL)
+    private Photonvision rightCamera;
+    @Logged(importance = Importance.CRITICAL)
+    private Limelight frontCamera;
+
+    private List<poseEstimate> poseEstimates;
+
     public CommandSwerveDrivetrain drivetrain;
     private Supplier<SwerveDriveState> swerveStateSupplier;
     public poseEstimateConsumer poseConsumer;
 
-    private LimelightHelpers.PoseEstimate megaTag2 = new PoseEstimate();
-    private LimelightHelpers.PoseEstimate megaTag = new PoseEstimate();
-
     public Field2d visionField = new Field2d();
 
+    private VisionSystemSim visionSim;
+    private SimCameraProperties cameraProperties = new SimCameraProperties();
+
     public Matrix<N3, N1> currentStdDevs = limelight.kMegaTag2StdDevs;
-
-    private PhotonCamera leftCamera;
-    private PhotonPoseEstimator leftCameraEstimator = new PhotonPoseEstimator(photonvision.kTagLayout, photonvision.kRobotToLeftCamera);
-
-    private PhotonCamera rightCamera;
-    private PhotonPoseEstimator rightCameraEstimator = new PhotonPoseEstimator(photonvision.kTagLayout, photonvision.kRobotToRightCamera);
     
-    private LimelightHelpers.PoseEstimate cachedMegaTag2 = new PoseEstimate();
-    private LimelightHelpers.PoseEstimate cachedMegaTag = new PoseEstimate();
     private Pose2d testPose = new Pose2d(5.0, 5.0, new Rotation2d(90.0));
-    private Pose2d leftPhotonPose = new Pose2d(0, 0, new Rotation2d(0.0));
-    private Pose2d rightPhotonPose = new Pose2d(0, 0, new Rotation2d(0.0));
     private double cachedRobotHeading = 0.0;
     private double cachedRobotRotationRate = 0.0;
-    private boolean cachedMegaTag2Valid = false;
-    private boolean cachedMegaTagValid = false;
-    private boolean cachedAreMegaTagsSeen = false;
-    private boolean cachedAreMegaTag2Seen = false;
     private boolean cachedIsRobotSlowEnough = false;
-    private boolean cachedIsMegaTagPoseValid = false;
-    private boolean cachedIsMegaTag2PoseValid = false;
-    private boolean cachedIsLeftPhotonPoseValid = false;
-    private boolean cachedIsRightPhotonPoseValid = false;
-    private double cachedLimelightHeartbeat = 0.0;
     private double testTimestamp;
 
     /* Logging Variables */
     @Logged(importance = Importance.CRITICAL)
     private String currentCommand = "";
-    @Logged
-    private Pose2d cachedMegaTagPose;
-    @Logged
-    private Pose2d cachedMegaTag2Pose;
-    @Logged
-    private Pose2d cachedLeftPhotonPose;
-    @Logged
-    private Pose2d cachedRightPhotonPose;
 
     /* Subsystem Alerts */
     Alert limelightDisconnected = new Alert("Limelight Disconnected", AlertType.kError);
@@ -109,94 +91,28 @@ public class Vision extends SubsystemBase {
 
         this.telemetryLevel = telemetryLevel;
 
-        this.setLimelightRobotPosition();
-        //In the constructor, set the IMU mode to 1, so the limelight IMU is seeded with the robot gyro heading.
-        this.setLimelightIMUMode(1);
-        this.setLimelightPipeline(limelight.kCompPipelineIndex);    // Force the limelight to use the competition pipeline.
-        LimelightHelpers.SetRobotOrientation(limelight.kName, this.getRobotHeading(), 0.0, 0.0, 0.0, 0.0, 0.0);
+        leftCamera = new Photonvision(photonvision.kLeftName, photonvision.kTagLayout, photonvision.kRobotToLeftCamera);
+        rightCamera = new Photonvision(photonvision.kRightName, photonvision.kTagLayout, photonvision.kRobotToRightCamera);
+        frontCamera = new Limelight(limelight.kName, photonvision.kTagLayout, limelight.kRobotToLimelight);
 
-        leftCamera = new PhotonCamera(photonvision.kLeftName);
-        rightCamera = new PhotonCamera(photonvision.kRightName);
+        // Force all cameras to use the competition pipeline.
+        leftCamera.setPipeline(photonvision.kCompPipelineIndex);
+        rightCamera.setPipeline(photonvision.kCompPipelineIndex);
+        frontCamera.setPipeline(limelight.kCompPipelineIndex);
 
-        // Force both photonvision cameras to use the competition pipeline.
-        this.setPhotonvisionPipeline(leftCamera, photonvision.kCompPipelineIndex);
-        this.setPhotonvisionPipeline(rightCamera, photonvision.kCompPipelineIndex);
+        frontCamera.setOrientation(this.getRobotHeading());
 
         SmartDashboard.putData("Vision", this);
         SmartDashboard.putData("Vision/Pose", this.visionField);
-    }
 
-    /**
-     * Set the position of the Limelight relative to the center of the robot.
-     * This only needs to be run during initialization.
-     */
-    private void setLimelightRobotPosition() {
-        LimelightHelpers.setCameraPose_RobotSpace(
-            limelight.kName,
-            limelight.kForwardOffset,
-            limelight.kSideOffset,
-            limelight.kUpOffset,
-            limelight.kRollOffset,
-            limelight.kPitchOffset,
-            limelight.kYawOffset
-        );
-    }
-
-    /**
-     * Command the limelight to start using its internal IMU for the pose estimate it produces.
-     */
-    private void setLimelightIMUMode(int IMUMode) {
-        /*
-         * Mode 0 - External_Only - MegaTag2 uses the yaw sent from the robot to the Limelight.
-         * Mode 1 - External_Seed - The Limelight gyro is seeded with the yaw sent from the robot.
-         * Mode 2 - Internal_Only - Uses the Limelight gyro only.
-         * Mode 3 - Internal_MT1_Assist - Corrects the Limelight gyro with MegaTag1 estimated yaw.
-         * Mode 4 - Internal_External_Assist - Corrects the Limelight gyro with the robot yaw over time.  Recommended in the Limelight documentation.
-         */
-        LimelightHelpers.SetIMUMode(limelight.kName, IMUMode);
-    }
-
-    /**
-     * Sets the current pipeline for the limelight.
-     * @param pipelineIndex - The pipeline to switch to.
-     */
-    private void setLimelightPipeline(int pipelineIndex) {
-        LimelightHelpers.setPipelineIndex(limelight.kName, pipelineIndex);
-    }
-
-    /**
-     * Sets the current pipeline for the photonvision camera.
-     * @param camera - The photonvision camera to switch the pipeline for.
-     * @param pipelineIndex - The pipeline to switch to.
-     */
-    private void setPhotonvisionPipeline(PhotonCamera camera, int pipelineIndex) {
-        camera.setPipelineIndex(pipelineIndex);
-    }
-
-    /**
-     * Retrieve the limelight standard deviations from NetworkTables.
-     * @return An array containing standard deviations for the megaTag and megaTag2 pose estimates.
-     */
-    private double[] getLimelightStdDevs() {
-        return NetworkTableInstance.getDefault().getTable(limelight.kName).getEntry("stddevs").getDoubleArray(new double[12]);
-    }
-
-    /**
-     * Separate the megaTag standard deviations from the whole standard deviation array and add them into a matrix.
-     * @return A 3x1 matrix of standard deviations for the megaTag pose estimate.
-     */
-    private Matrix<N3, N1> getMegaTagStdDevs() {
-        var stdDevs = this.getLimelightStdDevs();
-        return VecBuilder.fill(stdDevs[0], stdDevs[1], stdDevs[5]);
-    }
-
-    /**
-     * Separate the megaTag2 standard deviations from the whole standard deviation array and add them into a matrix.
-     * @return A 3x1 matrix of standard deviations for the megaTag2 pose estimate.
-     */
-    private Matrix<N3, N1> getMegaTag2StdDevs() {
-        var stdDevs = this.getLimelightStdDevs();
-        return VecBuilder.fill(stdDevs[6], stdDevs[7], stdDevs[11]);
+        if (RobotBase.isSimulation()) {
+            this.visionSim = new VisionSystemSim("vision");
+            this.visionSim.addAprilTags(photonvision.kTagLayout);
+            PhotonvisionSim leftCameraSim = new PhotonvisionSim(this.leftCamera);
+            PhotonvisionSim rightCameraSim = new PhotonvisionSim(this.rightCamera);
+            this.visionSim.addCamera(leftCameraSim.getCameraSim(), photonvision.kRobotToLeftCamera);
+            this.visionSim.addCamera(rightCameraSim.getCameraSim(), photonvision.kRobotToRightCamera);
+        }
     }
 
     /**
@@ -210,69 +126,12 @@ public class Vision extends SubsystemBase {
     }
 
     /**
-     * Returns true if the photonvision pose estimate is not empty.
-     * This method is not checking if the data makes sense.
-     * @param camera
-     * @param result
-     * @return
-     */
-    private boolean isPhotonEstimateValid(PhotonPoseEstimator camera, PhotonPipelineResult result) {
-        return true;
-        // Commenting out, because I suspect this might not be the best way to check if the estimate is valid.
-        // Besides, the photonvision processes poses in a different way.
-        // I think I should be checking if the *result* is valid.
-        //return !camera.estimateCoprocMultiTagPose(result).isEmpty();
-    }
-
-    /**
-     * Checks every target within a result and returns true if the highest measured ambiguity is less than the threshold passed into the method.
-     * @param targets
-     * @param ambiguityThreshold
-     * @return
-     */
-    private boolean isResultAmbiguityBelowThreshold(List<PhotonTrackedTarget> targets, double ambiguityThreshold) {
-        double highestAmbiguity = 0;
-        for (var tgt : targets) {
-            // For now, the ambiguity is -1 if the target is in a multi-pose estimate.
-            // In that case, treat the target as 0 ambiguity.
-            // A -1 would still work with the existing logic, but this is future-proofing.
-            if (this.isResultAmbiguityInvalid(tgt)) {
-                highestAmbiguity = 0;
-            }
-            else if (tgt.getPoseAmbiguity() >= highestAmbiguity) {
-                highestAmbiguity = tgt.getPoseAmbiguity();
-            }
-        }
-        return highestAmbiguity <= ambiguityThreshold;
-    }
-
-    /**
      * Check if the current pose ambiguity from the target is invalid.  A value of -1 is invalid.
      * @param target
      * @return True if the pose ambiguity is -1.
      */
     private boolean isResultAmbiguityInvalid(PhotonTrackedTarget target) {
         return target.getPoseAmbiguity() == -1;
-    }
-
-    /**
-     * Returns true if the latest megaTag estimate identifies at least the amount of tags passed into this method.
-     * @param megaTagEstimate - A limelight pose estimate (megaTag or megaTag2)
-     * @param tagCount - The amount of tags that the estimate must see for a valid estimate.
-     * @return
-     */
-    private boolean areLimelightTagsSeen(LimelightHelpers.PoseEstimate megaTagEstimate, int tagCount) {
-        return megaTagEstimate.tagCount >= tagCount;
-    }
-
-    /**
-     * Returns true if the photonvision result contains at least the amount of tags passed into this method.
-     * @param photonResult
-     * @param tagCount
-     * @return
-     */
-    private boolean arePhotonTagsSeen(PhotonPipelineResult photonResult, int tagCount) {
-        return photonResult.hasTargets() && (photonResult.getTargets().size() >= tagCount);
     }
 
     /**
@@ -286,79 +145,12 @@ public class Vision extends SubsystemBase {
     }
 
     /**
-     * Returns true if the average distance between visible targets and the robot is less than the distance passed into this method.
-     * This is the photonvision version, which is a little more complicated than the limelight version.
-     * @param photonResult - The latest result from the camera.  The best target is used from this result to find the pose of that target.
-     * @param camera - The pose estimator for the camera.  This method uses the field layout for the camera to find the pose of the best target.
-     * @param swerveState - The current swerveDriveState, used to get the current robot pose.
-     * @param distance - The maximum distance allowable between the robot and the apriltags.
-     * @return True if the best tag distance is less than or equal to the distance.
-     */
-    private boolean isPhotonDistanceClose(PhotonPipelineResult photonResult, PhotonPoseEstimator camera, SwerveDriveState swerveState, double distance) {
-        return camera.getFieldTags().getTagPose(photonResult.getBestTarget().fiducialId).get().toPose2d().getTranslation().getDistance(swerveState.Pose.getTranslation()) <= distance;
-    }
-
-    /**
      * Returns true if the rotational velocity of the robot is less than the value passed into this method.
      * @param maximumRotationRate
      * @return
      */
     private boolean isRobotSlowEnough(double maximumRotationRate) {
         return this.cachedRobotRotationRate <= maximumRotationRate;
-    }
-
-    /**
-     * Signifies that the latest estimated pose is valid if:
-     * 1. The megaTag estimate is valid.
-     * 2. At least one AprilTag was seen.
-     * 3. The robot is not turning too fast.
-     * @param megaTagEstimate - A limelight pose estimate (megaTag or megaTag2).
-     * @return
-     */
-    private boolean isLimelightPoseValid(LimelightHelpers.PoseEstimate megaTagEstimate, int tagCount) {
-        // 3.3 radians per second is currently 75% of our maximum rotational speed.
-        return this.isMegaTagValid(megaTagEstimate) && this.areLimelightTagsSeen(megaTagEstimate, tagCount) && this.isRobotSlowEnough(VisionConstants.kMaximumRotationRate);
-    }
-
-    /**
-     * Take a snapshot with the limelight.
-     */
-    private void takeLimelightSnapshot() {
-        LimelightHelpers.triggerSnapshot(limelight.kName);
-    }
-
-    /**
-     * Take a snapshot with the photonvision camera.
-     * This takes a picture of the camera input, and the processed output.
-     * @param camera - The photonvision camera to take a picture with.
-     */
-    private void takePhotonvisionSnapshot(PhotonCamera camera) {
-        camera.takeInputSnapshot();
-        camera.takeOutputSnapshot();
-    }
-
-    /**
-     * Setup a limelight rewind capture.
-     * @param duration - The amount of time, in seconds, to capture a recording for.  The maximum is 165 seconds.
-     */
-    private void takeLimelightVideo(double duration) {
-        // This method is a want, not a need.
-        LimelightHelpers.setRewindEnabled(limelight.kName, true);
-        LimelightHelpers.triggerRewindCapture(limelight.kName, duration);
-    }
-
-    /**
-     * Signifies that the latest estimated photon pose is valid if:
-     * 1. The photon pose estimate is valid.
-     * 2. At least one AprilTag was seen.
-     * 3. The robot is not turning too fast.
-     * @param camera
-     * @param result
-     * @return
-     */
-    private boolean isPhotonvisionResultValid(PhotonPoseEstimator camera, PhotonPipelineResult result, int tagCount) {
-        //3.3 radian per second is currently 75% of our maximum rotational speed.
-        return this.arePhotonTagsSeen(result, tagCount) && this.isResultAmbiguityBelowThreshold(result.getTargets(), photonvision.kAmbiguityThreshold) && this.isRobotSlowEnough(VisionConstants.kMaximumRotationRate);
     }
 
     /**
@@ -375,98 +167,6 @@ public class Vision extends SubsystemBase {
      */
     private double getRobotRotationRate() {
         return Math.abs(this.swerveStateSupplier.get().Speeds.omegaRadiansPerSecond);
-    }
-
-    /**
-     * Return the pose component of the current megaTag estimate.
-     * @return
-     */
-    private Pose2d getCurrentMegaTagPose() {
-        return this.megaTag.pose;
-    }
-
-    /**
-     * Return the pose component of the current megaTag2 estimate.
-     * @return
-     */
-    private Pose2d getCurrentMegaTag2Pose() {
-        return this.megaTag2.pose;
-    }
-
-    /**
-     * Return the pose component of the current left swerve camera estimate.
-     * @param camera
-     * @return
-     */
-    private Pose2d getCurrentLeftPhotonPose() {
-        return this.leftPhotonPose;
-    }
-
-    /**
-     * Return the pose component of the current right swerve camera estimate.
-     * @param camera
-     * @return
-     */
-    private Pose2d getCurrentRightPhotonPose() {
-        return this.rightPhotonPose;
-    }    
-
-    /**
-     * Process the latest camera results from the photon camera.
-     * We still need to determine the return type of this method, and how it passes the estimate back into the periodic method.
-     * @param photonResults
-     * @param photonEstimator
-     */
-    private void processPhotonCameraResults(List<PhotonPipelineResult> photonResults, PhotonPoseEstimator photonEstimator, photonvision.Camera photonCamera) {
-        Optional<EstimatedRobotPose> visionEst = Optional.empty();
-        for (var result : photonResults) {
-            // Check if the pose is valid, and ignore everything if it isn't.
-            if (this.isPhotonvisionResultValid(photonEstimator, result, photonvision.kEstimateTagCount)) {
-                visionEst = photonEstimator.estimateCoprocMultiTagPose(result);
-                if (visionEst.isEmpty()) {
-                    // If there's no estimate from the MultiTagPose, do nothing.
-                    // Leave the option to return to using the lowest estimate ambiguity.
-                    //visionEst = photonEstimator.estimateLowestAmbiguityPose(result);
-                }
-                this.updateEstimationStdDevs(photonEstimator, visionEst, result.getTargets());
-
-                // Only accept the vision estimate if there is one.
-                visionEst.ifPresent( est -> {
-                    var stddev = getEstimationStdDevs();
-                    poseConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, stddev);
-                    switch (photonCamera) {
-                    case SWERVE_LEFT_CAMERA:
-                        this.leftPhotonPose = est.estimatedPose.toPose2d();
-                    break;
-                    case SWERVE_RIGHT_CAMERA:
-                        this.rightPhotonPose = est.estimatedPose.toPose2d();
-                    break;
-                    default:
-                    break;
-                }
-                });
-            }
-            // this.drivetrain.addVisionMeasurement(visionEst.get().estimatedPose.toPose2d(), visionEst.get().timestampSeconds, this.getEstimationStdDevs());
-        } 
-    }
-
-    /**
-    * Logs variables from the subsystem via DogLog.  The amount of variables logged can be controlled with the logLevel parameter.
-    * @param logLevel - The level of logging to enable.
-    */
-    private void log(MotorEnableConstants.LogLevel logLevel) {
-        switch (logLevel) {
-        case NONE:
-            break;
-        case FULL:
-            // Log Limelight pose estimate
-            DogLog.log("Vision/Limelight/X" , this.megaTag2.pose.getX());
-            DogLog.log("Vision/Limelight/Y" , this.megaTag2.pose.getY());
-            DogLog.log("Vision/Limelight/RotDeg" , this.megaTag2.pose.getRotation().getDegrees());
-            break;
-        default:
-            break;
-        }
     }
 
     /**
@@ -524,20 +224,8 @@ public class Vision extends SubsystemBase {
      * @return
      */
     private String getCurrentCommandName() {
-        if (this.getCurrentCommand() == null) {
-            return "No Command";
-        }
-        else {
-            return this.getCurrentCommand().getName();
-        }
-        // Refactoring this method with a ternary operator.
-        // return (this.getCurrentCommand == null) ? "No Command" : this.getCurrentCommand().getName();
+        return (this.getCurrentCommand() == null) ? "No Command" : this.getCurrentCommand().getName();
     }
-
-    public Trigger addMegaTagPose = new Trigger(() -> {return this.cachedIsMegaTagPoseValid;});
-    public Trigger addMegaTag2Pose = new Trigger(() -> {return this.cachedIsMegaTag2PoseValid;});
-    public Trigger addLeftPhotonPose = new Trigger(() -> {return this.cachedIsLeftPhotonPoseValid;});
-    public Trigger addRightPhotonPose = new Trigger(() -> {return this.cachedIsRightPhotonPoseValid;});
 
     /**
      * Add the current test pose estimate to the drivetrain pose estimate.
@@ -557,7 +245,7 @@ public class Vision extends SubsystemBase {
     private Command limelightVideo(DoubleSupplier duration) {
         return runOnce(
             () -> {
-                this.takeLimelightVideo(duration.getAsDouble());
+                this.frontCamera.takeVideo(duration.getAsDouble());
             }
         ).ignoringDisable(true).withName("limelightVideo");
     }
@@ -566,11 +254,11 @@ public class Vision extends SubsystemBase {
     public Command limelightTeleopVideo() {return this.limelightVideo(() -> {return 140.0;}).withName("limelightTeleopVideo");}
 
     public Command limelightSnapshot() {
-        return runOnce(() -> {this.takeLimelightSnapshot();}).ignoringDisable(true).withName("limelightSnapshot");
+        return runOnce(() -> {this.frontCamera.takeSnapshot();}).ignoringDisable(true).withName("limelightSnapshot");
     }
 
-    private Command photonvisionSnapshot(PhotonCamera camera) {
-        return runOnce(() -> {this.takePhotonvisionSnapshot(camera);}).ignoringDisable(true).withName("photonvisionSnapshot");
+    private Command photonvisionSnapshot(Photonvision camera) {
+        return runOnce(() -> {camera.takeSnapshot();}).ignoringDisable(true).withName("photonvisionSnapshot");
     }
 
     public Command leftPhotonSnapshot() {return this.photonvisionSnapshot(this.leftCamera).withName("leftPhotonSnapshot");};
@@ -586,7 +274,7 @@ public class Vision extends SubsystemBase {
      * @return A command that changes the limelight IMU mode.
      */
     private Command switchIMUMode(int IMUMode) {
-        return runOnce(() -> {this.setLimelightIMUMode(IMUMode);}).ignoringDisable(true);
+        return runOnce(() -> {this.frontCamera.setIMUMode(IMUMode);}).ignoringDisable(true);
     }
 
     public Command setLimelightIMUExternalOnly() {return this.switchIMUMode(0).withName("IMU Mode 0: External Only");}
@@ -604,9 +292,9 @@ public class Vision extends SubsystemBase {
      */
     private Command setPipeline(int limelightPipelineIndex, int photonvisionPipelineIndex) {
         return runOnce(() -> {
-            this.setLimelightPipeline(limelightPipelineIndex);
-            this.setPhotonvisionPipeline(leftCamera, photonvisionPipelineIndex);
-            this.setPhotonvisionPipeline(rightCamera, photonvisionPipelineIndex);
+            this.frontCamera.setPipeline(limelightPipelineIndex);
+            this.leftCamera.setPipeline(photonvisionPipelineIndex);
+            this.rightCamera.setPipeline(photonvisionPipelineIndex);
         }).ignoringDisable(true).withName("setPipeline");
     }
 
@@ -615,7 +303,7 @@ public class Vision extends SubsystemBase {
 
     public Command setLimelightPosition() {
         return runOnce(() -> {
-            this.setLimelightRobotPosition();
+            this.frontCamera.setCameraTransform(limelight.kRobotToLimelight);;
         }).ignoringDisable(true).withName("setLimelightPosition");
     }
 
@@ -642,9 +330,12 @@ public class Vision extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run.
         this.currentCommand = this.getCurrentCommandName();
-        this.limelightDisconnected.set(LimelightHelpers.getHeartbeat(limelight.kName) == this.cachedLimelightHeartbeat);
-        this.photonLeftDisconnected.set(!this.leftCamera.isConnected());
-        this.photonRightDisconnected.set(!this.rightCamera.isConnected());
+        this.frontCamera.cameraDisconnected.set(!this.frontCamera.isConnected());
+        this.leftCamera.cameraDisconnected.set(!this.leftCamera.isConnected());
+        this.rightCamera.cameraDisconnected.set(!this.rightCamera.isConnected());
+
+        // Begin each loop with an empty list of pose estimates.
+        this.poseEstimates = new LinkedList<poseEstimate>();
      
         // Start by caching important values.
         // By caching these values, any other code that requires them will use the same values for the current 20 ms loop.
@@ -653,75 +344,37 @@ public class Vision extends SubsystemBase {
         this.cachedIsRobotSlowEnough = this.isRobotSlowEnough(3.3);
 
         // Every loop, seed the limelight IMU with the current robot heading.
-        LimelightHelpers.SetRobotOrientation(limelight.kName, this.cachedRobotHeading, 0.0, 0.0, 0.0, 0.0, 0.0);
-        
-        this.cachedMegaTag = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight.kName);
-        this.cachedMegaTagValid = this.isMegaTagValid(this.cachedMegaTag);
+        this.frontCamera.setOrientation(this.cachedRobotHeading);
 
-        this.cachedMegaTag2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight.kName);
-        this.cachedMegaTag2Valid = this.isMegaTagValid(this.cachedMegaTag2);
+        frontCamera.calculateEstimate();
+        leftCamera.calculateEstimate(20);
+        rightCamera.calculateEstimate(20);
 
+        this.poseEstimates.addAll(frontCamera.getLatestEstimates());
+        this.poseEstimates.addAll(leftCamera.getLatestEstimates());
+        this.poseEstimates.addAll(rightCamera.getLatestEstimates());
 
-        // Only check the number of tags and validity of the pose if the megatag is valid.
-        // Only update the megaTag if the most recent megaTag is valid.
-        if (this.cachedMegaTagValid) {
-            this.cachedAreMegaTagsSeen = this.areLimelightTagsSeen(this.cachedMegaTag, limelight.kMegaTagCount);
-            this.cachedIsMegaTagPoseValid = this.isLimelightPoseValid(this.cachedMegaTag, limelight.kMegaTagCount);
-            this.megaTag = this.cachedMegaTag;
-        } else {
-            // If the megaTag isn't valid, obviously no tags can be seen and the pose isn't valid.
-            this.cachedAreMegaTagsSeen = false;
-            this.cachedIsMegaTagPoseValid = false;
-        }
-
-        // Only check the number of tags and validity of the pose if the megatag2 is valid.
-        // Only update the megaTag2 if the most recent megaTag2 is valid.
-        if (this.cachedMegaTag2Valid) {
-            this.cachedAreMegaTag2Seen = this.areLimelightTagsSeen(this.cachedMegaTag2, limelight.kMegaTag2Count);
-            this.cachedIsMegaTag2PoseValid = this.isLimelightPoseValid(this.cachedMegaTag2, limelight.kMegaTag2Count);
-            this.megaTag2 = this.cachedMegaTag2;
-            this.log(LogLevel.NONE);
-        } else {
-            // If the megaTag2 isn't valid, obviously no tags can be seen and the pose isn't valid.
-            this.cachedAreMegaTag2Seen = false;
-            this.cachedIsMegaTag2PoseValid = false;
-        }
-
-        if (cachedIsMegaTagPoseValid) {
-            poseConsumer.accept(this.getCurrentMegaTagPose(), this.megaTag.timestampSeconds, limelight.kMegaTagStdDevs);
-        }
-        
-        if (cachedIsMegaTag2PoseValid) {
-            poseConsumer.accept(this.getCurrentMegaTag2Pose(), this.megaTag2.timestampSeconds, limelight.kMegaTag2StdDevs);
-        }
-
-        this.processPhotonCameraResults(this.leftCamera.getAllUnreadResults(), this.leftCameraEstimator, photonvision.Camera.SWERVE_LEFT_CAMERA);
-        this.processPhotonCameraResults(this.rightCamera.getAllUnreadResults(), this.rightCameraEstimator, photonvision.Camera.SWERVE_RIGHT_CAMERA);
-
-        this.cachedLimelightHeartbeat = LimelightHelpers.getHeartbeat(limelight.kName);
-
-        this.cachedMegaTagPose = this.getCurrentMegaTagPose();
-        this.cachedMegaTag2Pose = this.getCurrentMegaTag2Pose();
-        this.cachedLeftPhotonPose = this.getCurrentLeftPhotonPose();
-        this.cachedRightPhotonPose = this.getCurrentRightPhotonPose();
-
-        // Every loop, update the odometry with the current pose estimated by the limelight.
-        switch (this.telemetryLevel) {
-        case FULL:
-            visionField.getObject("limelightMegaTagPose").setPose(this.getCurrentMegaTagPose());
-            visionField.getObject("limelightMegaTag2Pose").setPose(this.getCurrentMegaTag2Pose());
-            visionField.getObject("photonLeftPose").setPose(this.getCurrentLeftPhotonPose());
-            visionField.getObject("photonRightPose").setPose(this.getCurrentRightPhotonPose());
-        case LIMITED:
-        case NONE:
-            // No values!
-        default:
-            break;
+        for(var est : this.poseEstimates) {
+            // Rejection checks
+            // Check for tag limit
+            // check ambiguity
+            // check Z height
+            // check out of bounds
+            // Need the zone classes for this check
+            if ((est.tagCount() < photonvision.kEstimateTagCount) || (est.ambiguity() > photonvision.kAmbiguityThreshold) || (est.pose().getZ() > photonvision.kHeightLimit)) {
+                continue;
+            } else {
+                double stddevFactor = Math.pow(est.averageTagDistance(), 2) / Math.pow(est.tagCount(), 2);
+                poseConsumer.accept(est.pose().toPose2d(), est.timestamp(), photonvision.kMultiTagStdDevs.times(stddevFactor));
+            }
         }
     }
 
     @Override
     public void simulationPeriodic() {
+
+        this.visionSim.update(this.swerveStateSupplier.get().Pose);
+
         // This method will be called once per scheduler run during simulation.
 
         // Update the odometry to the test pose, for test purposes.
