@@ -2,35 +2,25 @@ package frc.robot.subsystems.vision;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.VisionConstants.photonvision;
 
 public class Photonvision implements Camera {
 
-    @Logged
     private String name;
     private PhotonCamera camera;
     private PhotonPoseEstimator poseEstimator;
     private AprilTagFieldLayout fieldLayout;
     private Transform3d cameraTransform;
     private List<poseEstimate> poseEstimates;
-    @Logged
-    private Pose3d logTest = new Pose3d();
-    private Alert cameraDisconnected;
+    public Alert cameraDisconnected;
 
     /**
     * Constructor for a Photonvision camera.
@@ -67,6 +57,7 @@ public class Photonvision implements Camera {
     * Return the name of this camera.
     * @return The name of the camera, used to query the co-processor.
     */
+    @Override
     public String getName() {return this.name;}
 
     /**
@@ -145,6 +136,7 @@ public class Photonvision implements Camera {
     * A poseEstimate is a custom record in the Camera interface - An attempt at a 'co-processor agnostic' type that can be handled in the vision subsystem in one way.
     * @return A list of pose estimates for the vision subsystem to accept or reject.
     */
+    @Override
     public List<poseEstimate> getLatestEstimates() {
         return this.poseEstimates;
     }
@@ -173,7 +165,6 @@ public class Photonvision implements Camera {
                 var est = this.poseEstimator.estimateCoprocMultiTagPose(result);
                 // Redundancy check - Confirm that an estimate was created from the result.
                 if (est.isPresent()) {
-                    this.logTest = est.get().estimatedPose;
                     // Start filling out the pose estimate.
                     this.poseEstimates.add(new poseEstimate(
                         est.get().estimatedPose,    // Keep this as the 3d pose estimate.
@@ -191,7 +182,6 @@ public class Photonvision implements Camera {
                 var est = this.poseEstimator.estimateLowestAmbiguityPose(result);
                 // Redundancy check - Confirm that an estimate was created from the result.
                 if (est.isPresent()) {
-                    this.logTest = est.get().estimatedPose;
                     this.poseEstimates.add(new poseEstimate(
                         est.get().estimatedPose,    // Keep this as the 3d pose estimate.
                         est.get().timestampSeconds,
@@ -236,6 +226,6 @@ public class Photonvision implements Camera {
     * @return True, when the camera is connected and the size of the 'best' tag in the result is larger than the threshold.
     */
     private boolean targetArea(PhotonPipelineResult result, double tagSizeThreshold) {
-        return this.isConnected() && (result.getBestTarget().getArea() >= tagSizeThreshold);
+        return this.isConnected() && (result.getBestTarget().getArea() >= (tagSizeThreshold / 100.0));
     }
 }
