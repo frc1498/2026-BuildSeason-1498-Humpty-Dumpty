@@ -47,7 +47,7 @@ public class VisionConstants {
     public static class photonvision {
         public static final String kRightName = "swerveRightCamera";
         public static final Transform3d kRobotToRightCamera = new Transform3d(new Translation3d(0.2794, -0.31115, 0.1810), 
-        new Rotation3d(0.0, 0.314159, -1.5708));
+        new Rotation3d(0.0, -0.314159, -1.5708));
         // 11 in. (0.279400558801118 in meters) X
         // 13 in. (-0.330200660401321 in meters) Y
         // 7-1/8 in. (0.180975361950724 in meters) Z
@@ -59,7 +59,7 @@ public class VisionConstants {
         // That is in the robot coordinate frame.  To the camera, that is a 15 deg positive pitch.
         public static final String kLeftName = "swerveLeftCamera";
         public static final Transform3d kRobotToLeftCamera = new Transform3d(new Translation3d(0.2794, 0.31115, 0.1810), 
-        new Rotation3d(0.0, 0.349, 1.5708));
+        new Rotation3d(0.0, -0.349, 1.5708));
         // 11 in. (0.279400558801118 in meters) X
         // 12-1/8 in. (0.307975615951232 in meters) Y
         // 7-1/8 in. (0.180975361950724 in meters) Z
