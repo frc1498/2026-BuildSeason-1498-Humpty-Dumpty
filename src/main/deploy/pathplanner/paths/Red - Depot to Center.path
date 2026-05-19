@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 15.893119047619049,
-        "y": 2.1238214285714285
+        "x": 15.887720238095241,
+        "y": 2.6906964285714285
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.791761904761904,
-        "y": 2.134619047619047
+        "x": 14.786363095238096,
+        "y": 2.701494047619047
       },
       "isLocked": false,
       "linkedName": "redDepot"
@@ -29,8 +29,33 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
-  "pointTowardsZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.697841726618705,
+      "maxWaypointRelativePos": 0.9964028776978417,
+      "constraints": {
+        "maxVelocity": 0.75,
+        "maxAcceleration": 4.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [
+    {
+      "fieldPosition": {
+        "x": 11.9,
+        "y": 4.024
+      },
+      "rotationOffset": 0.0,
+      "minWaypointRelativePos": 0.4510791366906466,
+      "maxWaypointRelativePos": 1.0,
+      "name": "Point Towards Zone"
+    }
+  ],
   "eventMarkers": [
     {
       "name": "stopIntake",

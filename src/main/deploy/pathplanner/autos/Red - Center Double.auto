@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Red - Center to Depot"
+            "pathName": "Red - Center to Depot Double"
           }
         },
         {
@@ -36,6 +36,12 @@
                 "type": "named",
                 "data": {
                   "name": "slowRetract"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 8.0
                 }
               }
             ]
