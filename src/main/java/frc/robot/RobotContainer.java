@@ -14,6 +14,8 @@ import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Floor;
 import frc.robot.subsystems.Vision;
+import frc.robot.util.Battery.Battery;
+import frc.robot.util.Battery.BatteryConstants;
 import frc.robot.config.HopperConfig;
 import frc.robot.config.IntakeConfig;
 import frc.robot.config.ShooterConfig;
@@ -43,6 +45,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -90,6 +94,8 @@ public class RobotContainer {
     public Selector autonSelect = new Selector(autonFolder, ".auto", "Auton Selector", MotorEnableConstants.TelemetryLevel.LIMITED);
     public PathPlannerAuto selectedAuton;
     public ArrayList<PathPlannerAuto> autonCommands = new ArrayList<PathPlannerAuto>();
+
+    public final SendableChooser<Battery> batterySelection = new SendableChooser();
 
     //Gamepad assignment
     //Instantiate 
@@ -142,6 +148,12 @@ public class RobotContainer {
 
         driveFacingAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
+        this.batterySelection.setDefaultOption("NONE", null);
+        for (Battery battery : BatteryConstants.BATTERY_LIST) {
+            this.batterySelection.addOption(battery.getID(), battery);
+        }
+        SmartDashboard.putData("Current Battery", this.batterySelection);
+
         // Configure the trigger bindings
         registerAutoCommands();
         configureBindings();        
@@ -185,6 +197,9 @@ public class RobotContainer {
         //driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // This will technically run twice during a match, but the data shouldn't actually change.
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(Commands.runOnce(() -> {this.batterySelection.getSelected().logMetadata();}));
 
         // Once the robot starts the match, switch over the limelight to estimate pose with the internal IMU.
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(vision.setLimelightIMUInternalExternalAssist());
