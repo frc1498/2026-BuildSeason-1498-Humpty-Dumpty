@@ -148,7 +148,7 @@ public class RobotContainer {
 
         driveFacingAngle.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
 
-        this.batterySelection.setDefaultOption("NONE", null);
+        this.batterySelection.setDefaultOption("NONE", new Battery());
         for (Battery battery : BatteryConstants.BATTERY_LIST) {
             this.batterySelection.addOption(battery.getID(), battery);
         }
