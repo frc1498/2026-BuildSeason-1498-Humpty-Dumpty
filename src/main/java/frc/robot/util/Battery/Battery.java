@@ -7,7 +7,7 @@ public class Battery {
     /* Battery Defaults */
     /* These are logged if they are not overwritten with the initialization of a new Battery object. */
     /* This assumes a default MK ES17-12 battery. */
-    private String id = "N/A";
+    private String id = "DEFAULT";
     private String manufacturer = "MK";
     private String model = "ES17-12";
     private String buildDate = "N/A";
