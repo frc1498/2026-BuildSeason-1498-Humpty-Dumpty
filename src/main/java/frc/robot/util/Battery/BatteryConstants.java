@@ -8,6 +8,8 @@ public class BatteryConstants {
 
     public static final Battery TEST_BATTERY_ONE = new Battery()
         .withID("1")
+        .withManufacturer("MK")
+        .withModel("ES17-12")
         .withBuildDate("2025-08-15")
         .withPurchaseDate("2026-01-15")
         .withRanking(3)
@@ -18,6 +20,8 @@ public class BatteryConstants {
 
     public static final Battery TEST_BATTERY_TWO = new Battery()
         .withID("2")
+        .withManufacturer("MK")
+        .withModel("ES17-12")
         .withBuildDate("2025-08-15")
         .withPurchaseDate("2026-02-05")
         .withRanking(2)
@@ -28,6 +32,8 @@ public class BatteryConstants {
 
     public static final Battery TEST_BATTERY_THREE = new Battery()
         .withID("3")
+        .withManufacturer("Energizer")
+        .withModel("EN18-12")
         .withBuildDate("2025-12-01")
         .withPurchaseDate("2026-02-05")
         .withRanking(1)
