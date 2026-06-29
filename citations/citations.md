@@ -17,6 +17,10 @@ https://jostyslog.blogspot.com/2025/12/load-shedding-strategies-for-critical.htm
 5. jonahb55, "FRC 6328 Mechanical Advantage 2026 Build Thread" (2026). Post #689
 https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2026-build-thread/509595/699
 
+# Battery Modeling
+1. Basic, Mateo, Vukadinovic, Dinko, Visnjic, Vice & Rakic, Ivan, "Dynamic Equivalent Circuit Models of Lead-Acid Batteries - A Performance Comparison" (2022). ScienceDirect.
+https://www.sciencedirect.com/science/article/pii/S2405896322003469
+
 # Advanced Control
 1. Labbe, Roger R., "Kalman and Bayesian Filters in Python" (2015).
 https://rlabbe.github.io/Kalman-and-Bayesian-Filters-in-Python/
