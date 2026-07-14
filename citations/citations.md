@@ -28,6 +28,8 @@ https://www.sciencedirect.com/science/article/pii/S2405896322003469
 https://rlabbe.github.io/Kalman-and-Bayesian-Filters-in-Python/
 2. Veness, Tyler, "Controls Engineering in FRC" (2017).
 https://github.com/calcmogul/controls-engineering-in-frc
+3. Brunton, Steve, "Model Predictive Control" (2018).
+https://www.youtube.com/watch?v=YwodGM2eoy4&t=1s
 
 # Zones
 1. Nigelientje, "FRC 4481 Rembrandts | 2026 Build Thread | Open Alliance" (2026). Post #419
