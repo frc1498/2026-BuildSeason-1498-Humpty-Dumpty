@@ -16,6 +16,8 @@ https://web.eecs.umich.edu/~hiskens/publications/cdc_1786.pdf
 https://jostyslog.blogspot.com/2025/12/load-shedding-strategies-for-critical.html
 5. jonahb55, "FRC 6328 Mechanical Advantage 2026 Build Thread" (2026). Post #689
 https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2026-build-thread/509595/699
+6. thaneye, "Team 254 Presents: Overload" (2026). Post #82
+https://www.chiefdelphi.com/t/team-254-presents-overload/516252/85
 
 # Battery Modeling
 1. Basic, Mateo, Vukadinovic, Dinko, Visnjic, Vice & Rakic, Ivan, "Dynamic Equivalent Circuit Models of Lead-Acid Batteries - A Performance Comparison" (2022). ScienceDirect.
